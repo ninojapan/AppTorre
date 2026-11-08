@@ -94,6 +94,10 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      termine dell'autonomia** (frecce ore e minuti, oppure +30′, +1h, +1h30… da
      adesso), **POB** e **Weapon** (testo libero; gli armamenti già usati vengono
      riproposti). L'autonomia residua appare subito in verde, giallo o rosso.
+     **Solo per A/C in volo** (dopo il **Decollo**): con un A/C a terra compare
+     l'errore "Normal OPS: … non è in volo — registra prima il Decollo" e non si
+     salva nulla. Per un A/C in volo si registra **subito alla conferma** della
+     finestra (senza spot né Salva).
    - **Personale**: Imbarco o Sbarco e numero di persone.
    - **Elev. Sx / Dx / Mun. Prora / Mun. Poppa**: cosa trasporta (i carichi
      già usati vengono riproposti con un clic). **Registra** nella finestra
@@ -130,7 +134,7 @@ Un riquadro per ogni aeromobile in volo con **Callsign**, **Side**, **POB**,
 **Weapon** e **autonomia residua** in ore e minuti, aggiornata ogni secondo.
 Il bordo è **verde** con 1 ora o più, **giallo** da 30 a 59 minuti, **rosso**
 sotto i 30 minuti (lampeggia se l'autonomia è scaduta). Un A/C compare dopo il
-**Decollo** (o un **Normal OPS**) e sparisce con l'**Appontaggio** o con uno spot.
+**Decollo** e sparisce con l'**Appontaggio** o con uno spot.
 POB, Weapon e ora di termine vengono dall'ultimo **Normal OPS** di quel volo.
 
 - **Normal OPS** sul riquadro: aggiorna i dati (finestra già compilata) e lo registra in cronologia.
