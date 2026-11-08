@@ -119,6 +119,13 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
 3. **Spot**: 1–9, Hangar, Isole. **Toccando uno spot l'evento viene registrato
    subito** con data e ora. Se l'evento non ha spot premi **SALVA** in basso a
    destra (oppure **F2**).
+   **Uno Spot (1–9) può ospitare un solo A/C**: se lo spot è occupato da un altro
+   A/C compare l'errore "Spot 3 occupato da …" e non si salva nulla (la selezione
+   resta, puoi toccare un altro spot); lo stesso se selezioni più A/C sullo stesso
+   spot. Quando un evento è pronto, gli spot occupati sono evidenziati in rosso;
+   in **Move** le destinazioni occupate sono disattivate con il nome dell'A/C che
+   le occupa. Il controllo vale anche nella modifica di una riga (all'ora della
+   riga). **Hangar** e **Isole** possono ospitare più A/C.
 
 Sequenza tipica: **A/C → Evento** (registrato subito se l'A/C è già su uno spot),
 altrimenti **A/C → Evento → Spot**.

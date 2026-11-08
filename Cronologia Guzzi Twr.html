@@ -256,6 +256,12 @@ input[type=date],input[type=time]{color-scheme:dark}
 .spot:hover{border-color:var(--gold);background:radial-gradient(circle at 50% 42%,#33301f,#1f1d15)}
 .spot.occ{border-color:#5c6a82}
 .deck.armed .spot{border-color:#8a6b14;animation:armed 1.6s infinite}
+.deck.armed .spot.busy{border-color:#7a2020;background:radial-gradient(circle at 50% 42%,#2a1418,#180f12);animation:none}
+.deck.armed .spot.busy .sn{color:#f87171}
+.spot.bad{animation:bad .6s ease}
+@keyframes bad{0%,40%{background:#ef4444;border-color:#ef4444}100%{}}
+.chip.busy{opacity:.45;cursor:not-allowed;border-style:dashed}
+.chip small{font-size:10px;font-weight:700;color:var(--muted2);margin-left:2px}
 @keyframes armed{0%,100%{box-shadow:0 0 0 0 #f5c54200}50%{box-shadow:0 0 0 3px #f5c54233}}
 .spot.hit{animation:hit .5s ease}
 @keyframes hit{0%{transform:scale(.92);background:#f5c542}100%{transform:none}}
@@ -1113,10 +1119,12 @@ function renderEvGrid(){
 function renderSpots(){
   const pos = positions(), occ = {};
   Object.keys(pos).forEach(id=>{ const a=getAc(id); if(a && a.active){ (occ[pos[id]]=occ[pos[id]]||[]).push(a); } });
+  const armed = SEL.ev.length>0 && SEL.ac.length>0;
   const cell = s => {
     const o = occ[s]||[];
-    const tip = spotLabel(s) + (o.length ? ' — '+o.map(a=>a.callsign).join(', ') : '');
-    return '<button class="spot'+(o.length?' occ':'')+'" data-spot="'+esc(s)+'" data-tip="'+esc(tip)+'"><span class="sn">'+esc(s)+'</span>'+
+    const busy = armed && isNum(s) && Object.keys(pos).some(id=>pos[id]===s && !SEL.ac.includes(id));
+    const tip = spotLabel(s) + (o.length ? ' — '+o.map(a=>a.callsign).join(', ') : '') + (busy ? ' (occupato)' : '');
+    return '<button class="spot'+(o.length?' occ':'')+(busy?' busy':'')+'" data-spot="'+esc(s)+'" data-tip="'+esc(tip)+'"><span class="sn">'+esc(s)+'</span>'+
       (o.length ? '<span class="so">'+o.slice(0,3).map(a=>'<i style="background:'+tipoColor(a.tipo)+'"></i>').join('')+
         '<em>'+esc(o.length===1 ? (o[0].side||o[0].callsign) : (isNum(s)? o.length+' A/C' : o.map(a=>a.side||a.callsign).join(' · ')))+'</em></span>' : '')+'</button>';
   };
@@ -1231,12 +1239,12 @@ function onEvClick(id){
   };
   if(auto && ev.modal!=='none'){ openDetModal(ev, suggestDet(ev), done, { direct:true }); return; }
   if(ev.modal==='none') done(null);
+  else if(ev.modal==='move') openDetModal(ev, suggestDet(ev), done, { occ: occupiedBy(SEL.ac), validate: d=>spotConflict(SEL.ac, d.a) });
   else openDetModal(ev, suggestDet(ev), done);
 }
 function onSpotClick(s, btn){
   if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
-  register(s);
-  const nb = qsa('#deck [data-spot]').find(b=>b.dataset.spot===s); if(nb) nb.classList.add('hit');
+  if(register(s)){ const nb = qsa('#deck [data-spot]').find(b=>b.dataset.spot===s); if(nb) nb.classList.add('hit'); }
 }
 const evSnap = (e, det) => ({ id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det: det ? clone(det) : null });
 let LAST_REG = null;   // ultima registrazione (per unire Tacchi + Rizze)
@@ -1302,10 +1310,31 @@ function register(spot, spotByAc){
   if(fly){ const ground = notFlying(SEL.ac.map(getAc).filter(Boolean)); if(ground.length){ needFlyError(fly, ground); return; } }
   const gnd = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needGround);
   if(gnd){ const air = airborne(SEL.ac.map(getAc).filter(Boolean)); if(air.length){ inFlightError(gnd, air); return; } }
+  // uno Spot (1-9) puo' ospitare un solo A/C
+  const mvs = SEL.ev.find(x=>{ const e=getEv(x.id); return e && e.modal==='move' && x.det && x.det.a; });
+  const target = mvs ? mvs.det.a : (spotByAc ? null : spot);
+  if(SEL.ac.length && target){ const c = spotConflict(SEL.ac, target); if(c){ spotError(c, target); return false; } }
   const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
   const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot, spotByAc);
   SEL.ac=[]; SEL.ev=[];
   afterRegister(ids);
+  return true;
+}
+function occupiedBy(acIds){
+  // { spot: callsign } degli Spot 1-9 occupati da A/C diversi da quelli indicati
+  const st = acStates(), out = {};
+  Object.keys(st).forEach(id=>{ const p = st[id].pos; if(p && isNum(p) && !acIds.includes(id)) out[p] = st[id].ac.cs; });
+  return out;
+}
+function spotConflict(acIds, spot){
+  if(!spot || !isNum(spot)) return null;            // Hangar e Isole possono ospitare piu' A/C
+  if(acIds.length>1) return spotLabel(spot)+': un solo A/C per spot ('+acIds.length+' selezionati)';
+  const occ = occupiedBy(acIds)[spot];
+  return occ ? spotLabel(spot)+' occupato da '+occ : null;
+}
+function spotError(msg, s){
+  toast(msg, 'err');
+  const b = qsa('#deck [data-spot]').find(x=>x.dataset.spot===s); if(b){ b.classList.remove('bad','hit'); void b.offsetWidth; b.classList.add('bad'); }
 }
 function registerSolo(ev, det){
   afterRegister(addEntries([], [evSnap(ev, det)], null));
@@ -1332,11 +1361,13 @@ function rememberRecent(kind, txt){
 const chip = (v, label, on, ic) => '<button type="button" class="chip'+(on?' on':'')+'" data-v="'+esc(v)+'">'+(ic?I[ic]:'')+esc(label)+'</button>';
 const stepper = (k, v) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="0" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
 const fmtShort = v => { const h=Math.floor(v/60), m=v%60; return h ? h+'h'+(m?pad(m):'') : m+'′'; };
-function detForm(ev, det, ref){
+function detForm(ev, det, ref, occ){
   det = det||{};
   switch(ev.modal){
     case 'move': return '<div class="fgrp"><label>Da</label><div class="chipgrp" data-k="da">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.da===p)).join('')+'</div></div>'+
-                        '<div class="fgrp"><label>A</label><div class="chipgrp" data-k="a">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.a===p)).join('')+'</div></div>';
+                        '<div class="fgrp"><label>A</label><div class="chipgrp" data-k="a">'+MOVE_PLACES.map(p=>(occ && occ[p])
+                          ? '<button type="button" class="chip busy" disabled data-v="'+esc(p)+'" data-tip="Occupato da '+esc(occ[p])+'">'+esc(spotLabel(p))+'<small>'+esc(occ[p])+'</small></button>'
+                          : chip(p, spotLabel(p), det.a===p)).join('')+'</div></div>';
     case 'fasi':
     case 'fasiLt': return '<div class="fgrp"><div class="chipgrp big" data-k="fase">'+chip('inizio','Inizio',det.fase==='inizio','play')+chip('fine','Fine',det.fase==='fine','stop')+'</div></div>'+
       (ev.modal==='fasiLt' ? '<div class="fgrp ltbox'+(det.fase==='fine'?'':' hide')+'"><label>Quantità (lt)</label><input type="number" inputmode="numeric" min="0" step="1" data-k="lt" value="'+esc(det.lt!=null?det.lt:'')+'" placeholder="es. 1200"'+(det.fase==='fine'?' autofocus':'')+'>'+
@@ -1508,7 +1539,7 @@ function openDetModal(ev, det, onOk, opts){
   const okLabel = opts.okLabel || (direct ? (ev.modal==='move' ? 'Registra movimento' : 'Registra') : 'Conferma');
   openModal({
     title: opts.title || esc(ev.label), icon: mDot(ev.color),
-    body: '<div class="detbox">'+detForm(ev, det)+'</div><div class="ferr" hidden></div>',
+    body: '<div class="detbox">'+detForm(ev, det, undefined, opts.occ)+'</div><div class="ferr" hidden></div>',
     foot: '<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn '+(direct?'':'blue')+'" data-primary data-ok>'+I.check+okLabel+'</button>',
     onMount(m){
       const box = m.root.querySelector('.detbox');
@@ -1516,6 +1547,8 @@ function openDetModal(ev, det, onOk, opts){
       m.root.querySelector('[data-ok]').onclick = ()=>{
         const r = detRead(ev, box);
         if(r.err){ showErr(m, r.err); return; }
+        const v = opts.validate ? opts.validate(r.det) : null;
+        if(v){ showErr(m, v); return; }
         m.close(); onOk(r.det);
       };
     }
@@ -1614,6 +1647,11 @@ function openEdit(day, id){
         const sc = R.querySelector('[data-f="spot"] .chip.on');
         let spot = sc && sc.dataset.v ? sc.dataset.v : null;
         const mv = evs.find(x=>x.modal==='move' && x.det && x.det.a); if(mv) spot = mv.det.a;
+        if(acv && spot && isNum(spot)){
+          const prior = (DAYS[prevDayKey(day)]||[]).concat(DAYS[day]||[]).filter(x=>x.id!==en.id && x.ts < newTs);
+          const st = computeStates(prior), other = Object.keys(st).find(id=>id!==acv && st[id].pos===spot);
+          if(other) return showErr(m, spotLabel(spot)+': a quell\'ora era occupato da '+st[other].ac.cs);
+        }
         en.ts = newTs; en.ac = ac; en.evs = evs; en.spot = spot;
         const nv = String(R.querySelector('[data-f="note"]').value||'').trim(); if(nv) en.note = nv; else delete en.note;
         rememberFrom(evs);
