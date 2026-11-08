@@ -81,6 +81,9 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      si tocca lo spot (es. l'Appontaggio) oppure si preme **SALVA**.
    - **Tacchi + Rizze**: se premi Rizze (o Tacchi) sullo stesso A/C entro 2 minuti
      dall'altro, viene aggiunto alla stessa riga ("Tacchi + Rizze").
+   - **Decollo** solo per A/C a terra: se l'A/C risulta già in volo compare
+     l'errore "Decollo: … è già in volo" e non si salva nulla (vale anche nella
+     modifica di una riga). Per farlo ripartire serve prima l'**Appontaggio**.
    - **Un clic** (icona ⚡): **Ops di volo, FodWalk, Deck Ready, Prova Semaforo,
      Giallo, Rosso, Verde** vengono registrati subito, senza A/C né spot.
      Gli A/C eventualmente selezionati restano selezionati.
@@ -108,6 +111,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
    - Nella finestra di modifica di ogni evento, la voce **Registrazione** sceglie
      come si registra: *standard* (spot o Salva), *subito* (al clic o alla
      conferma, con gli A/C selezionati) oppure *un clic* (subito, senza A/C né spot).
+     Le opzioni **Solo per A/C in volo** (Normal OPS) e **Solo per A/C a terra**
+     (Decollo) si possono attivare anche su altri eventi.
      L'opzione **Richiede un A/C selezionato** blocca l'evento con un errore se
      nessun A/C è selezionato e lo registra subito se l'A/C è già su uno spot;
      puoi attivarla o disattivarla per ogni evento.

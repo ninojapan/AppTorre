@@ -804,7 +804,7 @@ const TIPO_COLORS = ['#38bdf8','#f59e0b','#a78bfa','#22c55e','#f472b6','#2dd4bf'
 const TIPI_SUGG = ['SH-90A','NH-90','EH-101','SH-101A','UH-101A','AB-212','AV-8B+','F-35B'];
 
 function defaultEvents(){
-  // [id, nome, colore, finestra, statistica, combinabile, registrazione, richiede A/C, solo A/C in volo]
+  // [id, nome, colore, finestra, statistica, combinabile, registrazione, richiede A/C, solo A/C in volo, solo A/C a terra]
   return [
     ['ops','Ops di volo','#38bdf8','none','',false,'solo'],
     ['fod','FodWalk','#f59e0b','none','',false,'solo'],
@@ -821,7 +821,7 @@ function defaultEvents(){
     ['apu','APU/IPP','#2dd4bf','none','',false,'spot',true],
     ['mim','MIM','#60a5fa','none','',false,'spot',true],
     ['ingaggio','Ingaggio','#818cf8','none','',false,'spot',true],
-    ['decollo','Decollo','#38bdf8','none','decollo',false,'spot',true],
+    ['decollo','Decollo','#38bdf8','none','decollo',false,'spot',true,false,true],
     ['normalops','Normal OPS','#818cf8','normalops','',false,'spot',true,true],
     ['appontaggio','Appontaggio','#22c55e','none','appontaggio',false,'spot',true],
     ['personale','Personale','#f472b6','personale','personale',false,'spot',true],
@@ -833,7 +833,7 @@ function defaultEvents(){
     ['fold','Fold','#94a3b8','none','',false,'spot',true],
     ['unfold','Unfold','#94a3b8','none','',false,'spot',true],
     ['testo','Testo','#e2e8f0','testo']
-  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', needAc:!!a[7], needFly:!!a[8], hidden:false }));
+  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', needAc:!!a[7], needFly:!!a[8], needGround:!!a[9], hidden:false }));
 }
 
 /* ------------------------------ Stato ------------------------------ */
@@ -1079,7 +1079,7 @@ function renderEvGrid(){
       e.reg==='solo' ? 'Un clic: registra subito, senza A/C né spot' : e.reg==='subito' ? 'Registra subito'+(e.modal!=='none'?' alla conferma':'')+' (con gli A/C selezionati)' : '',
       e.modal!=='none' ? 'Apre: '+MODAL_TYPES[e.modal] : '',
       e.combo ? 'Combinabile con altri eventi combinabili' : '',
-      e.needFly ? 'Solo per A/C in volo (dopo il Decollo)' : e.needAc ? 'Richiede un A/C selezionato' : ''
+      e.needFly ? 'Solo per A/C in volo (dopo il Decollo)' : e.needGround ? 'Solo per A/C a terra (non gia\' in volo)' : e.needAc ? 'Richiede un A/C selezionato' : ''
     ].filter(Boolean).join(' · ');
     return '<button class="evbtn'+(s?' on':'')+'" data-ev="'+e.id+'" style="'+cvars(e.color)+'"'+(tip?' data-tip="'+esc(tip)+'"':'')+'>'+
       '<span class="dot"></span><span class="evl">'+esc(e.label)+'</span>'+
@@ -1181,7 +1181,7 @@ function onEvClick(id){
   }
   const i = SEL.ev.findIndex(s=>s.id===id);
   if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
-  if((ev.needAc || ev.needFly) && !SEL.ac.length){ needAcError(ev); return; }
+  if((ev.needAc || ev.needFly || ev.needGround) && !SEL.ac.length){ needAcError(ev); return; }
   if(ev.needFly){
     // solo A/C in volo (dopo il Decollo); in volo non c'e' spot, quindi si registra subito
     const ground = notFlying(SEL.ac.map(getAc).filter(Boolean));
@@ -1189,6 +1189,11 @@ function onEvClick(id){
     const fin = det=>{ applyEvSel(ev, det); register(null); };
     if(ev.modal==='none') fin(null); else openDetModal(ev, suggestDet(ev), fin, { direct:true });
     return;
+  }
+  if(ev.needGround){
+    // es. Decollo: non per un A/C che risulta gia' in volo
+    const air = airborne(SEL.ac.map(getAc).filter(Boolean));
+    if(air.length){ inFlightError(ev, air); return; }
   }
   // A/C gia' su uno spot: l'evento si registra subito su quello spot (per ogni A/C selezionato)
   const auto = ev.needAc && ev.reg==='spot' ? deckSpots(SEL.ac.map(getAc).filter(Boolean)) : null;
@@ -1253,6 +1258,11 @@ function mergeCombo(ev){
 }
 function needAcMsg(ev){ return ev.label+': seleziona prima l\'A/C'+(ev.modal==='move'?' da movimentare':''); }
 function notFlying(acs){ const pos = positions(); return acs.filter(a=>pos[a.id]!=='VOLO'); }
+function airborne(acs){ const pos = positions(); return acs.filter(a=>pos[a.id]==='VOLO'); }
+function inFlightError(ev, air){
+  toast(ev.label+': '+air.map(a=>a.callsign).join(', ')+(air.length>1?' sono già':' è già')+' in volo','err');
+  const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
+}
 function needFlyError(ev, ground){
   toast(ev.label+': '+ground.map(a=>a.callsign).join(', ')+(ground.length>1?' non sono':' non è')+' in volo — registra prima il Decollo','err');
   const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
@@ -1267,6 +1277,8 @@ function register(spot, spotByAc){
   if(need && !SEL.ac.length){ needAcError(need); return; }
   const fly = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needFly);
   if(fly){ const ground = notFlying(SEL.ac.map(getAc).filter(Boolean)); if(ground.length){ needFlyError(fly, ground); return; } }
+  const gnd = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needGround);
+  if(gnd){ const air = airborne(SEL.ac.map(getAc).filter(Boolean)); if(air.length){ inFlightError(gnd, air); return; } }
   const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
   const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot, spotByAc);
   SEL.ac=[]; SEL.ev=[];
@@ -1568,6 +1580,12 @@ function openEdit(day, id){
           const st = computeStates(prior)[acv];
           if(!st || st.pos!=='VOLO') return showErr(m, fly.label+': a quell\'ora l\'A/C non risulta in volo (manca il Decollo)');
         }
+        const gnd = sel.map(x=>getP(x.id)).find(x=>x && x.needGround);
+        if(gnd && acv){
+          const prior = (DAYS[prevDayKey(day)]||[]).concat(DAYS[day]||[]).filter(x=>x.id!==en.id && x.ts < newTs);
+          const st = computeStates(prior)[acv];
+          if(st && st.pos==='VOLO') return showErr(m, gnd.label+': a quell\'ora l\'A/C risulta già in volo');
+        }
         let ac = null;
         if(acv){ const a=getAc(acv); ac = a ? acSnap(a) : (en.ac && en.ac.id===acv ? en.ac : null); }
         const sc = R.querySelector('[data-f="spot"] .chip.on');
@@ -1754,7 +1772,7 @@ function openEvManager(){
           '<div class="erow'+(e.hidden?' off':'')+'" data-id="'+e.id+'"><div class="ord"><button class="iconbtn" data-mv="-1"'+(i===0?' disabled':'')+' data-tip="Sposta su">'+I.up+'</button><button class="iconbtn" data-mv="1"'+(i===CFG.events.length-1?' disabled':'')+' data-tip="Sposta giù">'+I.down+'</button></div>'+
           '<div class="en"><i style="background:'+e.color+';box-shadow:0 0 8px '+e.color+'"></i>'+esc(e.label)+'</div>'+
           '<div class="ed">'+(e.modal!=='none'?MODAL_TYPES[e.modal]:'<span style="opacity:.6">Nessuna finestra</span>')+'</div>'+
-          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+(e.reg==='solo'?'<span class="tag reg">Un clic</span>':e.reg==='subito'?'<span class="tag reg">Subito</span>':'')+(e.needFly?'<span class="tag need">Solo in volo</span>':e.needAc?'<span class="tag need">Richiede A/C</span>':'')+'</div>'+
+          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+(e.reg==='solo'?'<span class="tag reg">Un clic</span>':e.reg==='subito'?'<span class="tag reg">Subito</span>':'')+(e.needFly?'<span class="tag need">Solo in volo</span>':e.needGround?'<span class="tag need">Solo a terra</span>':e.needAc?'<span class="tag need">Richiede A/C</span>':'')+'</div>'+
           '<div class="acts"><button class="iconbtn" data-vis data-tip="'+(e.hidden?'Mostra':'Nascondi')+' in Cronologia">'+(e.hidden?I.eyeOff:I.eye)+'</button><button class="iconbtn" data-ed data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-del data-tip="Elimina">'+I.trash+'</button></div></div>').join('');
       };
       const changed = ()=>{ queueSave('config'); renderPanel(); draw(); };
@@ -1782,7 +1800,7 @@ function openEvManager(){
 }
 function openEvForm(ev, after){
   const isNew = !ev;
-  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, reg:'spot', needAc:false, needFly:false, hidden:false };
+  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, reg:'spot', needAc:false, needFly:false, needGround:false, hidden:false };
   openModal({
     title: isNew?'Nuovo evento':'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid',
     body:'<div class="prev" data-prev></div>'+
@@ -1792,6 +1810,7 @@ function openEvForm(ev, after){
       '<div class="fgrp"><label>Conteggia nelle statistiche come</label><select data-e="stat">'+Object.keys(STAT_TYPES).map(k=>'<option value="'+k+'"'+(k===e.stat?' selected':'')+'>'+STAT_TYPES[k]+'</option>').join('')+'</select></div></div>'+
       '<div class="fgrp"><label>Registrazione</label><select data-e="reg">'+Object.keys(REG_TYPES).map(k=>'<option value="'+k+'"'+(k===e.reg?' selected':'')+'>'+REG_TYPES[k]+'</option>').join('')+'</select></div>'+
       '<label class="chk"><input type="checkbox" data-e="needFly"'+(e.needFly?' checked':'')+'>Solo per A/C in volo (dopo il Decollo): altrimenti mostra un errore; si registra alla conferma</label>'+
+      '<label class="chk"><input type="checkbox" data-e="needGround"'+(e.needGround?' checked':'')+'>Solo per A/C a terra: se l\'A/C risulta già in volo mostra un errore (es. Decollo)</label>'+
       '<label class="chk"><input type="checkbox" data-e="needAc"'+(e.needAc?' checked':'')+'>Richiede un A/C selezionato: senza A/C mostra un errore; se l\'A/C è già su uno spot si registra subito lì</label>'+
       '<label class="chk"><input type="checkbox" data-e="combo"'+(e.combo?' checked':'')+'>Combinabile: selezionabile insieme ad altri eventi combinabili (es. Tacchi + Rizze)</label>'+
       '<label class="chk"><input type="checkbox" data-e="visible"'+(!e.hidden?' checked':'')+'>Visibile nella Cronologia</label><div class="ferr" hidden></div>',
@@ -1804,8 +1823,9 @@ function openEvForm(ev, after){
       R.querySelector('[data-ok]').onclick = ()=>{
         const label = val('label').value.trim();
         if(!label) return showErr(m,'Inserisci il nome dell\'evento');
-        if(val('reg').value==='solo' && (val('needAc').checked || val('needFly').checked)) return showErr(m,'Un evento "un clic" si registra senza A/C: togli "Richiede un A/C" oppure cambia la registrazione');
-        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, reg:val('reg').value, needAc:val('needAc').checked || val('needFly').checked, needFly:val('needFly').checked, combo:val('combo').checked, hidden:!val('visible').checked });
+        if(val('needFly').checked && val('needGround').checked) return showErr(m,'Scegli solo una tra "Solo per A/C in volo" e "Solo per A/C a terra"');
+        if(val('reg').value==='solo' && (val('needAc').checked || val('needFly').checked || val('needGround').checked)) return showErr(m,'Un evento "un clic" si registra senza A/C: togli "Richiede un A/C" oppure cambia la registrazione');
+        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, reg:val('reg').value, needAc:val('needAc').checked || val('needFly').checked || val('needGround').checked, needFly:val('needFly').checked, needGround:val('needGround').checked, combo:val('combo').checked, hidden:!val('visible').checked });
         if(isNew) CFG.events.push(e); else Object.assign(ev, e);
         m.close(); after && after();
       };
@@ -2157,6 +2177,7 @@ function normalizeCfg(c){
     if(!REG_TYPES[e.reg]){ e.reg = DEF[e.id] ? DEF[e.id].reg : 'spot'; fresh = true; }
     if(typeof e.needAc!=='boolean'){ e.needAc = DEF[e.id] ? DEF[e.id].needAc : false; fresh = true; }
     if(typeof e.needFly!=='boolean'){ e.needFly = DEF[e.id] ? DEF[e.id].needFly : false; fresh = true; }
+    if(typeof e.needGround!=='boolean'){ e.needGround = DEF[e.id] ? DEF[e.id].needGround : false; fresh = true; }
     if(e.id==='nlock' && e.label==='Norck Lock'){ e.label = 'Norco Lock'; fresh = true; }
   });
   if(!o.tipoColor || typeof o.tipoColor!=='object') o.tipoColor = {};
@@ -2174,7 +2195,12 @@ function normalizeCfg(c){
     o.events.forEach(e=>{ if(e.id==='normalops'){ e.needFly = true; e.needAc = true; } });
     fresh = true;
   }
-  o.version = 3;
+  if((Number(o.version)||1) < 4){
+    // v4: Decollo non permesso per A/C gia' in volo
+    o.events.forEach(e=>{ if(e.id==='decollo'){ e.needGround = true; e.needAc = true; } });
+    fresh = true;
+  }
+  o.version = 4;
   return { cfg:o, fresh };
 }
 function showOffline(){
