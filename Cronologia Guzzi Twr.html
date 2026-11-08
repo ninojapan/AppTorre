@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cronologia Guzzi Twr</title>
+<style>
+:root{
+  --bg:#060c18; --bg2:#0a1324; --panel:#0f1b31; --panel2:#14233f; --panel3:#1b2e52;
+  --border:#203356; --border2:#2d4775; --text:#e8eef8; --muted:#93a6c6; --muted2:#687c9f;
+  --accent:#38bdf8; --accent-d:#0ea5e9; --gold:#f5c542; --gold-d:#d9a514;
+  --green:#22c55e; --green-d:#16a34a; --red:#ef4444; --red-d:#dc2626; --amber:#f59e0b; --violet:#a78bfa;
+  --it-green:#009246; --it-red:#ce2b37;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --radius:14px; --shadow:0 10px 30px rgba(0,0,0,.45);
+  --font:"Segoe UI",Roboto,system-ui,-apple-system,Arial,sans-serif;
+  --font-d:"Bahnschrift","DIN Alternate","Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:"Cascadia Mono","Consolas","SFMono-Regular",ui-monospace,monospace;
+  --top:68px; --sbw:236px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; font-family:var(--font); color:var(--text); font-size:14px;
+  background:
+    radial-gradient(1100px 560px at 6% -12%, #15305c66, transparent 60%),
+    radial-gradient(900px 480px at 108% 0%, #0b3b4a55, transparent 55%),
+    linear-gradient(#0d1a301a 1px, transparent 1px) 0 0/100% 32px,
+    var(--bg);
+  overflow:hidden;
+}
+button{font-family:inherit;cursor:pointer;color:inherit}
+button:disabled{cursor:not-allowed}
+input,select,textarea{font-family:inherit}
+svg.i{width:18px;height:18px;flex:0 0 auto;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:#243a60;border-radius:8px;border:2px solid transparent;background-clip:padding-box}
+::-webkit-scrollbar-track{background:transparent}
+.muted{color:var(--muted)}
+.hide{display:none!important}
+
+/* ================= LAYOUT ================= */
+.app{display:grid;grid-template-rows:var(--top) minmax(0,1fr);grid-template-columns:var(--sbw) minmax(0,1fr);
+  grid-template-areas:"top top" "side main";height:100vh;transition:grid-template-columns .25s ease}
+.app.sb-closed{grid-template-columns:0 minmax(0,1fr)}
+.app.sb-closed .sidebar{border-right:none}
+
+/* ================= TOPBAR ================= */
+.topbar{grid-area:top;display:flex;align-items:center;gap:14px;padding:0 18px 0 12px;
+  background:linear-gradient(180deg,#12223f,#0b162b);border-bottom:1px solid var(--border);
+  box-shadow:0 6px 24px rgba(0,0,0,.35);position:relative;z-index:30}
+.topbar::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:3px;
+  background:linear-gradient(90deg,var(--it-green) 0 33.3%,#fff 33.3% 66.6%,var(--it-red) 66.6% 100%);opacity:.9}
+.hamb{width:42px;height:42px;border-radius:12px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;transition:.15s}
+.hamb:hover{border-color:var(--accent);background:var(--panel2)}
+.hamb svg{width:22px;height:22px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand .logo{width:54px;height:54px;flex:0 0 auto;filter:drop-shadow(0 3px 8px rgba(0,0,0,.5))}
+.brand .logo img,.brand .logo svg{width:100%;height:100%;object-fit:contain}
+.brand h1{margin:0;font-family:var(--font-d);font-size:21px;font-weight:700;letter-spacing:.6px;line-height:1.05;white-space:nowrap}
+.brand h1 b{color:var(--gold);font-weight:700}
+.brand .sub{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:2.4px;text-transform:uppercase;margin-top:3px;white-space:nowrap}
+.crumb{display:flex;align-items:center;gap:8px;margin-left:8px;padding:7px 12px;border-radius:10px;background:#0b1a33;border:1px solid var(--border);color:var(--accent);font-weight:700;font-size:13px;white-space:nowrap}
+.spacer{flex:1}
+.clocks{display:flex;align-items:stretch;gap:8px}
+.clk{background:#07101f;border:1px solid var(--border);border-radius:11px;padding:5px 12px;min-width:118px;text-align:center}
+.clk .ck-l{font-size:9.5px;letter-spacing:2px;color:var(--muted2);font-weight:800}
+.clk .ck-v{font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:1px;color:#d6f3ff;line-height:1.15}
+.clk.z .ck-v{color:var(--gold)}
+.clk.date .ck-v{font-family:var(--font-d);font-size:15px;letter-spacing:.5px;color:var(--text);padding-top:2px}
+.srv{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:8px 12px;border-radius:11px;white-space:nowrap}
+.srv .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green)}
+.srv.off .dot{background:var(--red);box-shadow:0 0 8px var(--red)}
+.srv.off{color:#ffc9c9;border-color:#6b2222}
+
+/* ================= SIDEBAR ================= */
+.sidebar{grid-area:side;overflow:hidden;background:linear-gradient(180deg,#0d1930,#09111f);border-right:1px solid var(--border);position:relative;z-index:20}
+.sb-inner{width:var(--sbw);height:100%;display:flex;flex-direction:column;padding:16px 12px}
+.sb-lab{font-size:10.5px;color:var(--muted2);font-weight:800;letter-spacing:2px;text-transform:uppercase;padding:4px 10px 10px}
+.navbtn{display:flex;align-items:center;gap:12px;width:100%;padding:12px 12px;border-radius:12px;border:1px solid transparent;background:none;text-align:left;margin-bottom:6px;transition:.15s;color:var(--muted)}
+.navbtn .ni{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--panel);border:1px solid var(--border);flex:0 0 auto}
+.navbtn .nt{display:flex;flex-direction:column;min-width:0}
+.navbtn .nt b{font-size:14.5px;color:var(--text);font-weight:700}
+.navbtn .nt small{font-size:11.5px;color:var(--muted2);margin-top:1px}
+.navbtn:hover{background:var(--panel);border-color:var(--border)}
+.navbtn.active{background:linear-gradient(90deg,#0f3456,#10233f);border-color:#1f5a86}
+.navbtn.active .ni{background:linear-gradient(180deg,var(--accent),var(--accent-d));color:#04121f;border-color:var(--accent);box-shadow:0 4px 14px #0ea5e955}
+.navbtn.active .nt small{color:#9cc9e8}
+.sb-foot{margin-top:auto;border-top:1px solid var(--border);padding-top:12px}
+.sb-foot .btn{margin-bottom:10px}
+.sb-db{font-size:11px;color:var(--muted2);line-height:1.45;padding:0 4px;word-break:break-all}
+.sb-db b{color:var(--muted);font-weight:700}
+
+/* ================= MAIN / VIEWS ================= */
+.main{grid-area:main;overflow:hidden;position:relative}
+.view{display:none;height:100%;animation:fade .18s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Buttons / form ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border:none;border-radius:11px;font-weight:800;font-size:14px;letter-spacing:.3px;
+  color:#04121f;background:linear-gradient(180deg,var(--green),var(--green-d));transition:.15s;box-shadow:0 5px 16px #16a34a44;white-space:nowrap}
+.btn:hover{filter:brightness(1.08)}
+.btn.blue{background:linear-gradient(180deg,var(--accent),var(--accent-d));box-shadow:0 5px 16px #0ea5e944}
+.btn.red{background:linear-gradient(180deg,var(--red),var(--red-d));color:#fff;box-shadow:0 5px 16px #dc262644}
+.btn.gold{background:linear-gradient(180deg,var(--gold),var(--gold-d));box-shadow:0 5px 16px #d9a51444}
+.btn.ghost{background:var(--panel2);color:var(--text);box-shadow:none;border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--accent)}
+.btn.small{padding:7px 11px;font-size:12.5px;border-radius:9px}
+.btn.block{width:100%}
+.btn:disabled{filter:grayscale(1) brightness(.6);box-shadow:none;opacity:.6}
+.iconbtn{background:var(--panel2);border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;transition:.15s;flex:0 0 auto}
+.iconbtn svg{width:16px;height:16px}
+.iconbtn:hover{color:var(--text);border-color:var(--accent)}
+.iconbtn.danger:hover{color:var(--red);border-color:var(--red)}
+.iconbtn.on{color:var(--accent);border-color:var(--accent)}
+.fgrp{margin-bottom:14px}
+.fgrp > label{display:block;font-size:11px;color:var(--muted);margin-bottom:6px;font-weight:800;text-transform:uppercase;letter-spacing:.7px}
+.fgrp input.mono{font-family:var(--mono);font-size:17px;letter-spacing:1px}
+.fgrp input[type=text],.fgrp input[type=number],.fgrp input[type=time],.fgrp input[type=date],.fgrp select,.fgrp textarea,.inp{
+  width:100%;padding:10px 12px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:10px;font-size:14.5px;outline:none;transition:.15s}
+.fgrp textarea{min-height:110px;resize:vertical;line-height:1.45}
+.fgrp input:focus,.fgrp select:focus,.fgrp textarea:focus,.inp:focus{border-color:var(--accent);box-shadow:0 0 0 3px #38bdf833}
+input.up{text-transform:uppercase}
+input[type=date],input[type=time]{color-scheme:dark}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.hint{font-size:12px;color:var(--muted2);margin-top:5px;line-height:1.4}
+.chk{display:flex;align-items:center;gap:10px;font-size:13.5px;cursor:pointer;user-select:none;padding:6px 0}
+.chk input{width:18px;height:18px;accent-color:var(--accent)}
+
+/* chip groups (selezioni a pulsante nei modal) */
+.chipgrp{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:8px 13px;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-weight:700;font-size:13px;transition:.12s;display:inline-flex;align-items:center;gap:7px}
+.chip:hover{color:var(--text);border-color:var(--border2)}
+.chip.on{color:#04121f;background:linear-gradient(180deg,var(--accent),var(--accent-d));border-color:var(--accent);box-shadow:0 3px 12px #0ea5e944}
+.chipgrp.big .chip{flex:1;justify-content:center;padding:16px 12px;font-size:16px;border-radius:13px}
+.chipgrp.big .chip svg{width:20px;height:20px}
+.stepper{display:flex;align-items:center;gap:8px}
+.stepper button{width:46px;height:46px;border-radius:12px;border:1px solid var(--border);background:var(--panel2);font-size:24px;line-height:1;flex:0 0 auto}
+.stepper button:hover{border-color:var(--accent)}
+.stepper input{text-align:center;font-size:22px!important;font-weight:800;height:46px}
+.quick{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.qbtn{padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-size:12px;font-weight:700}
+.qbtn:hover{color:var(--text);border-color:var(--accent)}
+.ferr{background:#3a1010;border:1px solid #7a2020;color:#ffcaca;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:600;margin-top:4px}
+
+/* ================= CRONOLOGIA ================= */
+.cro{display:grid;grid-template-columns:minmax(0,1fr) 580px;grid-template-rows:minmax(0,1fr);height:100%}
+.logpane{display:flex;flex-direction:column;min-width:0;min-height:0;padding:16px 16px 16px 18px}
+.loghead{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.loghead h2{margin:0;font-family:var(--font-d);font-size:21px;letter-spacing:.4px;display:flex;align-items:center;gap:10px}
+.loghead h2 svg{width:22px;height:22px;color:var(--accent)}
+.loghead .ld{color:var(--muted);font-size:13.5px;font-weight:600}
+.mstats{display:flex;gap:6px;flex-wrap:wrap}
+.mstat{font-size:12px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:5px 10px;border-radius:20px;white-space:nowrap}
+.mstat b{color:var(--text);font-family:var(--font-d);font-size:13px;margin-left:3px}
+.logbox{flex:1;min-height:0;overflow:auto;background:linear-gradient(180deg,#0e1a30,#0b1527);border:1px solid var(--border);border-radius:var(--radius)}
+.lhead,.lrow{display:grid;grid-template-columns:84px minmax(120px,190px) minmax(0,1fr) 96px 76px;gap:12px;align-items:center;padding:10px 14px}
+.lhead{position:sticky;top:0;z-index:2;background:var(--panel2);border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding-top:9px;padding-bottom:9px}
+.lrow{border-bottom:1px solid #1a2b4a;transition:background .15s}
+.lrow:hover{background:#14254230}
+.lrow.fresh{animation:fresh 1.6s ease}
+@keyframes fresh{0%{background:#38bdf838}100%{background:transparent}}
+.l-time{font-family:var(--mono);font-size:19px;font-weight:700;color:#d6f3ff;letter-spacing:.5px}
+.l-time small{font-size:12px;color:var(--muted2);font-weight:600}
+.l-ac{min-width:0;display:flex;flex-direction:column}
+.l-ac b{font-family:var(--font-d);font-size:15px;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:7px}
+.l-ac b::before{content:"";width:8px;height:8px;border-radius:2px;background:var(--c);flex:0 0 auto}
+.l-ac span{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:15px}
+.l-ac .none{color:var(--muted2);padding-left:0}
+.l-ev{min-width:0}
+.pills{display:flex;flex-wrap:wrap;gap:5px}
+.evpill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:12.5px;font-weight:800;background:var(--cb);border:1px solid var(--cg);color:var(--text);letter-spacing:.2px}
+.evpill i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+.l-det{font-size:13px;color:#c7d6ee;margin-top:5px;line-height:1.35;word-break:break-word}
+.l-spot{text-align:center}
+.spotbadge{display:inline-block;padding:4px 9px;border-radius:8px;font-family:var(--font-d);font-size:12.5px;font-weight:700;color:var(--gold);background:#2a220a;border:1px solid #5c4a12;white-space:nowrap}
+.l-act{display:flex;gap:6px;justify-content:flex-end}
+.empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
+.empty svg{width:46px;height:46px;color:#33507e;margin-bottom:10px}
+.empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+
+/* ---------- Pannello comandi (lato destro) ---------- */
+.ctrl{border-left:1px solid var(--border);background:linear-gradient(180deg,#0c172b,#08111f);display:flex;flex-direction:column;min-height:0}
+.ctrl-scroll{flex:1;overflow:auto;padding:14px 16px 6px}
+.psec{margin-bottom:14px}
+.psec-h{display:flex;align-items:center;gap:8px;margin-bottom:9px}
+.psec-h h3{margin:0;font-family:var(--font-d);font-size:13px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:8px}
+.psec-h h3 .num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:6px;background:var(--panel3);color:var(--accent);font-size:11px;letter-spacing:0}
+.psec-h .line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.psec-h .iconbtn{width:30px;height:30px}
+
+/* A/C chips */
+.acgrid{display:flex;flex-wrap:wrap;gap:8px}
+.acchip{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:112px;padding:8px 26px 8px 12px;border-radius:12px;cursor:pointer;user-select:none;
+  background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--c);transition:.12s;outline:none}
+.acchip:hover{border-color:var(--cg);border-left-color:var(--c)}
+.acchip:focus-visible{box-shadow:0 0 0 3px #38bdf855}
+.acchip.on{background:var(--cb);border-color:var(--c);box-shadow:0 0 0 1px var(--c) inset,0 6px 18px var(--cb)}
+.acchip .ac-cs{font-family:var(--font-d);font-size:15px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
+.acchip .ac-meta{font-size:11.5px;color:var(--muted);white-space:nowrap;display:flex;gap:6px}
+.acchip .ac-meta b{color:#cfe0f7}
+.acchip .ac-pos{position:absolute;top:-8px;right:8px;font-family:var(--font-d);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;background:#2a220a;border:1px solid #5c4a12;color:var(--gold);display:flex;align-items:center;gap:3px}
+.acchip .ac-pos.fly{background:#0b2a40;border-color:#1c5c86;color:var(--accent)}
+.acchip .ac-pos svg{width:11px;height:11px}
+.acchip .ac-x{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted2);opacity:0;transition:.12s}
+.acchip .ac-x svg{width:12px;height:12px}
+.acchip:hover .ac-x{opacity:1}
+.acchip .ac-x:hover{color:var(--red);background:#3a1010}
+.acchip.on::after{content:"";position:absolute;left:-4px;top:-1px;bottom:-1px;width:4px;border-radius:12px 0 0 12px;background:var(--c)}
+.acadd{min-width:64px;border-radius:12px;border:1px dashed var(--border2);background:transparent;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800;font-size:13px;padding:8px 12px}
+.acadd:hover{background:#0e2a3f;border-color:var(--accent)}
+.acempty{font-size:12.5px;color:var(--muted2);align-self:center;padding:0 6px}
+
+/* Event buttons */
+.evgrid{display:flex;flex-wrap:wrap;gap:6px}
+.evbtn{position:relative;display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;border:1px solid var(--border);background:var(--panel);font-size:13px;font-weight:700;color:#c9d6ea;transition:.12s;line-height:1.1}
+.evbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:0 0 auto;box-shadow:0 0 6px var(--cg)}
+.evbtn:hover{border-color:var(--cg);color:var(--text)}
+.evbtn.on{background:var(--cb);border-color:var(--c);color:#fff;box-shadow:0 0 0 1px var(--c) inset,0 4px 14px var(--cb)}
+.evbtn .evm{font-size:10px;color:var(--muted2);margin-left:-2px;letter-spacing:1px}
+.evbtn .evd{font-size:11px;font-weight:700;color:var(--c);background:#00000040;border-radius:6px;padding:2px 6px;margin-left:2px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* Spot deck */
+.deck{position:relative;border-radius:16px;padding:12px;background:
+  repeating-linear-gradient(90deg,transparent 0 46px,#ffffff05 46px 47px),
+  linear-gradient(180deg,#1b2230,#141a25);border:1px solid #2a3446;box-shadow:inset 0 0 0 1px #00000060}
+.deck::before{content:"";position:absolute;left:14px;right:14px;top:50%;height:0;border-top:2px dashed #f5c54222;pointer-events:none}
+.deck.armed{border-color:#5c4a12;box-shadow:inset 0 0 0 1px #00000060,0 0 0 3px #f5c5421f}
+.spots{position:relative;display:grid;grid-template-columns:repeat(9,1fr);gap:7px}
+.spot{position:relative;aspect-ratio:1/1.08;border-radius:12px;border:2px solid #3a4558;background:radial-gradient(circle at 50% 42%,#262f40,#1a212d);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:.12s;padding:2px}
+.spot .sn{font-family:var(--font-d);font-size:23px;font-weight:700;color:var(--gold);line-height:1;text-shadow:0 1px 0 #000}
+.spot .so{display:flex;align-items:center;gap:2px;max-width:100%}
+.spot .so i{width:6px;height:6px;border-radius:50%;flex:0 0 auto}
+.spot .so em{font-style:normal;font-size:9.5px;font-weight:800;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:44px}
+.spot:hover{border-color:var(--gold);background:radial-gradient(circle at 50% 42%,#33301f,#1f1d15)}
+.spot.occ{border-color:#5c6a82}
+.deck.armed .spot{border-color:#8a6b14;animation:armed 1.6s infinite}
+@keyframes armed{0%,100%{box-shadow:0 0 0 0 #f5c54200}50%{box-shadow:0 0 0 3px #f5c54233}}
+.spot.hit{animation:hit .5s ease}
+@keyframes hit{0%{transform:scale(.92);background:#f5c542}100%{transform:none}}
+.areas{position:relative;display:grid;grid-template-columns:2fr 1fr;gap:7px;margin-top:8px}
+.areas .spot{aspect-ratio:auto;height:52px;flex-direction:row;gap:10px}
+.areas .spot .sn{font-size:17px;letter-spacing:2px;text-transform:uppercase}
+.areas .spot .so em{max-width:140px;font-size:11px}
+.deck-lab{position:absolute;right:14px;bottom:-9px;font-size:9.5px;font-weight:800;letter-spacing:2px;color:#6d7890;background:#0a121f;padding:1px 8px;border-radius:6px;border:1px solid #2a3446}
+
+/* Composer / barra Salva */
+.actbar{border-top:1px solid var(--border);background:linear-gradient(180deg,#0e1b33,#0a1426);padding:12px 16px;display:flex;align-items:center;gap:12px}
+.composer{flex:1;min-width:0}
+.cmp-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-height:24px}
+.cmp-k{font-size:10px;font-weight:800;letter-spacing:1.5px;color:var(--muted2);text-transform:uppercase;margin-right:2px}
+.cmp-tag{font-size:12px;font-weight:800;padding:3px 8px;border-radius:7px;background:var(--cb);border:1px solid var(--cg);white-space:nowrap}
+.cmp-sep{color:var(--border2);margin:0 4px}
+.cmp-hint{font-size:12px;color:var(--muted2);margin-top:4px;display:flex;align-items:center;gap:6px}
+.cmp-hint svg{width:14px;height:14px;color:var(--gold)}
+.btn-save{padding:15px 26px;font-size:16px;border-radius:13px;letter-spacing:1px}
+.btn-save svg{width:20px;height:20px}
+.btn-clear{width:50px;height:50px;border-radius:13px;border:1px solid var(--border);background:var(--panel2);color:var(--muted);display:flex;align-items:center;justify-content:center}
+.btn-clear:hover:not(:disabled){color:var(--red);border-color:var(--red)}
+.btn-clear:disabled{opacity:.4}
+
+/* ================= STORICO ================= */
+.hist{display:grid;grid-template-columns:380px minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:18px;height:100%;padding:16px 18px}
+.hist .logpane{padding:0}
+.cal{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.cal-h{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.cal-h .cm{flex:1;text-align:center;font-family:var(--font-d);font-size:18px;font-weight:700;letter-spacing:.5px}
+.cal-h .cm small{display:block;font-family:var(--font);font-size:11.5px;color:var(--muted);font-weight:600;letter-spacing:0;margin-top:2px}
+.cal-g{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.cal-wd{font-size:10.5px;font-weight:800;color:var(--muted2);text-align:center;letter-spacing:1px;padding:4px 0}
+.cal-d{position:relative;aspect-ratio:1;border-radius:10px;border:1px solid transparent;background:transparent;color:#4d6184;font-family:var(--font-d);font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center}
+.cal-d:disabled{cursor:default}
+.cal-d.has{color:#04121f;background:linear-gradient(180deg,#5cc8f8,#1aa6e6);font-weight:800;box-shadow:0 3px 10px #0ea5e933;cursor:pointer}
+.cal-d.has:hover{filter:brightness(1.12)}
+.cal-d .cn{position:absolute;bottom:2px;right:4px;font-size:9px;font-weight:800;color:#04263d;font-family:var(--font)}
+.cal-d.today{border-color:var(--gold)}
+.cal-d.today:not(.has){color:var(--gold)}
+.cal-d.sel{outline:2px solid #fff;outline-offset:2px}
+.cal-leg{display:flex;gap:14px;margin-top:12px;font-size:11.5px;color:var(--muted)}
+.cal-leg span{display:flex;align-items:center;gap:6px}
+.cal-leg i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.recent{margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);padding:14px}
+.recent h4{margin:0 0 10px;font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.rday{display:flex;align-items:center;justify-content:space-between;width:100%;padding:8px 10px;border-radius:9px;border:1px solid transparent;background:none;font-size:13px;text-align:left}
+.rday:hover{background:var(--panel2);border-color:var(--border)}
+.rday.sel{background:#0f3456;border-color:#1f5a86}
+.rday b{font-family:var(--font-d);font-size:12px;color:var(--accent)}
+.hist-side{overflow:auto;min-height:0;padding-bottom:4px}
+
+/* ================= STATISTICHE ================= */
+.stats{height:100%;overflow:auto;padding:16px 18px 30px}
+.st-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.st-head h2{margin:0;font-family:var(--font-d);font-size:21px;display:flex;align-items:center;gap:10px}
+.st-head h2 svg{width:22px;height:22px;color:var(--accent)}
+.periods{display:flex;gap:6px;flex-wrap:wrap}
+.range{display:flex;align-items:center;gap:6px;color:var(--muted)}
+.range input{padding:8px 10px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:9px;font-size:13px;color-scheme:dark}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:14px;padding:14px 16px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--kc)}
+.kpi .k-ic{position:absolute;right:12px;top:12px;color:var(--kc);opacity:.45}
+.kpi .k-ic svg{width:24px;height:24px}
+.kpi .k-lab{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:800}
+.kpi .k-val{font-family:var(--font-d);font-size:30px;font-weight:700;margin-top:4px;letter-spacing:.5px}
+.kpi .k-val small{font-size:14px;color:var(--muted);margin-left:4px}
+.kpi .k-sub{font-size:11.5px;color:var(--muted2);margin-top:2px}
+.stgrid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:1250px){.stgrid{grid-template-columns:1fr}}
+.panelbox{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
+.panelbox h3{margin:0 0 4px;font-size:15px;display:flex;align-items:center;gap:9px}
+.panelbox h3 svg{width:18px;height:18px;color:var(--accent)}
+.panelbox .ph-sub{font-size:12px;color:var(--muted2);margin-bottom:12px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-size:12px;color:var(--muted)}
+.legend span{display:flex;align-items:center;gap:6px}
+.legend i{width:12px;height:12px;border-radius:3px}
+.bars{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;align-items:center}
+.blabel{font-size:13px;color:var(--text);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bstack{display:flex;flex-direction:column;gap:2px}
+.bline{display:grid;grid-template-columns:minmax(0,1fr) 80px;align-items:center;gap:8px;padding:2px 0;border-radius:4px}
+.bline:hover{background:#ffffff06}
+.btrack{height:12px;position:relative}
+.bfill{height:100%;border-radius:0 4px 4px 0;transition:width .45s ease}
+.bval{font-size:12.5px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;text-align:right}
+.bline.zero .bval{color:var(--muted2)}
+.nodata{padding:22px;text-align:center;color:var(--muted2);font-size:13px;border:1px dashed var(--border);border-radius:12px}
+
+/* ================= MODAL ================= */
+.overlay{position:fixed;inset:0;background:#03060ccc;backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px}
+.modal{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border2);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);width:100%;max-width:470px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;animation:pop .16s ease}
+.modal.wide{max-width:820px}
+.modal.mid{max-width:620px}
+@keyframes pop{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
+.modal-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.modal-head h3{margin:0;font-family:var(--font-d);font-size:18px;letter-spacing:.4px;flex:1}
+.modal-head .mh-ic{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--panel3);color:var(--accent);flex:0 0 auto}
+.modal-head .mh-dot{width:14px;height:14px;border-radius:50%;margin:0 4px;box-shadow:0 0 10px currentColor}
+.modal-head .x{background:none;border:none;color:var(--muted);width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center}
+.modal-head .x:hover{color:var(--red);background:#3a1010}
+.modal-body{padding:18px;overflow:auto;flex:1 1 auto}
+.modal-foot{padding:14px 18px;border-top:1px solid var(--border);display:flex;gap:10px;align-items:center;flex:0 0 auto}
+.modal-foot .grow{flex:1}
+.confirm-text{margin:0;font-size:14.5px;line-height:1.55}
+.detsec{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:12px 14px 2px;margin-bottom:14px}
+.detsec-h{font-size:12px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:7px;color:var(--muted)}
+.detsec-h i{width:8px;height:8px;border-radius:50%}
+
+/* tabs */
+.tabs{display:flex;gap:6px;margin-bottom:16px;background:var(--bg2);padding:5px;border-radius:12px;border:1px solid var(--border)}
+.tabs button{flex:1;padding:10px;border-radius:9px;border:none;background:none;color:var(--muted);font-weight:800;font-size:13.5px;display:flex;align-items:center;justify-content:center;gap:8px}
+.tabs button.on{background:var(--panel3);color:var(--text);box-shadow:0 2px 8px #0005}
+.tabs .cnt{font-size:11px;background:var(--panel);padding:1px 7px;border-radius:20px;color:var(--accent)}
+
+/* archivio A/C */
+.arch-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.arch-tools .inp{flex:1;min-width:180px;padding:9px 12px}
+.arch-list{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;padding-right:2px}
+.arow{display:grid;grid-template-columns:44px minmax(0,1.3fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,.9fr) 74px;gap:10px;align-items:center;padding:9px 12px;border-radius:11px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:.12s}
+.arow:hover{border-color:var(--border2)}
+.arow.on{background:#0f2440;border-color:#1f5a86}
+.arow b{font-family:var(--font-d);font-size:15px;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow span{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .tipo{display:inline-block;font-size:11.5px;font-weight:800;padding:3px 8px;border-radius:7px;background:var(--cb);border:1px solid var(--cg);color:var(--text)}
+.arow .acts{display:flex;gap:6px;justify-content:flex-end}
+.sw{width:38px;height:22px;border-radius:20px;background:#26344f;position:relative;transition:.15s;border:1px solid var(--border2)}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#8da0c0;transition:.15s}
+.sw.on{background:var(--green-d);border-color:var(--green)}
+.sw.on::after{left:18px;background:#fff}
+.ahead{display:grid;grid-template-columns:44px minmax(0,1.3fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,.9fr) 74px;gap:10px;padding:0 12px 6px;font-size:10.5px;font-weight:800;color:var(--muted2);letter-spacing:.8px;text-transform:uppercase}
+
+/* gestione eventi */
+.evlist{display:flex;flex-direction:column;gap:6px;max-height:56vh;overflow:auto;padding-right:2px}
+.erow{display:grid;grid-template-columns:62px minmax(0,1.2fr) minmax(0,1.3fr) minmax(0,1fr) 112px;gap:10px;align-items:center;padding:8px 12px;border-radius:11px;background:var(--bg2);border:1px solid var(--border)}
+.erow.off{opacity:.5}
+.erow .ord{display:flex;gap:3px}
+.erow .ord .iconbtn{width:27px;height:27px}
+.erow .en{display:flex;align-items:center;gap:8px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.erow .en i{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.erow .ed{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.erow .tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;border:1px solid var(--border2);color:var(--muted);white-space:nowrap}
+.tag.stat{color:var(--gold);border-color:#5c4a12;background:#2a220a}
+.tag.combo{color:var(--violet);border-color:#4b3c86;background:#1d1838}
+.erow .acts{display:flex;gap:5px;justify-content:flex-end}
+.swatches{display:flex;flex-wrap:wrap;gap:7px}
+.swatch{width:30px;height:30px;border-radius:9px;border:2px solid transparent;box-shadow:inset 0 0 0 1px #0006}
+.swatch.on{border-color:#fff;transform:scale(1.08)}
+.prev{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);margin-bottom:14px}
+
+/* ================= TOAST (alto a destra, minimal) ================= */
+#toasts{position:fixed;top:13px;right:14px;z-index:300;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
+.toast{display:flex;align-items:center;gap:8px;padding:8px 14px 8px 10px;border-radius:10px;font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.45);border:1px solid var(--border);background:#0f1b31ee;backdrop-filter:blur(6px);animation:tin .22s ease;transition:opacity .25s,transform .25s}
+.toast .t-ic{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.toast .t-ic svg{width:12px;height:12px;stroke-width:3}
+.toast.ok{border-color:#1f7a45;color:#c9f7d8}.toast.ok .t-ic{background:var(--green);color:#04140a}
+.toast.warn{border-color:#8a6013;color:#ffe4b0}.toast.warn .t-ic{background:var(--amber);color:#1f1400}
+.toast.err{border-color:#7a2020;color:#ffcaca}.toast.err .t-ic{background:var(--red);color:#fff}
+.toast.info{border-color:#1c5c86;color:#cde9fb}.toast.info .t-ic{background:var(--accent);color:#04121f}
+.toast.out{opacity:0;transform:translateX(14px)}
+@keyframes tin{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+
+/* tooltip */
+#tip{position:fixed;z-index:400;pointer-events:none;background:#050a14f2;border:1px solid var(--border2);color:var(--text);font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;box-shadow:0 8px 20px #0008;max-width:320px;display:none;line-height:1.4}
+
+/* offline */
+.offline{position:fixed;inset:0;z-index:500;background:#03060cee;display:flex;align-items:center;justify-content:center;padding:20px}
+.offline .box{max-width:520px;text-align:center;background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid #7a2020;border-radius:20px;padding:28px}
+.offline h3{margin:6px 0 8px;font-family:var(--font-d);font-size:21px}
+.offline p{color:var(--muted);line-height:1.55;margin:0 0 18px}
+.offline svg.big{width:52px;height:52px;color:var(--red)}
+
+/* responsive */
+@media(max-width:1320px){
+  .cro{grid-template-columns:minmax(0,1fr) 500px}
+  .clk.date{display:none}
+}
+@media(max-width:1100px){
+  body{overflow:auto}
+  .app{height:auto;min-height:100vh}
+  .main{overflow:visible}
+  .cro,.hist{grid-template-columns:1fr;grid-template-rows:auto;height:auto}
+  .logbox{max-height:60vh}
+  .ctrl{border-left:none;border-top:1px solid var(--border)}
+  .crumb,.srv span:last-child{display:none}
+  .lhead,.lrow{grid-template-columns:70px minmax(100px,150px) minmax(0,1fr) 80px 72px}
+}
+@media(max-width:760px){
+  .clocks .clk:not(.z){display:none}
+  .brand .sub{display:none}
+  .lhead{display:none}
+  .lrow{grid-template-columns:64px minmax(0,1fr) 72px;grid-template-areas:"t a s" "t e x"}
+  .l-time{grid-area:t}.l-ac{grid-area:a}.l-ev{grid-area:e}.l-spot{grid-area:s}.l-act{grid-area:x}
+  .spots{grid-template-columns:repeat(5,1fr)}
+}
+
+/* ================= STAMPA ================= */
+#printArea{display:none}
+@media print{
+  @page{size:A4 landscape;margin:12mm}
+  html,body{background:#fff!important;color:#000;overflow:visible;height:auto}
+  body > *:not(#printArea){display:none!important}
+  #printArea{display:block;font-family:Arial,Helvetica,sans-serif;font-size:10.5pt}
+  .pr-head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid #000;padding-bottom:6px;margin-bottom:10px}
+  .pr-head h1{margin:0;font-size:17pt}
+  .pr-brand{display:flex;align-items:center;gap:12px}
+  .pr-brand img{width:58px;height:58px;object-fit:contain}
+  .pr-head .pr-sub{font-size:9pt;letter-spacing:2px;text-transform:uppercase}
+  .pr-date{font-size:13pt;font-weight:bold;text-align:right}
+  #printArea table{width:100%;border-collapse:collapse}
+  #printArea th,#printArea td{border:1px solid #777;padding:4px 6px;text-align:left;vertical-align:top}
+  #printArea th{background:#e8e8e8;font-size:8.5pt;text-transform:uppercase}
+  #printArea td.t{font-family:Consolas,monospace;font-weight:bold;white-space:nowrap}
+  #printArea tr{page-break-inside:avoid}
+  .pr-foot{display:flex;justify-content:space-between;margin-top:14px;font-size:9pt}
+  .pr-sign{margin-top:28px;text-align:right;font-size:10pt}
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+
+  <!-- ================= TOPBAR ================= -->
+  <header class="topbar">
+    <button class="hamb" id="btnMenu" data-tip="Mostra / nascondi menu" aria-label="Menu"></button>
+    <div class="brand">
+      <div class="logo" id="logoBox"><img src="logo.png" alt="Stemma" id="logoImg"></div>
+      <div>
+        <h1>Cronologia <b>Guzzi</b> Twr</h1>
+        <div class="sub">Torre di Controllo · Registro eventi</div>
+      </div>
+    </div>
+    <div class="crumb" id="crumb"></div>
+    <div class="spacer"></div>
+    <div class="clocks">
+      <div class="clk date"><div class="ck-l">DATA</div><div class="ck-v" id="clkDate">—</div></div>
+      <div class="clk"><div class="ck-l">LOCALE</div><div class="ck-v" id="clkLoc">--:--:--</div></div>
+      <div class="clk z"><div class="ck-l">ZULU</div><div class="ck-v" id="clkUtc">--:--:--Z</div></div>
+    </div>
+    <div class="srv" id="srvChip"><span class="dot"></span><span id="srvTxt">Server</span></div>
+  </header>
+
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-inner">
+      <div class="sb-lab">Menu</div>
+      <nav id="nav">
+        <button class="navbtn" data-view="cronologia"><span class="ni" data-icon="list"></span><span class="nt"><b>Cronologia</b><small>Registrazione eventi del giorno</small></span></button>
+        <button class="navbtn" data-view="storico"><span class="ni" data-icon="calendar"></span><span class="nt"><b>Storico</b><small>Consulta per data</small></span></button>
+        <button class="navbtn" data-view="statistiche"><span class="ni" data-icon="chart"></span><span class="nt"><b>Statistiche</b><small>Conteggi e riepiloghi</small></span></button>
+      </nav>
+      <div class="sb-foot">
+        <button class="btn ghost small block" id="btnBackup"><span data-icon="download"></span>Esporta backup completo</button>
+        <div class="sb-db" id="sbDb"><b>Database locale</b><br>—</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN ================= -->
+  <main class="main">
+
+    <!-- ========== CRONOLOGIA ========== -->
+    <section class="view" id="view-cronologia">
+      <div class="cro">
+        <div class="logpane">
+          <div class="loghead">
+            <h2><span data-icon="list"></span>Cronologia</h2>
+            <span class="ld" id="cronDate"></span>
+            <div class="mstats" id="cronStats"></div>
+            <div class="spacer"></div>
+            <button class="iconbtn" id="btnSort" data-tip="Ordine: più recenti in alto / in basso"></button>
+            <button class="btn ghost small" id="btnPrintToday"><span data-icon="printer"></span>Stampa</button>
+          </div>
+          <div class="logbox" id="cronLog"></div>
+        </div>
+
+        <div class="ctrl">
+          <div class="ctrl-scroll">
+            <div class="psec">
+              <div class="psec-h"><h3><span class="num">1</span>A/C</h3><span class="line"></span>
+                <button class="iconbtn" id="btnAcArch" data-tip="Archivio aeromobili"></button>
+                <button class="iconbtn on" id="btnAcAdd" data-tip="Aggiungi / richiama A/C"></button>
+              </div>
+              <div class="acgrid" id="acGrid"></div>
+            </div>
+            <div class="psec">
+              <div class="psec-h"><h3><span class="num">2</span>Eventi</h3><span class="line"></span>
+                <button class="iconbtn" id="btnEvEdit" data-tip="Modifica / ordina eventi"></button>
+                <button class="iconbtn on" id="btnEvAdd" data-tip="Aggiungi evento"></button>
+              </div>
+              <div class="evgrid" id="evGrid"></div>
+            </div>
+            <div class="psec">
+              <div class="psec-h"><h3><span class="num">3</span>Spot</h3><span class="line"></span></div>
+              <div class="deck" id="deck">
+                <div class="spots" id="spotGrid"></div>
+                <div class="areas" id="areaGrid"></div>
+                <div class="deck-lab">FLIGHT DECK</div>
+              </div>
+            </div>
+          </div>
+          <div class="actbar">
+            <div class="composer">
+              <div class="cmp-row" id="cmpRow"></div>
+              <div class="cmp-hint" id="cmpHint"></div>
+            </div>
+            <button class="btn-clear" id="btnClear" data-tip="Annulla selezione (Esc)"></button>
+            <button class="btn btn-save" id="btnSave" data-tip="Registra senza spot (F2)"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STORICO ========== -->
+    <section class="view" id="view-storico">
+      <div class="hist">
+        <div class="hist-side">
+          <div class="cal" id="cal"></div>
+          <div class="recent" id="recent"></div>
+        </div>
+        <div class="logpane">
+          <div class="loghead">
+            <h2><span data-icon="calendar"></span>Storico</h2>
+            <span class="ld" id="histDate"></span>
+            <div class="mstats" id="histStats"></div>
+            <div class="spacer"></div>
+            <button class="iconbtn" id="btnHistPrev" data-tip="Giorno precedente con cronologia"></button>
+            <button class="iconbtn" id="btnHistNext" data-tip="Giorno successivo con cronologia"></button>
+            <button class="btn ghost small" id="btnHistCsv"><span data-icon="download"></span>CSV</button>
+            <button class="btn ghost small" id="btnHistPrint"><span data-icon="printer"></span>Stampa</button>
+          </div>
+          <div class="logbox" id="histLog"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STATISTICHE ========== -->
+    <section class="view" id="view-statistiche">
+      <div class="stats">
+        <div class="st-head">
+          <h2><span data-icon="chart"></span>Statistiche</h2>
+          <div class="spacer"></div>
+          <div class="periods" id="stPeriods"></div>
+          <div class="range"><input type="date" id="stFrom"><span>→</span><input type="date" id="stTo"></div>
+        </div>
+        <div class="kpis" id="stKpis"></div>
+        <div class="stgrid">
+          <div class="panelbox"><h3><span data-icon="plane"></span>Decolli e appontaggi per tipo A/C</h3><div class="ph-sub" id="stTipoSub"></div><div id="stTipo"></div></div>
+          <div class="panelbox"><h3><span data-icon="pin"></span>Decolli e appontaggi per spot</h3><div class="ph-sub">Spot in cui è stato registrato l'evento</div><div id="stSpot"></div></div>
+          <div class="panelbox"><h3><span data-icon="elev"></span>Movimentazioni elevatori</h3><div class="ph-sub">Numero di movimentazioni registrate</div><div id="stElev"></div></div>
+          <div class="panelbox"><h3><span data-icon="fuel"></span>Carburante erogato per tipo A/C</h3><div class="ph-sub">Litri registrati alla <b>Fine</b> di Fuel e HotRef</div><div id="stFuel"></div></div>
+          <div class="panelbox"><h3><span data-icon="users"></span>Personale imbarcato / sbarcato</h3><div class="ph-sub">Numero di persone</div><div id="stPers"></div></div>
+          <div class="panelbox"><h3><span data-icon="zap"></span>Eventi registrati</h3><div class="ph-sub">Conteggio per tipo di evento</div><div id="stEv"></div></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toasts"></div>
+<div id="tip"></div>
+<div id="printArea"></div>
+
+<script>
+"use strict";
+/* =========================================================================
+   Cronologia Guzzi Twr — logica app (vanilla JS, nessuna libreria esterna)
+   Persistenza via server PowerShell locale (server.ps1):
+     GET/POST /api/config        -> DATI/config.json (A/C, eventi, impostazioni)
+     GET/POST /api/day?d=DATA     -> DATI/cronologia/DATA.json (eventi del giorno)
+     GET      /api/days           -> giorni con cronologia { data: n_eventi }
+     GET      /api/range?from&to  -> cronologie nell'intervallo (statistiche)
+   ========================================================================= */
+
+/* ------------------------------ Utility ------------------------------ */
+const $ = id => document.getElementById(id);
+const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2,'0');
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const clone = o => JSON.parse(JSON.stringify(o));
+const fmtNum = n => (Number(n)||0).toLocaleString('it-IT');
+const pl = (n, one, many) => fmtNum(n)+' '+(Number(n)===1 ? one : many);
+const MESI = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+const GIORNI = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+function dayKey(d){ d=d||new Date(); return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); }
+function parseDay(k){ const p=k.split('-').map(Number); return new Date(p[0],p[1]-1,p[2]); }
+function fmtTime(iso){ const d=new Date(iso); return pad(d.getHours())+':'+pad(d.getMinutes()); }
+function fmtSec(iso){ return pad(new Date(iso).getSeconds()); }
+function fmtDayLong(k){ const d=parseDay(k); return GIORNI[d.getDay()]+' '+d.getDate()+' '+MESI[d.getMonth()]+' '+d.getFullYear(); }
+function fmtDayShort(k){ const d=parseDay(k); return pad(d.getDate())+'/'+pad(d.getMonth()+1)+'/'+d.getFullYear(); }
+function hexRgba(hex,a){ let h=String(hex||'#38bdf8').replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16)||0; return 'rgba('+(n>>16&255)+','+(n>>8&255)+','+(n&255)+','+a+')'; }
+function cvars(c){ return '--c:'+c+';--cb:'+hexRgba(c,.17)+';--cg:'+hexRgba(c,.5)+';'; }
+function lsGet(k,d){ try{ const v=localStorage.getItem(k); return v==null?d:JSON.parse(v); }catch(e){ return d; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+
+/* ------------------------------ Icone SVG ------------------------------ */
+const P = {
+  menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  pencil:'<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/><path d="M14.5 5.5l3 3"/>',
+  trash:'<path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v6M14 11v6"/>',
+  x:'<path d="M6 6l12 12M18 6L6 18"/>',
+  check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  alert:'<path d="M12 8v5M12 16.5v.5"/><path d="M10.3 3.9 2.4 18a2 2 0 0 0 1.7 3h15.8a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/>',
+  list:'<path d="M9 6h12M9 12h12M9 18h12"/><path d="M4 6h.01M4 12h.01M4 18h.01" stroke-width="3"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="17" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  printer:'<path d="M6 9V3h12v6"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v7H6z"/>',
+  download:'<path d="M12 3v12M7 10l5 5 5-5M5 21h14"/>',
+  sort:'<path d="M7 4v16M3 16l4 4 4-4M17 20V4M13 8l4-4 4 4"/>',
+  sliders:'<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
+  chevL:'<path d="M15 18l-6-6 6-6"/>',
+  chevR:'<path d="M9 18l6-6-6-6"/>',
+  up:'<path d="M18 15l-6-6-6 6"/>',
+  down:'<path d="M6 9l6 6 6-6"/>',
+  eye:'<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff:'<path d="M3 3l18 18"/><path d="M10.6 5.1A10.6 10.6 0 0 1 12 5c6.4 0 10 7 10 7a17 17 0 0 1-3.2 3.9M6.6 6.6C3.8 8.4 2 12 2 12s3.6 7 10 7a9.9 9.9 0 0 0 5.4-1.6"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
+  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
+  plane:'<path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5Z"/>',
+  pin:'<path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"/><circle cx="12" cy="10" r="2.6"/>',
+  zap:'<path d="M13 2 3 14h9l-1 8 10-12h-9Z"/>',
+  fuel:'<path d="M3 22h12M4 9h10M14 22V4a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v18"/><path d="M14 13h2a2 2 0 0 1 2 2v2a2 2 0 0 0 4 0V9.8a2 2 0 0 0-.6-1.4L18 5"/>',
+  users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  elev:'<rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="M9 9.5l3-3 3 3M9 14.5l3 3 3-3"/>',
+  play:'<path d="M7 4.5v15l12-7.5Z"/>',
+  stop:'<rect x="6" y="6" width="12" height="12" rx="1.5"/>',
+  archive:'<rect x="2.5" y="3.5" width="19" height="5" rx="1.5"/><path d="M4.5 8.5V19a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8.5M10 12.5h4"/>',
+  refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4L21 8M21 3v5h-5"/>',
+  server:'<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01" stroke-width="3"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
+  dots:'<path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3.2"/>',
+  tower:'<path d="M9 22l1-9h4l1 9M6.5 13h11M8 13 6.5 7h11L16 13M12 7V3.5M9.5 3.5h5"/>'
+};
+const I = new Proxy({}, { get:(t,k)=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+(P[k]||'')+'</svg>' });
+const LOGO_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3a6b"/><stop offset="1" stop-color="#0a1a33"/></linearGradient></defs>'+
+  '<circle cx="32" cy="32" r="29" fill="url(#lg)" stroke="#f5c542" stroke-width="3"/><circle cx="32" cy="32" r="24" fill="none" stroke="#f5c54255" stroke-width="1"/>'+
+  '<g fill="none" stroke="#f5c542" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="16.5" r="3.2"/><path d="M32 20v26M25 25h14M18 36c1.5 7 7 11 14 11s12.5-4 14-11M18 36l-3 3M18 36l4 1.5M46 36l3 3M46 36l-4 1.5"/></g>'+
+  '<path d="M8 30h12M44 30h12" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round"/></svg>';
+
+/* ------------------------------ Costanti ------------------------------ */
+const SPOTS = ['1','2','3','4','5','6','7','8','9','Hangar','Isole'];
+const NUM_SPOTS = SPOTS.filter(s=>/^\d+$/.test(s));
+const AREA_SPOTS = SPOTS.filter(s=>!/^\d+$/.test(s));
+const MOVE_PLACES = ['Hangar','1','2','3','4','5','6','7','8','9'];
+const isNum = s => /^\d+$/.test(String(s));
+const spotLabel = s => (s==null||s==='') ? '—' : (isNum(s) ? 'Spot '+s : String(s));
+const spotShort = s => isNum(s) ? 'S'+s : (s==='Hangar' ? 'HGR' : s==='Isole' ? 'ISOLE' : String(s));
+const posLabel = p => p==='VOLO' ? 'In volo' : spotLabel(p);
+
+const MODAL_TYPES = {
+  none:'Nessuna finestra', move:'Movimento (da → a)', fasi:'Inizio / Fine', fasiLt:'Inizio / Fine + litri',
+  normalops:'Endurance + POB', personale:'Imbarco / Sbarco + n° persone', carico:'Cosa trasporta / carico', testo:'Testo libero'
+};
+const STAT_TYPES = {
+  '':'Nessuna', decollo:'Decollo', appontaggio:'Appontaggio', fuel:'Carburante · Fuel', hotref:'Carburante · HotRef',
+  personale:'Personale', elev_sx:'Elevatore Sx', elev_dx:'Elevatore Dx', elev_prora:'Elev. munizioni Prora', elev_poppa:'Elev. munizioni Poppa'
+};
+const PALETTE = ['#38bdf8','#60a5fa','#818cf8','#a78bfa','#e879f9','#f472b6','#fb7185','#ef4444','#f97316','#f59e0b','#facc15','#a3e635','#22c55e','#2dd4bf','#94a3b8','#e2e8f0'];
+const TIPO_COLORS = ['#38bdf8','#f59e0b','#a78bfa','#22c55e','#f472b6','#2dd4bf','#fb7185','#facc15','#818cf8','#a3e635','#e879f9','#f97316'];
+const TIPI_SUGG = ['SH-90A','NH-90','EH-101','SH-101A','UH-101A','AB-212','AV-8B+','F-35B'];
+
+function defaultEvents(){
+  return [
+    ['ops','Ops di volo','#38bdf8'],
+    ['fod','FodWalk','#f59e0b'],
+    ['deck','Deck Ready','#22c55e'],
+    ['move','Move','#a78bfa','move'],
+    ['sem','Prova Semaforo','#2dd4bf'],
+    ['giallo','Giallo','#facc15'],
+    ['rosso','Rosso','#ef4444'],
+    ['verde','Verde','#22c55e'],
+    ['tacchi','Tacchi','#f97316','none','',true],
+    ['rizze','Rizze','#f97316','none','',true],
+    ['fuel','Fuel','#f59e0b','fasiLt','fuel'],
+    ['hotref','HotRef','#fb7185','fasiLt','hotref'],
+    ['apu','APU/IPP','#2dd4bf'],
+    ['mim','MIM','#60a5fa'],
+    ['ingaggio','Ingaggio','#818cf8'],
+    ['decollo','Decollo','#38bdf8','none','decollo'],
+    ['normalops','Normal OPS','#818cf8','normalops'],
+    ['appontaggio','Appontaggio','#22c55e','none','appontaggio'],
+    ['personale','Personale','#f472b6','personale','personale'],
+    ['elsx','Elev. Sx','#a3e635','carico','elev_sx'],
+    ['eldx','Elev. Dx','#a3e635','carico','elev_dx'],
+    ['elpr','Elev. Mun. Prora','#e879f9','carico','elev_prora'],
+    ['elpo','Elev. Mun. Poppa','#e879f9','carico','elev_poppa'],
+    ['nlock','Norck Lock','#94a3b8'],
+    ['fold','Fold','#94a3b8'],
+    ['unfold','Unfold','#94a3b8'],
+    ['testo','Testo','#e2e8f0','testo']
+  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], hidden:false }));
+}
+
+/* ------------------------------ Stato ------------------------------ */
+let CFG = null;               // configurazione (archivio A/C, eventi, ...)
+const DAYS = {};              // dayKey -> [eventi] (cache)
+let INDEX = {};               // dayKey -> numero eventi (giorni con cronologia)
+let TODAY = dayKey();
+let VIEW = 'cronologia';
+const SEL = { ac:[], ev:[] }; // selezione corrente: ac=[id], ev=[{id,det}]
+let SORT_DESC = lsGet('gt.sortDesc', true);
+let HIST_DAY = null, CAL_MONTH = null;
+let ST_PERIOD = 'mese';
+let READY = false;
+
+const getAc = id => CFG.aircraft.find(a=>a.id===id);
+const getEv = id => CFG.events.find(e=>e.id===id);
+const acSnap = a => ({ id:a.id, cs:a.callsign, side:a.side||'', gr:a.gruppo||'', tipo:a.tipo||'' });
+function tipoColor(tipo){
+  const t = String(tipo||'').trim().toUpperCase() || 'N/D';
+  if(!CFG.tipoColor[t]){
+    const used = Object.keys(CFG.tipoColor).length;
+    CFG.tipoColor[t] = TIPO_COLORS[used % TIPO_COLORS.length];
+    queueSave('config', true);
+  }
+  return CFG.tipoColor[t];
+}
+function sortDay(k){ (DAYS[k]||[]).sort((a,b)=>a.ts<b.ts?-1:a.ts>b.ts?1:0); }
+function setIndex(k){ const n=(DAYS[k]||[]).length; if(n) INDEX[k]=n; else delete INDEX[k]; }
+
+/* ------------------------------ Persistenza ------------------------------ */
+async function api(method, url, body){
+  const opt = { method, cache:'no-store' };
+  if(body!==undefined){ opt.headers={'Content-Type':'application/json'}; opt.body=JSON.stringify(body); }
+  const r = await fetch(url, opt);
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.json();
+}
+async function getJSON(url, fallback, tries){
+  tries = tries||6;
+  for(let i=0;i<tries;i++){
+    try{ const j = await api('GET', url); setServer(true); return j; }
+    catch(e){ await sleep(350); }
+  }
+  setServer(false);
+  return fallback;
+}
+// coda salvataggi: chiave 'config' oppure una data AAAA-MM-GG
+const DIRTY = new Map();
+let flushTimer=null, retryTimer=null, flushing=false;
+function queueSave(key, silent){
+  if(!READY) return;
+  const cur = DIRTY.get(key);
+  DIRTY.set(key, { v:(cur?cur.v:0)+1, silent: cur ? (cur.silent && !!silent) : !!silent });
+  clearTimeout(flushTimer);
+  flushTimer = setTimeout(flush, 220);
+}
+async function flush(){
+  if(flushing){ clearTimeout(flushTimer); flushTimer=setTimeout(flush,200); return; }
+  if(!DIRTY.size) return;
+  flushing = true; clearTimeout(retryTimer);
+  let ok = true, loud = false;
+  for(const [key, st] of Array.from(DIRTY.entries())){
+    try{
+      if(key==='config') await api('POST','/api/config', CFG);
+      else await api('POST','/api/day?d='+key, DAYS[key]||[]);
+      const now = DIRTY.get(key);
+      if(now && now.v===st.v) DIRTY.delete(key);
+      if(!st.silent) loud = true;
+    }catch(e){ ok = false; }
+  }
+  flushing = false;
+  setServer(ok);
+  if(ok){ if(loud) toast('Salvataggio riuscito','ok'); }
+  else { toast('Errore di salvataggio · nuovo tentativo…','err'); retryTimer = setTimeout(flush, 3000); }
+}
+function setServer(ok){
+  const c=$('srvChip'); c.classList.toggle('off', !ok);
+  $('srvTxt').textContent = ok ? 'Server OK' : 'Server offline';
+}
+window.addEventListener('beforeunload', e=>{ if(DIRTY.size){ e.preventDefault(); e.returnValue=''; } });
+
+/* ------------------------------ Toast / tooltip ------------------------------ */
+function toast(msg, type){
+  type = type||'ok';
+  const box = $('toasts');
+  let t = Array.from(box.children).find(x=>x.dataset.msg===msg);
+  if(!t){
+    t = document.createElement('div');
+    t.className = 'toast '+type; t.dataset.msg = msg;
+    t.innerHTML = '<span class="t-ic">'+(type==='ok'?I.check:type==='err'?I.x:type==='info'?I.check:I.alert)+'</span><span>'+esc(msg)+'</span>';
+    box.appendChild(t);
+    while(box.children.length>4) box.firstChild.remove();
+  }
+  t.classList.remove('out'); clearTimeout(t._a); clearTimeout(t._b);
+  t._a = setTimeout(()=>{ t.classList.add('out'); t._b=setTimeout(()=>t.remove(),260); }, type==='err'?3400:1700);
+}
+(function tooltip(){
+  const tip = $('tip'); let cur=null;
+  document.addEventListener('mouseover', e=>{
+    const el = e.target.closest('[data-tip]');
+    if(el===cur) return; cur=el;
+    if(!el || !el.dataset.tip){ tip.style.display='none'; return; }
+    tip.textContent = el.dataset.tip; tip.style.display='block';
+  });
+  document.addEventListener('mousemove', e=>{
+    if(tip.style.display!=='block') return;
+    const w=tip.offsetWidth, h=tip.offsetHeight;
+    let x=e.clientX+14, y=e.clientY+16;
+    if(x+w>innerWidth-8) x=e.clientX-w-12;
+    if(y+h>innerHeight-8) y=e.clientY-h-12;
+    tip.style.left=x+'px'; tip.style.top=y+'px';
+  });
+  document.addEventListener('mousedown', ()=>{ tip.style.display='none'; cur=null; });
+})();
+
+/* ------------------------------ Modal ------------------------------ */
+const MODALS = [];
+function openModal(o){
+  const ov = document.createElement('div');
+  ov.className = 'overlay';
+  ov.innerHTML = '<div class="modal '+(o.size||'')+'" role="dialog" aria-modal="true">'+
+    '<div class="modal-head">'+(o.icon||'')+'<h3>'+o.title+'</h3><button class="x" data-close aria-label="Chiudi">'+I.x+'</button></div>'+
+    '<div class="modal-body">'+o.body+'</div>'+
+    (o.foot?'<div class="modal-foot">'+o.foot+'</div>':'')+'</div>';
+  document.body.appendChild(ov);
+  const m = {
+    ov, root: ov.querySelector('.modal'),
+    close(){ if(m.closed) return; m.closed=true; ov.remove(); const i=MODALS.indexOf(m); if(i>=0) MODALS.splice(i,1); if(o.onClose) o.onClose(); }
+  };
+  ov.addEventListener('mousedown', e=>{ if(e.target===ov) m.close(); });
+  ov.addEventListener('click', e=>{ if(e.target.closest('[data-close]')) m.close(); });
+  MODALS.push(m);
+  if(o.onMount) o.onMount(m);
+  setTimeout(()=>{
+    if(m.closed) return;
+    const f = m.root.querySelector('[autofocus]:not(.hide *)') || m.root.querySelector('.modal-body input:not([type=hidden]):not([type=checkbox]),.modal-body textarea');
+    if(f && f.offsetParent!==null) f.focus(); else { const p=m.root.querySelector('[data-primary]'); if(p) p.focus(); }
+  },40);
+  return m;
+}
+const mIcon = name => '<span class="mh-ic">'+I[name]+'</span>';
+const mDot = color => '<span class="mh-dot" style="background:'+color+';color:'+color+'"></span>';
+function showErr(m, msg){ const e=m.root.querySelector('.ferr'); if(e){ e.textContent=msg; e.hidden=false; } else toast(msg,'warn'); }
+function confirmBox(o){
+  return new Promise(res=>{
+    let done=false;
+    openModal({
+      title: esc(o.title||'Conferma'), icon: mIcon(o.danger?'trash':'alert'),
+      body: '<p class="confirm-text">'+o.html+'</p>',
+      foot: '<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn '+(o.danger?'red':'blue')+'" data-primary data-ok>'+(o.danger?I.trash:I.check)+esc(o.ok||'Conferma')+'</button>',
+      onMount(m){ m.root.querySelector('[data-ok]').onclick=()=>{ done=true; m.close(); res(true); }; },
+      onClose(){ if(!done) res(false); }
+    });
+  });
+}
+
+/* ------------------------------ Navigazione / orologio ------------------------------ */
+const VIEW_LAB = { cronologia:['list','Cronologia'], storico:['calendar','Storico'], statistiche:['chart','Statistiche'] };
+function showView(v){
+  VIEW = v;
+  qsa('.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+v));
+  qsa('#nav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  $('crumb').innerHTML = I[VIEW_LAB[v][0]]+VIEW_LAB[v][1];
+  if(v==='cronologia') renderCron();
+  if(v==='storico') openHistory();
+  if(v==='statistiche') renderStats();
+  if(innerWidth<1100) setSidebar(false);
+}
+function setSidebar(open){ $('app').classList.toggle('sb-closed', !open); lsSet('gt.sidebar', open); }
+function tick(){
+  const d = new Date();
+  $('clkLoc').textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  $('clkUtc').textContent = pad(d.getUTCHours())+':'+pad(d.getUTCMinutes())+':'+pad(d.getUTCSeconds())+'Z';
+  $('clkDate').textContent = pad(d.getDate())+' '+MESI[d.getMonth()].slice(0,3).toUpperCase()+' '+d.getFullYear();
+  const k = dayKey(d);
+  if(READY && k!==TODAY) rollDay(k);
+}
+function rollDay(k){
+  TODAY = k;
+  if(!DAYS[k]) DAYS[k] = [];
+  if(VIEW==='cronologia') renderCron();
+  if(VIEW==='storico') { renderCal(); renderRecent(); }
+  toast('Nuovo giorno: '+fmtDayShort(k),'info');
+}
+
+/* =========================================================================
+   CRONOLOGIA
+   ========================================================================= */
+function positions(){
+  // ultima posizione nota di ogni A/C (dalla cronologia di oggi)
+  const pos = {};
+  (DAYS[TODAY]||[]).forEach(en=>{
+    if(!en.ac) return;
+    let p = null;
+    en.evs.forEach(ev=>{ if(ev.modal==='move' && ev.det && ev.det.a) p = ev.det.a; });
+    if(p==null && en.spot) p = en.spot;
+    if(en.evs.some(ev=>ev.stat==='decollo')) p = 'VOLO';
+    if(p!=null) pos[en.ac.id] = p;
+  });
+  return pos;
+}
+function renderCron(hl){ renderLog(hl); renderPanel(); }
+function renderPanel(){ renderAcGrid(); renderEvGrid(); renderSpots(); renderComposer(); }
+
+function renderAcGrid(){
+  const acs = CFG.aircraft.filter(a=>a.active);
+  const pos = positions();
+  SEL.ac = SEL.ac.filter(id=>acs.some(a=>a.id===id));
+  let h = acs.map(a=>{
+    const on = SEL.ac.includes(a.id), p = pos[a.id];
+    const tip = [a.callsign, a.side, a.gruppo, a.tipo].filter(Boolean).join(' · ') + (p ? ' — Posizione: '+posLabel(p) : '');
+    return '<div class="acchip'+(on?' on':'')+'" role="button" tabindex="0" data-ac="'+a.id+'" style="'+cvars(tipoColor(a.tipo))+'" data-tip="'+esc(tip)+'">'+
+      '<span class="ac-cs">'+esc(a.callsign||'—')+'</span>'+
+      '<span class="ac-meta">'+(a.side?'<b>'+esc(a.side)+'</b>':'')+'<span>'+esc(a.tipo||'')+'</span></span>'+
+      (p ? '<span class="ac-pos'+(p==='VOLO'?' fly':'')+'">'+(p==='VOLO'?I.plane+'VOLO':esc(spotShort(p)))+'</span>' : '')+
+      '<span class="ac-x" data-hide="'+a.id+'" data-tip="Togli dalla gestione (resta in archivio)">'+I.x+'</span></div>';
+  }).join('');
+  if(!acs.length) h = '<span class="acempty">Nessun A/C in gestione — premi <b>+</b> per aggiungerne o richiamarli dall\'archivio.</span>';
+  h += '<button class="acadd" data-acadd>'+I.plus+'<span>A/C</span></button>';
+  $('acGrid').innerHTML = h;
+}
+function renderEvGrid(){
+  SEL.ev = SEL.ev.filter(s=>{ const e=getEv(s.id); return e && !e.hidden; });
+  $('evGrid').innerHTML = CFG.events.filter(e=>!e.hidden).map(e=>{
+    const s = SEL.ev.find(x=>x.id===e.id);
+    const d = s && s.det ? detText(e.modal, s.det) : '';
+    const tip = (e.modal!=='none' ? 'Apre: '+MODAL_TYPES[e.modal] : '') + (e.combo ? (e.modal!=='none'?' · ':'')+'Combinabile con altri eventi combinabili' : '');
+    return '<button class="evbtn'+(s?' on':'')+'" data-ev="'+e.id+'" style="'+cvars(e.color)+'"'+(tip?' data-tip="'+esc(tip)+'"':'')+'>'+
+      '<span class="dot"></span><span>'+esc(e.label)+'</span>'+(e.modal!=='none'&&!d?'<span class="evm">…</span>':'')+(d?'<span class="evd">'+esc(d)+'</span>':'')+'</button>';
+  }).join('') || '<span class="acempty">Nessun evento visibile — usa la matita per gestirli.</span>';
+}
+function renderSpots(){
+  const pos = positions(), occ = {};
+  Object.keys(pos).forEach(id=>{ const a=getAc(id); if(a && a.active){ (occ[pos[id]]=occ[pos[id]]||[]).push(a); } });
+  const cell = s => {
+    const o = occ[s]||[];
+    const tip = spotLabel(s) + (o.length ? ' — '+o.map(a=>a.callsign).join(', ') : '');
+    return '<button class="spot'+(o.length?' occ':'')+'" data-spot="'+esc(s)+'" data-tip="'+esc(tip)+'"><span class="sn">'+esc(s)+'</span>'+
+      (o.length ? '<span class="so">'+o.slice(0,3).map(a=>'<i style="background:'+tipoColor(a.tipo)+'"></i>').join('')+
+        '<em>'+esc(o.length===1 ? (o[0].side||o[0].callsign) : (isNum(s)? o.length+' A/C' : o.map(a=>a.side||a.callsign).join(' · ')))+'</em></span>' : '')+'</button>';
+  };
+  $('spotGrid').innerHTML = NUM_SPOTS.map(cell).join('');
+  $('areaGrid').innerHTML = AREA_SPOTS.map(cell).join('');
+  $('deck').classList.toggle('armed', SEL.ev.length>0);
+}
+function renderComposer(){
+  const acs = SEL.ac.map(getAc).filter(Boolean);
+  const evs = SEL.ev.map(s=>({ e:getEv(s.id), det:s.det })).filter(x=>x.e);
+  $('cmpRow').innerHTML =
+    '<span class="cmp-k">A/C</span>'+(acs.length ? acs.map(a=>'<span class="cmp-tag" style="'+cvars(tipoColor(a.tipo))+'">'+esc(a.callsign)+'</span>').join('') : '<span class="muted">—</span>')+
+    '<span class="cmp-sep">|</span><span class="cmp-k">Evento</span>'+(evs.length ? evs.map(x=>{ const d=x.det?detText(x.e.modal,x.det):''; return '<span class="cmp-tag" style="'+cvars(x.e.color)+'">'+esc(x.e.label)+(d?' · '+esc(d):'')+'</span>'; }).join('') : '<span class="muted">—</span>');
+  $('cmpHint').innerHTML = evs.length
+    ? I.pin+'<span>Tocca uno <b>SPOT</b> per registrare, oppure premi <b>SALVA</b></span>'
+    : '<span>Seleziona A/C (facoltativo) ed evento</span>';
+  $('btnSave').disabled = !evs.length;
+  $('btnClear').disabled = !acs.length && !evs.length;
+}
+function clearSel(){ SEL.ac=[]; SEL.ev=[]; renderPanel(); }
+
+function statsChips(list){
+  const c = { tot:list.length, dec:0, app:0 };
+  list.forEach(en=>en.evs.forEach(ev=>{ if(ev.stat==='decollo') c.dec++; if(ev.stat==='appontaggio') c.app++; }));
+  return '<span class="mstat">Eventi<b>'+c.tot+'</b></span><span class="mstat">Decolli<b>'+c.dec+'</b></span><span class="mstat">Appontaggi<b>'+c.app+'</b></span>';
+}
+const LOG_HEAD = '<div class="lhead"><div>Ora</div><div>A/C</div><div>Evento · dettagli</div><div style="text-align:center">Spot</div><div></div></div>';
+function rowHTML(en, day, hl){
+  const ac = en.ac;
+  const pills = en.evs.map(ev=>'<span class="evpill" style="'+cvars(ev.color)+'"><i></i>'+esc(ev.label)+'</span>').join('');
+  const dets = en.evs.map(ev=>detText(ev.modal, ev.det)).filter(Boolean);
+  return '<div class="lrow'+(hl&&hl.includes(en.id)?' fresh':'')+'" data-id="'+en.id+'" data-day="'+day+'">'+
+    '<div class="l-time">'+fmtTime(en.ts)+'<small>:'+fmtSec(en.ts)+'</small></div>'+
+    '<div class="l-ac">'+(ac ? '<b style="'+cvars(tipoColor(ac.tipo))+'">'+esc(ac.cs)+'</b><span>'+[ac.side,ac.tipo].filter(Boolean).map(esc).join(' · ')+'</span>' : '<span class="none">—</span>')+'</div>'+
+    '<div class="l-ev"><div class="pills">'+pills+'</div>'+(dets.length?'<div class="l-det">'+dets.map(esc).join(' · ')+'</div>':'')+'</div>'+
+    '<div class="l-spot">'+(en.spot?'<span class="spotbadge">'+esc(spotLabel(en.spot))+'</span>':'')+'</div>'+
+    '<div class="l-act"><button class="iconbtn" data-act="edit" data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-act="del" data-tip="Elimina">'+I.trash+'</button></div></div>';
+}
+function logHTML(list, day, hl, emptyMsg){
+  if(!list.length) return '<div class="empty">'+I.tower+'<b>'+emptyMsg[0]+'</b>'+emptyMsg[1]+'</div>';
+  const l = list.slice(); if(SORT_DESC) l.reverse();
+  return LOG_HEAD + l.map(en=>rowHTML(en, day, hl)).join('');
+}
+function renderLog(hl){
+  const list = DAYS[TODAY]||[];
+  $('cronDate').textContent = fmtDayLong(TODAY);
+  $('cronStats').innerHTML = statsChips(list);
+  $('cronLog').innerHTML = logHTML(list, TODAY, hl, ['Nessun evento registrato oggi','Seleziona A/C, evento e spot nel pannello a destra.']);
+  $('btnSort').innerHTML = I.sort;
+  if(hl && hl.length){ const b=$('cronLog'); b.scrollTop = SORT_DESC ? 0 : b.scrollHeight; }
+}
+
+/* --- interazioni pannello --- */
+function onAcClick(id){
+  const i = SEL.ac.indexOf(id);
+  if(i>=0) SEL.ac.splice(i,1); else SEL.ac.push(id);
+  renderPanel();
+}
+function hideAc(id){
+  const a = getAc(id); if(!a) return;
+  a.active = false; SEL.ac = SEL.ac.filter(x=>x!==id);
+  renderPanel(); queueSave('config');
+  toast(a.callsign+' tolto dalla gestione','info');
+}
+function applyEvSel(ev, det){
+  const allCombo = SEL.ev.every(s=>{ const e=getEv(s.id); return e && e.combo; });
+  if(ev.combo && allCombo) SEL.ev.push({ id:ev.id, det:det||null });
+  else SEL.ev = [{ id:ev.id, det:det||null }];
+}
+function onEvClick(id){
+  const ev = getEv(id); if(!ev) return;
+  const i = SEL.ev.findIndex(s=>s.id===id);
+  if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
+  if(ev.modal==='none'){ applyEvSel(ev,null); renderPanel(); return; }
+  openDetModal(ev, suggestDet(ev), det=>{
+    if(ev.modal==='move'){ applyEvSel(ev, det); register(det.a); }
+    else { applyEvSel(ev, det); renderPanel(); }
+  });
+}
+function onSpotClick(s, btn){
+  if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
+  register(s);
+  const nb = qsa('#deck [data-spot]').find(b=>b.dataset.spot===s); if(nb) nb.classList.add('hit');
+}
+function register(spot){
+  if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
+  const now = new Date(), k = dayKey(now);
+  if(k!==TODAY) rollDay(k);
+  if(!DAYS[k]) DAYS[k] = [];
+  const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? { id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det:s.det?clone(s.det):null } : null; }).filter(Boolean);
+  // se c'e' un Move, lo spot e' la destinazione
+  const mv = evs.find(e=>e.modal==='move' && e.det && e.det.a);
+  if(mv) spot = mv.det.a;
+  const acs = SEL.ac.map(getAc).filter(Boolean);
+  const ts = now.toISOString(), ids = [];
+  (acs.length ? acs : [null]).forEach(a=>{
+    const en = { id:uid(), ts, ac: a ? acSnap(a) : null, evs: clone(evs), spot: spot||null };
+    DAYS[k].push(en); ids.push(en.id);
+  });
+  // memorizza i "carichi" usati per suggerirli in futuro
+  evs.forEach(e=>{ if(e.modal==='carico' && e.det && e.det.txt) rememberRecent(e.det.txt); });
+  sortDay(k); setIndex(k);
+  SEL.ac=[]; SEL.ev=[];
+  renderCron(ids);
+  queueSave(k);
+}
+function rememberRecent(txt){
+  const r = CFG.recent.carico.filter(x=>x.toLowerCase()!==txt.toLowerCase());
+  r.unshift(txt); CFG.recent.carico = r.slice(0,12);
+  queueSave('config', true);
+}
+
+/* =========================================================================
+   DETTAGLI EVENTO (modal piccoli)
+   ========================================================================= */
+const chip = (v, label, on, ic) => '<button type="button" class="chip'+(on?' on':'')+'" data-v="'+esc(v)+'">'+(ic?I[ic]:'')+esc(label)+'</button>';
+const stepper = (k, v) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="0" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
+function detForm(ev, det){
+  det = det||{};
+  switch(ev.modal){
+    case 'move': return '<div class="fgrp"><label>Da</label><div class="chipgrp" data-k="da">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.da===p)).join('')+'</div></div>'+
+                        '<div class="fgrp"><label>A</label><div class="chipgrp" data-k="a">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.a===p)).join('')+'</div></div>';
+    case 'fasi':
+    case 'fasiLt': return '<div class="fgrp"><div class="chipgrp big" data-k="fase">'+chip('inizio','Inizio',det.fase==='inizio','play')+chip('fine','Fine',det.fase==='fine','stop')+'</div></div>'+
+      (ev.modal==='fasiLt' ? '<div class="fgrp ltbox'+(det.fase==='fine'?'':' hide')+'"><label>Quantità (lt)</label><input type="number" inputmode="numeric" min="0" step="1" data-k="lt" value="'+esc(det.lt!=null?det.lt:'')+'" placeholder="es. 1200"'+(det.fase==='fine'?' autofocus':'')+'>'+
+        '<div class="quick">'+[100,250,500,1000].map(v=>'<button type="button" class="qbtn" data-add="'+v+'" data-for="lt">+'+v+'</button>').join('')+'<button type="button" class="qbtn" data-zero="lt">Azzera</button></div></div>' : '');
+    case 'normalops': return '<div class="row2"><div class="fgrp"><label>Endurance</label><input type="text" data-k="end" value="'+esc(det.end||'')+'" placeholder="es. 2+30" autofocus></div>'+
+                             '<div class="fgrp"><label>POB</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div></div>';
+    case 'personale': return '<div class="fgrp"><div class="chipgrp big" data-k="dir">'+chip('imbarco','Imbarco',det.dir!=='sbarco','down')+chip('sbarco','Sbarco',det.dir==='sbarco','up')+'</div></div>'+
+                             '<div class="fgrp"><label>N° persone</label>'+stepper('n', det.n!=null?det.n:1)+'</div>';
+    case 'carico': {
+      const rec = (CFG.recent.carico||[]);
+      return '<div class="fgrp"><label>Cosa trasporta</label><input type="text" data-k="txt" value="'+esc(det.txt||'')+'" placeholder="es. Materiale tecnico, motore, munizionamento…" autofocus list="dlCarico">'+
+        '<datalist id="dlCarico">'+rec.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
+        (rec.length ? '<div class="quick">'+rec.slice(0,8).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="txt">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div>';
+    }
+    case 'testo': return '<div class="fgrp"><label>Descrizione evento</label><textarea data-k="txt" placeholder="Scrivi l\'evento fuori norma…" autofocus>'+esc(det.txt||'')+'</textarea></div>';
+  }
+  return '';
+}
+function detRead(ev, box){
+  const g = k => { const c = box.querySelector('.chipgrp[data-k="'+k+'"] .chip.on'); return c ? c.dataset.v : ''; };
+  const v = k => { const el = box.querySelector('[data-k="'+k+'"]'); return el ? String(el.value||'').trim() : ''; };
+  switch(ev.modal){
+    case 'move': { const da=g('da'), a=g('a'); if(!da||!a) return {err:'Seleziona provenienza (Da) e destinazione (A)'}; if(da===a) return {err:'Provenienza e destinazione coincidono'}; return {det:{da,a}}; }
+    case 'fasi': { const fase=g('fase'); if(!fase) return {err:'Seleziona Inizio o Fine'}; return {det:{fase}}; }
+    case 'fasiLt': {
+      const fase=g('fase'); if(!fase) return {err:'Seleziona Inizio o Fine'};
+      const det={fase};
+      if(fase==='fine'){ const s=v('lt').replace(/\./g,'').replace(',','.'); if(s!==''){ const n=Number(s); if(!isFinite(n)||n<0) return {err:'Quantità in litri non valida'}; det.lt=Math.round(n); } }
+      return {det};
+    }
+    case 'normalops': { const end=v('end'), pob=v('pob'); if(!end && pob==='') return {err:'Inserisci Endurance e/o POB'}; const det={}; if(end) det.end=end; if(pob!=='') det.pob=Math.max(0,parseInt(pob,10)||0); return {det}; }
+    case 'personale': { const dir=g('dir'); const n=parseInt(v('n'),10)||0; if(!dir) return {err:'Seleziona Imbarco o Sbarco'}; if(n<1) return {err:'Inserisci il numero di persone'}; return {det:{dir,n}}; }
+    case 'carico': { const txt=v('txt'); return {det: txt ? {txt} : {}}; }
+    case 'testo': { const txt=v('txt'); if(!txt) return {err:'Scrivi il testo dell\'evento'}; return {det:{txt}}; }
+  }
+  return {det:null};
+}
+function detText(modal, det){
+  if(!det) return '';
+  switch(modal){
+    case 'move': return det.da&&det.a ? spotLabel(det.da)+' → '+spotLabel(det.a) : '';
+    case 'fasi': return det.fase==='fine'?'Fine':det.fase==='inizio'?'Inizio':'';
+    case 'fasiLt': return det.fase==='inizio'?'Inizio':det.fase==='fine'?('Fine'+(det.lt!=null?' · '+fmtNum(det.lt)+' lt':'')):'';
+    case 'normalops': return [det.end?'Endurance '+det.end:'', det.pob!=null?'POB '+det.pob:''].filter(Boolean).join(' · ');
+    case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+' · '+det.n+' pers.' : '';
+    case 'carico': case 'testo': return det.txt||'';
+  }
+  return '';
+}
+function suggestDet(ev){
+  const acId = SEL.ac[0];
+  if(ev.modal==='move'){
+    const p = acId ? positions()[acId] : null;
+    return { da: MOVE_PLACES.includes(p) ? p : undefined };
+  }
+  if(ev.modal==='fasi' || ev.modal==='fasiLt'){
+    // se l'ultima registrazione di questo evento (stesso A/C) e' "Inizio", propone "Fine"
+    const list = (DAYS[TODAY]||[]).filter(en=>(acId ? en.ac && en.ac.id===acId : true) && en.evs.some(e=>e.id===ev.id));
+    const last = list.length ? list[list.length-1].evs.find(e=>e.id===ev.id) : null;
+    return { fase: last && last.det && last.det.fase==='inizio' ? 'fine' : 'inizio' };
+  }
+  if(ev.modal==='personale') return { dir:'imbarco', n:1 };
+  return {};
+}
+function syncDet(box){
+  if(!box) return;
+  const lt = box.querySelector('.ltbox');
+  if(lt){
+    const f = box.querySelector('.chipgrp[data-k="fase"] .chip.on');
+    const show = f && f.dataset.v==='fine';
+    lt.classList.toggle('hide', !show);
+    return show;
+  }
+}
+function bindDet(root){
+  root.addEventListener('click', e=>{
+    const c = e.target.closest('.chipgrp .chip');
+    if(c && root.contains(c)){
+      const g = c.parentElement;
+      Array.from(g.children).forEach(x=>x.classList.toggle('on', x===c));
+      const box = c.closest('.detbox');
+      if(syncDet(box)){ const i=box.querySelector('[data-k="lt"]'); if(i) setTimeout(()=>i.focus(),10); }
+      return;
+    }
+    const s = e.target.closest('[data-step]');
+    if(s){ const i=s.closest('.detbox').querySelector('[data-k="'+s.dataset.for+'"]'); i.value=Math.max(0,(parseInt(i.value,10)||0)+Number(s.dataset.step)); return; }
+    const q = e.target.closest('[data-add]');
+    if(q){ const i=q.closest('.detbox').querySelector('[data-k="'+q.dataset.for+'"]'); i.value=(parseInt(i.value,10)||0)+Number(q.dataset.add); i.focus(); return; }
+    const z = e.target.closest('[data-zero]');
+    if(z){ const i=z.closest('.detbox').querySelector('[data-k="'+z.dataset.zero+'"]'); i.value=''; i.focus(); return; }
+    const f = e.target.closest('[data-fill]');
+    if(f){ const i=f.closest('.detbox').querySelector('[data-k="'+f.dataset.for+'"]'); i.value=f.dataset.fill; i.focus(); return; }
+  });
+}
+function openDetModal(ev, det, onOk){
+  const isMove = ev.modal==='move';
+  openModal({
+    title: esc(ev.label), icon: mDot(ev.color),
+    body: '<div class="detbox">'+detForm(ev, det)+'</div><div class="ferr" hidden></div>',
+    foot: '<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn '+(isMove?'':'blue')+'" data-primary data-ok>'+I.check+(isMove?'Registra movimento':'Conferma')+'</button>',
+    onMount(m){
+      const box = m.root.querySelector('.detbox');
+      bindDet(m.root); syncDet(box);
+      m.root.querySelector('[data-ok]').onclick = ()=>{
+        const r = detRead(ev, box);
+        if(r.err){ showErr(m, r.err); return; }
+        m.close(); onOk(r.det);
+      };
+    }
+  });
+}
+
+/* =========================================================================
+   MODIFICA / ELIMINA EVENTO REGISTRATO
+   ========================================================================= */
+function findEntry(day, id){ return (DAYS[day]||[]).find(x=>x.id===id); }
+function refreshAfterChange(day){
+  if(day===TODAY) renderCron();
+  if(VIEW==='storico'){ renderHistLog(); renderCal(); renderRecent(); }
+}
+function openEdit(day, id){
+  const en = findEntry(day, id); if(!en) return;
+  const pool = CFG.events.slice();
+  en.evs.forEach(e=>{ if(!pool.some(p=>p.id===e.id)) pool.push(Object.assign({}, e, {hidden:false, combo:false, _orphan:true})); });
+  const getP = i => pool.find(e=>e.id===i);
+  let sel = en.evs.map(e=>({ id:e.id, det:e.det ? clone(e.det) : null }));
+  const d = new Date(en.ts);
+  const tval = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  const arch = CFG.aircraft.slice().sort((a,b)=>String(a.callsign).localeCompare(String(b.callsign)));
+  let acOpts = '<option value="">— Nessun A/C —</option>' + arch.map(a=>'<option value="'+a.id+'"'+(en.ac&&en.ac.id===a.id?' selected':'')+'>'+esc(a.callsign)+(a.side?' · '+esc(a.side):'')+(a.tipo?' · '+esc(a.tipo):'')+(a.active?'':' (archivio)')+'</option>').join('');
+  if(en.ac && !getAc(en.ac.id)) acOpts += '<option value="'+en.ac.id+'" selected>'+esc(en.ac.cs)+(en.ac.side?' · '+esc(en.ac.side):'')+' (eliminato dall\'archivio)</option>';
+  const body =
+    '<div class="row2"><div class="fgrp"><label>Ora (hh:mm:ss)</label><input type="text" class="mono" inputmode="numeric" maxlength="8" placeholder="hh:mm:ss" data-f="time" value="'+tval+'"></div>'+
+    '<div class="fgrp"><label>A/C</label><select data-f="ac">'+acOpts+'</select></div></div>'+
+    '<div class="fgrp"><label>Evento</label><div class="evgrid" data-f="evs"></div></div>'+
+    '<div data-f="det"></div>'+
+    '<div class="fgrp"><label>Spot</label><div class="chipgrp" data-k="spot" data-f="spot">'+chip('','Nessuno',!en.spot)+SPOTS.map(s=>chip(s, spotLabel(s), en.spot===s)).join('')+'</div></div>'+
+    '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div><div class="ferr" hidden></div>';
+  openModal({
+    title:'Modifica evento', icon:mIcon('pencil'), size:'mid', body,
+    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+'Salva modifiche</button>',
+    onMount(m){
+      const R = m.root, evBox = R.querySelector('[data-f="evs"]'), detZone = R.querySelector('[data-f="det"]');
+      bindDet(R);
+      const captureDet = ()=>{ qsa('.detbox[data-ev]', detZone).forEach(b=>{ const s=sel.find(x=>x.id===b.dataset.ev); const e=getP(b.dataset.ev); if(s&&e){ const r=detRead(e,b); if(!r.err) s.det=r.det; } }); };
+      const draw = ()=>{
+        evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span>'+esc(e.label)+'</button>').join('');
+        detZone.innerHTML = sel.map(s=>{ const e=getP(s.id); if(!e||e.modal==='none') return ''; return '<div class="detsec"><div class="detsec-h"><i style="background:'+e.color+'"></i>'+esc(e.label)+'</div><div class="detbox" data-ev="'+e.id+'">'+detForm(e, s.det)+'</div></div>'; }).join('');
+        qsa('.detbox', detZone).forEach(syncDet);
+      };
+      evBox.addEventListener('click', e=>{
+        const b = e.target.closest('[data-pe]'); if(!b) return;
+        captureDet();
+        const ev = getP(b.dataset.pe), i = sel.findIndex(s=>s.id===ev.id);
+        if(i>=0){ if(sel.length>1) sel.splice(i,1); }
+        else {
+          const allCombo = sel.every(s=>{ const x=getP(s.id); return x && x.combo; });
+          if(ev.combo && allCombo) sel.push({id:ev.id, det:null}); else sel = [{id:ev.id, det:null}];
+        }
+        draw();
+      });
+      draw();
+      R.querySelector('[data-ok]').onclick = ()=>{
+        const tm = String(R.querySelector('[data-f="time"]').value).trim().match(/^(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?$/);
+        const tp = tm ? [Number(tm[1]), Number(tm[2]), Number(tm[3]||0)] : null;
+        if(!tp || tp[0]>23 || tp[1]>59 || tp[2]>59) return showErr(m,'Orario non valido: usa il formato hh:mm:ss (24 ore)');
+        const base = parseDay(day); base.setHours(tp[0], tp[1], tp[2]||0, 0);
+        const evs = [];
+        for(const s of sel){
+          const e = getP(s.id); let det = null;
+          if(e.modal!=='none'){
+            const b = detZone.querySelector('.detbox[data-ev="'+e.id+'"]');
+            const r = detRead(e, b); if(r.err) return showErr(m, e.label+': '+r.err);
+            det = r.det;
+          }
+          evs.push({ id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det });
+        }
+        if(!evs.length) return showErr(m,'Seleziona almeno un evento');
+        const acv = R.querySelector('[data-f="ac"]').value;
+        let ac = null;
+        if(acv){ const a=getAc(acv); ac = a ? acSnap(a) : (en.ac && en.ac.id===acv ? en.ac : null); }
+        const sc = R.querySelector('[data-f="spot"] .chip.on');
+        let spot = sc && sc.dataset.v ? sc.dataset.v : null;
+        const mv = evs.find(x=>x.modal==='move' && x.det && x.det.a); if(mv) spot = mv.det.a;
+        en.ts = base.toISOString(); en.ac = ac; en.evs = evs; en.spot = spot;
+        evs.forEach(x=>{ if(x.modal==='carico' && x.det && x.det.txt) rememberRecent(x.det.txt); });
+        sortDay(day); m.close();
+        refreshAfterChange(day); queueSave(day);
+      };
+    }
+  });
+}
+async function deleteEntry(day, id){
+  const en = findEntry(day, id); if(!en) return;
+  const ok = await confirmBox({
+    title:'Elimina evento', danger:true, ok:'Elimina',
+    html:'Vuoi eliminare <b>'+esc(en.evs.map(e=>e.label).join(' + '))+'</b> delle <b>'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</b>'+(en.ac?' ('+esc(en.ac.cs)+')':'')+'?<br><span class="muted">L\'operazione non può essere annullata.</span>'
+  });
+  if(!ok) return;
+  DAYS[day] = DAYS[day].filter(x=>x.id!==id);
+  setIndex(day); refreshAfterChange(day); queueSave(day);
+}
+function bindLog(el){
+  el.addEventListener('click', e=>{
+    const b = e.target.closest('[data-act]'); if(!b) return;
+    const row = b.closest('.lrow');
+    if(b.dataset.act==='edit') openEdit(row.dataset.day, row.dataset.id);
+    if(b.dataset.act==='del') deleteEntry(row.dataset.day, row.dataset.id);
+  });
+}
+
+/* =========================================================================
+   AEROMOBILI (archivio + in gestione)
+   ========================================================================= */
+function acFormHTML(a){
+  a = a||{};
+  const tipi = Array.from(new Set(TIPI_SUGG.concat(CFG.aircraft.map(x=>x.tipo).filter(Boolean))));
+  const gruppi = Array.from(new Set(CFG.aircraft.map(x=>x.gruppo).filter(Boolean)));
+  return '<div class="row2"><div class="fgrp"><label>Callsign</label><input type="text" class="up" data-a="callsign" value="'+esc(a.callsign||'')+'" placeholder="es. GUZZI 01" autofocus></div>'+
+    '<div class="fgrp"><label>Side Number</label><input type="text" class="up" data-a="side" value="'+esc(a.side||'')+'" placeholder="es. 6-12"></div></div>'+
+    '<div class="row2"><div class="fgrp"><label>Gruppo Volo</label><input type="text" data-a="gruppo" value="'+esc(a.gruppo||'')+'" list="dlGruppi" placeholder="es. 1° Gruppo Elicotteri"><datalist id="dlGruppi">'+gruppi.map(g=>'<option value="'+esc(g)+'">').join('')+'</datalist></div>'+
+    '<div class="fgrp"><label>Tipo</label><input type="text" class="up" data-a="tipo" value="'+esc(a.tipo||'')+'" list="dlTipi" placeholder="es. SH-90A"><datalist id="dlTipi">'+tipi.map(t=>'<option value="'+esc(t)+'">').join('')+'</datalist></div></div>';
+}
+function acFormRead(root){
+  const v = k => String(root.querySelector('[data-a="'+k+'"]').value||'').trim();
+  const a = { callsign:v('callsign').toUpperCase(), side:v('side').toUpperCase(), gruppo:v('gruppo'), tipo:v('tipo').toUpperCase() };
+  if(!a.callsign) return {err:'Inserisci il Callsign'};
+  if(!a.tipo) return {err:'Inserisci il Tipo di aeromobile'};
+  return {a};
+}
+function openAcModal(tab){
+  let TAB = tab || (CFG.aircraft.length ? 'arch' : 'new');
+  let fTipo = '*', q = '';
+  openModal({
+    title:'Aeromobili', icon:mIcon('plane'), size:'wide',
+    body:'<div class="tabs"><button data-tab="new">'+I.plus+'Nuovo A/C</button><button data-tab="arch">'+I.archive+'Archivio <span class="cnt" data-cnt></span></button></div><div data-tb></div>',
+    foot:'<span class="hint grow">Gli A/C <b>in gestione</b> compaiono come pulsanti nella Cronologia. Quelli non in gestione restano in archivio per essere richiamati in futuro.</span><button class="btn ghost" data-close>Chiudi</button>',
+    onMount(m){
+      const R = m.root, TB = R.querySelector('[data-tb]');
+      const draw = ()=>{
+        qsa('.tabs button', R).forEach(b=>b.classList.toggle('on', b.dataset.tab===TAB));
+        R.querySelector('[data-cnt]').textContent = CFG.aircraft.length;
+        if(TAB==='new'){
+          TB.innerHTML = acFormHTML()+'<label class="chk"><input type="checkbox" data-a="active" checked>Metti subito in gestione (visibile in Cronologia)</label><div class="ferr" hidden></div>'+
+            '<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn" data-primary data-savenew>'+I.save+'Salva in archivio</button></div>';
+          setTimeout(()=>{ const i=TB.querySelector('[data-a="callsign"]'); if(i) i.focus(); },30);
+        } else drawArch();
+      };
+      const drawArch = ()=>{
+        const tipi = {}; CFG.aircraft.forEach(a=>{ const t=a.tipo||'N/D'; tipi[t]=(tipi[t]||0)+1; });
+        if(fTipo!=='*' && !tipi[fTipo]) fTipo='*';
+        const list = CFG.aircraft.filter(a=>(fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q)))
+          .sort((a,b)=>(b.active-a.active) || String(a.tipo).localeCompare(String(b.tipo)) || String(a.callsign).localeCompare(String(b.callsign)));
+        const inG = list.filter(a=>a.active).length;
+        const prevQ = TB.querySelector('[data-q]'); const hadFocus = prevQ && document.activeElement===prevQ;
+        TB.innerHTML = !CFG.aircraft.length ? '<div class="empty">'+I.plane+'<b>Archivio vuoto</b>Aggiungi il primo aeromobile dalla scheda "Nuovo A/C".</div>' :
+          '<div class="chipgrp" style="margin-bottom:12px" data-ft>'+chip('*','Tutti ('+CFG.aircraft.length+')',fTipo==='*')+Object.keys(tipi).sort().map(t=>chip(t, t+' ('+tipi[t]+')', fTipo===t)).join('')+'</div>'+
+          '<div class="arch-tools"><input class="inp" data-q placeholder="Cerca callsign, side number, gruppo…" value="'+esc(q)+'">'+
+          '<button class="btn small ghost" data-bulk="1">'+I.eye+'Tutti in gestione</button><button class="btn small ghost" data-bulk="0">'+I.eyeOff+'Nessuno in gestione</button></div>'+
+          '<div class="ahead"><div>Gest.</div><div>Callsign</div><div>Side</div><div>Gruppo Volo</div><div>Tipo</div><div></div></div>'+
+          '<div class="arch-list">'+(list.length ? list.map(a=>
+            '<div class="arow'+(a.active?' on':'')+'" data-id="'+a.id+'" data-tip="'+(a.active?'In gestione — clic per togliere':'Clic per mettere in gestione')+'">'+
+            '<span class="sw'+(a.active?' on':'')+'"></span><b>'+esc(a.callsign)+'</b><span>'+esc(a.side||'—')+'</span><span>'+esc(a.gruppo||'—')+'</span>'+
+            '<span><span class="tipo" style="'+cvars(tipoColor(a.tipo))+'">'+esc(a.tipo||'N/D')+'</span></span>'+
+            '<span class="acts"><button class="iconbtn" data-aedit="'+a.id+'" data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-adel="'+a.id+'" data-tip="Elimina dall\'archivio">'+I.trash+'</button></span></div>').join('')
+            : '<div class="nodata">Nessun aeromobile corrisponde al filtro.</div>')+'</div>'+
+          '<div class="hint">'+inG+' di '+list.length+' in gestione nel filtro corrente.</div>';
+        if(hadFocus){ const i=TB.querySelector('[data-q]'); i.focus(); i.setSelectionRange(i.value.length,i.value.length); }
+      };
+      R.addEventListener('click', e=>{
+        const t = e.target.closest('[data-tab]'); if(t){ TAB=t.dataset.tab; draw(); return; }
+        if(e.target.closest('[data-savenew]')){
+          const r = acFormRead(TB); if(r.err) return showErr(m, r.err);
+          const act = TB.querySelector('[data-a="active"]').checked;
+          const dup = CFG.aircraft.find(x=>x.callsign===r.a.callsign && (x.side||'')===r.a.side);
+          if(dup){ dup.active = dup.active || act; Object.assign(dup, {gruppo:r.a.gruppo||dup.gruppo, tipo:r.a.tipo}); toast(dup.callsign+' era già in archivio'+(act?': messo in gestione':''),'info'); }
+          else { CFG.aircraft.push(Object.assign({ id:uid(), active:act, created:new Date().toISOString() }, r.a)); tipoColor(r.a.tipo); }
+          queueSave('config'); renderPanel();
+          draw(); return;
+        }
+        const ft = e.target.closest('[data-ft] .chip'); if(ft){ fTipo = ft.dataset.v; drawArch(); return; }
+        const bk = e.target.closest('[data-bulk]');
+        if(bk){
+          const on = bk.dataset.bulk==='1';
+          CFG.aircraft.forEach(a=>{ if((fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q))) a.active=on; });
+          queueSave('config'); renderPanel(); drawArch(); return;
+        }
+        const ed = e.target.closest('[data-aedit]'); if(ed){ openAcEdit(ed.dataset.aedit, drawArch); return; }
+        const dl = e.target.closest('[data-adel]');
+        if(dl){
+          const a = getAc(dl.dataset.adel);
+          confirmBox({ title:'Elimina A/C', danger:true, ok:'Elimina', html:'Eliminare <b>'+esc(a.callsign)+'</b>'+(a.side?' ('+esc(a.side)+')':'')+' dall\'archivio?<br><span class="muted">Le cronologie già registrate non vengono modificate.</span>' })
+            .then(ok=>{ if(!ok) return; CFG.aircraft = CFG.aircraft.filter(x=>x.id!==a.id); SEL.ac = SEL.ac.filter(x=>x!==a.id); queueSave('config'); renderPanel(); drawArch(); });
+          return;
+        }
+        const row = e.target.closest('.arow');
+        if(row){ const a=getAc(row.dataset.id); a.active=!a.active; queueSave('config'); renderPanel(); drawArch(); }
+      });
+      R.addEventListener('input', e=>{ if(e.target.matches('[data-q]')){ q = e.target.value.trim().toLowerCase(); drawArch(); } });
+      draw();
+    }
+  });
+}
+function openAcEdit(id, after){
+  const a = getAc(id); if(!a) return;
+  openModal({
+    title:'Modifica A/C', icon:mIcon('pencil'), body: acFormHTML(a)+'<label class="chk"><input type="checkbox" data-a="active"'+(a.active?' checked':'')+'>In gestione (visibile in Cronologia)</label><div class="ferr" hidden></div>',
+    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+'Salva</button>',
+    onMount(m){
+      m.root.querySelector('[data-ok]').onclick = ()=>{
+        const r = acFormRead(m.root); if(r.err) return showErr(m, r.err);
+        Object.assign(a, r.a, { active: m.root.querySelector('[data-a="active"]').checked });
+        tipoColor(a.tipo); queueSave('config'); renderPanel(); m.close(); if(after) after();
+      };
+    }
+  });
+}
+
+/* =========================================================================
+   GESTIONE EVENTI (aggiungi / modifica / ordina)
+   ========================================================================= */
+function openEvManager(){
+  openModal({
+    title:'Personalizza eventi', icon:mIcon('sliders'), size:'wide',
+    body:'<div class="evlist" data-list></div>',
+    foot:'<button class="btn ghost small" data-reset>'+I.undo+'Ripristina predefiniti</button><span class="grow"></span><button class="btn blue" data-new>'+I.plus+'Nuovo evento</button><button class="btn ghost" data-close>Chiudi</button>',
+    onMount(m){
+      const L = m.root.querySelector('[data-list]');
+      const draw = ()=>{
+        L.innerHTML = CFG.events.map((e,i)=>
+          '<div class="erow'+(e.hidden?' off':'')+'" data-id="'+e.id+'"><div class="ord"><button class="iconbtn" data-mv="-1"'+(i===0?' disabled':'')+' data-tip="Sposta su">'+I.up+'</button><button class="iconbtn" data-mv="1"'+(i===CFG.events.length-1?' disabled':'')+' data-tip="Sposta giù">'+I.down+'</button></div>'+
+          '<div class="en"><i style="background:'+e.color+';box-shadow:0 0 8px '+e.color+'"></i>'+esc(e.label)+'</div>'+
+          '<div class="ed">'+(e.modal!=='none'?MODAL_TYPES[e.modal]:'<span style="opacity:.6">Nessuna finestra</span>')+'</div>'+
+          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+'</div>'+
+          '<div class="acts"><button class="iconbtn" data-vis data-tip="'+(e.hidden?'Mostra':'Nascondi')+' in Cronologia">'+(e.hidden?I.eyeOff:I.eye)+'</button><button class="iconbtn" data-ed data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-del data-tip="Elimina">'+I.trash+'</button></div></div>').join('');
+      };
+      const changed = ()=>{ queueSave('config'); renderPanel(); draw(); };
+      m.root.addEventListener('click', e=>{
+        if(e.target.closest('[data-new]')){ openEvForm(null, changed); return; }
+        if(e.target.closest('[data-reset]')){
+          confirmBox({ title:'Ripristina eventi', ok:'Ripristina', html:'Ripristinare l\'elenco eventi predefinito?<br><span class="muted">Gli eventi personalizzati verranno rimossi. Le cronologie già registrate non cambiano.</span>' })
+            .then(ok=>{ if(ok){ CFG.events = defaultEvents(); SEL.ev=[]; changed(); } });
+          return;
+        }
+        const row = e.target.closest('.erow'); if(!row) return;
+        const i = CFG.events.findIndex(x=>x.id===row.dataset.id), ev = CFG.events[i];
+        const mv = e.target.closest('[data-mv]');
+        if(mv){ const j=i+Number(mv.dataset.mv); if(j<0||j>=CFG.events.length) return; CFG.events.splice(i,1); CFG.events.splice(j,0,ev); changed(); return; }
+        if(e.target.closest('[data-vis]')){ ev.hidden=!ev.hidden; changed(); return; }
+        if(e.target.closest('[data-ed]')){ openEvForm(ev, changed); return; }
+        if(e.target.closest('[data-del]')){
+          confirmBox({ title:'Elimina evento', danger:true, ok:'Elimina', html:'Eliminare l\'evento <b>'+esc(ev.label)+'</b>?'+(ev.stat?'<br><span class="muted">Le statistiche già registrate restano valide.</span>':'')+'<br><span class="muted">Le cronologie già registrate non cambiano.</span>' })
+            .then(ok=>{ if(ok){ CFG.events = CFG.events.filter(x=>x.id!==ev.id); SEL.ev = SEL.ev.filter(s=>s.id!==ev.id); changed(); } });
+        }
+      });
+      draw();
+    }
+  });
+}
+function openEvForm(ev, after){
+  const isNew = !ev;
+  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, hidden:false };
+  openModal({
+    title: isNew?'Nuovo evento':'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid',
+    body:'<div class="prev" data-prev></div>'+
+      '<div class="fgrp"><label>Nome evento</label><input type="text" data-e="label" value="'+esc(e.label)+'" placeholder="es. Rifornimento acqua" maxlength="40" autofocus></div>'+
+      '<div class="fgrp"><label>Colore</label><div class="swatches">'+PALETTE.map(c=>'<button type="button" class="swatch'+(c===e.color?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>').join('')+'</div></div>'+
+      '<div class="row2"><div class="fgrp"><label>Finestra dettagli al clic</label><select data-e="modal">'+Object.keys(MODAL_TYPES).map(k=>'<option value="'+k+'"'+(k===e.modal?' selected':'')+'>'+MODAL_TYPES[k]+'</option>').join('')+'</select></div>'+
+      '<div class="fgrp"><label>Conteggia nelle statistiche come</label><select data-e="stat">'+Object.keys(STAT_TYPES).map(k=>'<option value="'+k+'"'+(k===e.stat?' selected':'')+'>'+STAT_TYPES[k]+'</option>').join('')+'</select></div></div>'+
+      '<label class="chk"><input type="checkbox" data-e="combo"'+(e.combo?' checked':'')+'>Combinabile: selezionabile insieme ad altri eventi combinabili (es. Tacchi + Rizze)</label>'+
+      '<label class="chk"><input type="checkbox" data-e="visible"'+(!e.hidden?' checked':'')+'>Visibile nella Cronologia</label><div class="ferr" hidden></div>',
+    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+(isNew?'Aggiungi':'Salva')+'</button>',
+    onMount(m){
+      const R = m.root, val = k => R.querySelector('[data-e="'+k+'"]');
+      const prev = ()=>{ R.querySelector('[data-prev]').innerHTML = '<span class="muted" style="font-size:12px">Anteprima</span><button type="button" class="evbtn on" style="'+cvars(e.color)+'"><span class="dot"></span>'+esc(val('label').value||'Evento')+'</button>'; };
+      R.addEventListener('click', ev2=>{ const s=ev2.target.closest('[data-c]'); if(s){ e.color=s.dataset.c; qsa('.swatch',R).forEach(x=>x.classList.toggle('on',x===s)); prev(); } });
+      val('label').addEventListener('input', prev); prev();
+      R.querySelector('[data-ok]').onclick = ()=>{
+        const label = val('label').value.trim();
+        if(!label) return showErr(m,'Inserisci il nome dell\'evento');
+        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, combo:val('combo').checked, hidden:!val('visible').checked });
+        if(isNew) CFG.events.push(e); else Object.assign(ev, e);
+        m.close(); after && after();
+      };
+    }
+  });
+}
+
+/* =========================================================================
+   STORICO
+   ========================================================================= */
+async function openHistory(){
+  const idx = await getJSON('/api/days', null, 3);
+  if(idx){ INDEX = idx; DIRTY.forEach((v,k)=>{ if(k!=='config') setIndex(k); }); }
+  const keys = Object.keys(INDEX).sort();
+  if(!HIST_DAY) HIST_DAY = INDEX[TODAY] ? TODAY : (keys[keys.length-1] || TODAY);
+  if(!CAL_MONTH){ const d=parseDay(HIST_DAY); CAL_MONTH = new Date(d.getFullYear(), d.getMonth(), 1); }
+  renderCal(); renderRecent();
+  await loadHistDay(HIST_DAY);
+}
+async function loadHistDay(k){
+  HIST_DAY = k;
+  if(k!==TODAY && !DIRTY.has(k)){
+    const list = await getJSON('/api/day?d='+k, null, 3);
+    if(Array.isArray(list)) DAYS[k] = list;
+  }
+  if(!DAYS[k]) DAYS[k] = [];
+  sortDay(k);
+  renderHistLog(); renderCal(); renderRecent();
+}
+function renderHistLog(){
+  const k = HIST_DAY, list = DAYS[k]||[];
+  $('histDate').textContent = fmtDayLong(k) + (k===TODAY ? ' · oggi' : '');
+  $('histStats').innerHTML = statsChips(list);
+  $('histLog').innerHTML = logHTML(list, k, null, ['Nessuna cronologia per questo giorno','Nel calendario sono evidenziati solo i giorni con cronologia salvata.']);
+  const keys = Object.keys(INDEX).sort();
+  $('btnHistPrev').disabled = !keys.some(x=>x<k);
+  $('btnHistNext').disabled = !keys.some(x=>x>k);
+}
+function renderCal(){
+  if(!CAL_MONTH) return;
+  const y = CAL_MONTH.getFullYear(), mo = CAL_MONTH.getMonth();
+  const first = new Date(y, mo, 1), nDays = new Date(y, mo+1, 0).getDate();
+  const off = (first.getDay()+6)%7;
+  let daysWith = 0, evMonth = 0;
+  let cells = '';
+  for(let i=0;i<off;i++) cells += '<span></span>';
+  for(let d=1; d<=nDays; d++){
+    const k = y+'-'+pad(mo+1)+'-'+pad(d), n = INDEX[k]||0;
+    if(n){ daysWith++; evMonth+=n; }
+    cells += '<button class="cal-d'+(n?' has':'')+(k===TODAY?' today':'')+(k===HIST_DAY?' sel':'')+'" data-day="'+k+'"'+(n?' data-tip="'+pl(n,'evento registrato','eventi registrati')+'"':' disabled')+'>'+d+(n?'<span class="cn">'+n+'</span>':'')+'</button>';
+  }
+  $('cal').innerHTML =
+    '<div class="cal-h"><button class="iconbtn" data-cm="-1" data-tip="Mese precedente">'+I.chevL+'</button><div class="cm">'+MESI[mo]+' '+y+'<small>'+pl(daysWith,'giorno','giorni')+' · '+pl(evMonth,'evento','eventi')+'</small></div><button class="iconbtn" data-cm="1" data-tip="Mese successivo">'+I.chevR+'</button></div>'+
+    '<div class="cal-g">'+['L','M','M','G','V','S','D'].map(x=>'<span class="cal-wd">'+x+'</span>').join('')+cells+'</div>'+
+    '<div class="cal-leg"><span><i style="background:linear-gradient(180deg,#5cc8f8,#1aa6e6)"></i>Con cronologia</span><span><i style="border:1px solid var(--gold)"></i>Oggi</span><span style="flex:1"></span><button class="btn ghost small" data-cm="0">Oggi</button></div>';
+}
+function renderRecent(){
+  const keys = Object.keys(INDEX).sort().reverse().slice(0,10);
+  $('recent').innerHTML = '<h4>Ultimi giorni registrati</h4>' + (keys.length ? keys.map(k=>'<button class="rday'+(k===HIST_DAY?' sel':'')+'" data-day="'+k+'"><span>'+fmtDayLong(k)+'</span><b>'+INDEX[k]+'</b></button>').join('') : '<div class="nodata">Ancora nessuna cronologia salvata.</div>');
+}
+function histStep(dir){
+  const keys = Object.keys(INDEX).sort();
+  const k = dir<0 ? keys.filter(x=>x<HIST_DAY).pop() : keys.find(x=>x>HIST_DAY);
+  if(k){ const d=parseDay(k); CAL_MONTH = new Date(d.getFullYear(), d.getMonth(), 1); loadHistDay(k); }
+}
+
+/* =========================================================================
+   STATISTICHE
+   ========================================================================= */
+const PERIODS = [['oggi','Oggi'],['7g','7 giorni'],['30g','30 giorni'],['mese','Questo mese'],['anno','Quest\'anno'],['tutto','Tutto']];
+function periodRange(p){
+  const t = new Date(); const k = dayKey(t);
+  const back = n => { const d=new Date(t); d.setDate(d.getDate()-n); return dayKey(d); };
+  switch(p){
+    case 'oggi': return [k,k];
+    case '7g': return [back(6),k];
+    case '30g': return [back(29),k];
+    case 'mese': return [t.getFullYear()+'-'+pad(t.getMonth()+1)+'-01', k];
+    case 'anno': return [t.getFullYear()+'-01-01', k];
+    case 'tutto': return ['',''];
+    case 'custom': return [$('stFrom').value||'', $('stTo').value||''];
+  }
+  return ['',''];
+}
+async function renderStats(){
+  $('stPeriods').innerHTML = PERIODS.map(p=>'<button class="chip'+(ST_PERIOD===p[0]?' on':'')+'" data-p="'+p[0]+'">'+p[1]+'</button>').join('');
+  const r = periodRange(ST_PERIOD);
+  if(ST_PERIOD!=='custom'){ $('stFrom').value = r[0]; $('stTo').value = r[1]; }
+  const data = await getJSON('/api/range?from='+r[0]+'&to='+r[1], {}, 3) || {};
+  // giorni con modifiche non ancora salvate: usa la copia in memoria
+  DIRTY.forEach((v,k)=>{ if(k!=='config' && (!r[0]||k>=r[0]) && (!r[1]||k<=r[1])) data[k] = DAYS[k]||[]; });
+  const entries = [];
+  Object.keys(data).forEach(k=>{ (data[k]||[]).forEach(en=>entries.push(en)); });
+
+  const S = { dec:0, app:0, tipo:{}, spot:{}, elev:{elev_sx:0,elev_dx:0,elev_prora:0,elev_poppa:0}, fuel:0, hot:0, fuelTipo:{}, pin:0, pout:0, pinOps:0, poutOps:0, ev:{} };
+  const T = k => (S.tipo[k] = S.tipo[k] || { dec:0, app:0 });
+  const SP = k => (S.spot[k] = S.spot[k] || { dec:0, app:0 });
+  const F = k => (S.fuelTipo[k] = S.fuelTipo[k] || { fuel:0, hot:0 });
+  entries.forEach(en=>{
+    const tipo = (en.ac && en.ac.tipo) || 'Senza A/C';
+    const spot = en.spot || 'N/D';
+    (en.evs||[]).forEach(ev=>{
+      S.ev[ev.label] = (S.ev[ev.label]||0)+1;
+      const d = ev.det||{};
+      switch(ev.stat){
+        case 'decollo': S.dec++; T(tipo).dec++; SP(spot).dec++; break;
+        case 'appontaggio': S.app++; T(tipo).app++; SP(spot).app++; break;
+        case 'fuel': if(d.fase==='fine' && d.lt>0){ S.fuel+=d.lt; F(tipo).fuel+=d.lt; } break;
+        case 'hotref': if(d.fase==='fine' && d.lt>0){ S.hot+=d.lt; F(tipo).hot+=d.lt; } break;
+        case 'personale': if(d.n>0){ if(d.dir==='sbarco'){ S.pout+=d.n; S.poutOps++; } else { S.pin+=d.n; S.pinOps++; } } break;
+        case 'elev_sx': case 'elev_dx': case 'elev_prora': case 'elev_poppa': S.elev[ev.stat]++; break;
+      }
+    });
+  });
+  const days = Object.keys(data).filter(k=>(data[k]||[]).length).length;
+  const elevTot = S.elev.elev_sx+S.elev.elev_dx+S.elev.elev_prora+S.elev.elev_poppa;
+  const kpi = (lab, val, sub, ic, color, unit) => '<div class="kpi" style="--kc:'+color+'"><span class="k-ic">'+I[ic]+'</span><div class="k-lab">'+lab+'</div><div class="k-val">'+fmtNum(val)+(unit?'<small>'+unit+'</small>':'')+'</div><div class="k-sub">'+sub+'</div></div>';
+  $('stKpis').innerHTML =
+    kpi('Decolli', S.dec, pl(days,'giorno con attività','giorni con attività'), 'plane', 'var(--s1)')+
+    kpi('Appontaggi', S.app, pl(entries.length,'evento registrato','eventi registrati'), 'plane', 'var(--s2)')+
+    kpi('Mov. elevatori', elevTot, 'Sx '+S.elev.elev_sx+' · Dx '+S.elev.elev_dx+' · Mun. '+(S.elev.elev_prora+S.elev.elev_poppa), 'elev', 'var(--violet)')+
+    kpi('Carburante', S.fuel+S.hot, 'Fuel '+fmtNum(S.fuel)+' · HotRef '+fmtNum(S.hot), 'fuel', 'var(--s4)', 'lt')+
+    kpi('Persone imbarcate', S.pin, 'in '+pl(S.pinOps,'imbarco','imbarchi'), 'users', 'var(--green)')+
+    kpi('Persone sbarcate', S.pout, 'in '+pl(S.poutOps,'sbarco','sbarchi'), 'users', 'var(--red)');
+
+  const DA = [{name:'Decolli',color:'var(--s1)'},{name:'Appontaggi',color:'var(--s2)'}];
+  const tipoRows = Object.keys(S.tipo).map(k=>({label:k, vals:[S.tipo[k].dec, S.tipo[k].app]})).sort((a,b)=>(b.vals[0]+b.vals[1])-(a.vals[0]+a.vals[1]));
+  $('stTipoSub').textContent = 'Per tipo di aeromobile';
+  $('stTipo').innerHTML = pairBars(tipoRows, DA);
+  const spotOrder = SPOTS.concat(['N/D']);
+  const spotRows = Object.keys(S.spot).sort((a,b)=>spotOrder.indexOf(a)-spotOrder.indexOf(b)).map(k=>({label:spotLabel(k==='N/D'?'Senza spot':k), vals:[S.spot[k].dec, S.spot[k].app]}));
+  $('stSpot').innerHTML = pairBars(spotRows, DA);
+  $('stElev').innerHTML = pairBars([
+    {label:'Elevatore Sx', vals:[S.elev.elev_sx]}, {label:'Elevatore Dx', vals:[S.elev.elev_dx]},
+    {label:'Elev. Mun. Prora', vals:[S.elev.elev_prora]}, {label:'Elev. Mun. Poppa', vals:[S.elev.elev_poppa]}
+  ], [{name:'Movimentazioni', color:'var(--s1)'}], true);
+  const fuelRows = Object.keys(S.fuelTipo).map(k=>({label:k, vals:[S.fuelTipo[k].fuel, S.fuelTipo[k].hot]})).sort((a,b)=>(b.vals[0]+b.vals[1])-(a.vals[0]+a.vals[1]));
+  $('stFuel').innerHTML = pairBars(fuelRows, [{name:'Fuel',color:'var(--s3)',unit:' lt'},{name:'HotRef',color:'var(--s4)',unit:' lt'}]);
+  $('stPers').innerHTML = pairBars([{label:'Imbarcate', vals:[S.pin]}, {label:'Sbarcate', vals:[S.pout]}], [{name:'Persone', color:'var(--s1)'}], true);
+  const evRows = Object.keys(S.ev).map(k=>({label:k, vals:[S.ev[k]]})).sort((a,b)=>b.vals[0]-a.vals[0]).slice(0,14);
+  $('stEv').innerHTML = pairBars(evRows, [{name:'Registrazioni', color:'var(--s1)'}]);
+}
+function pairBars(rows, series, keepZero){
+  if(!rows.length || (!keepZero && rows.every(r=>r.vals.every(v=>!v)))) return '<div class="nodata">Nessun dato nel periodo selezionato</div>';
+  const max = Math.max(1, ...rows.flatMap(r=>r.vals));
+  const legend = series.length>1 ? '<div class="legend">'+series.map(s=>'<span><i style="background:'+s.color+'"></i>'+s.name+'</span>').join('')+'</div>' : '';
+  return legend + '<div class="bars">' + rows.map(r=>'<div class="brow"><div class="blabel" title="'+esc(r.label)+'">'+esc(r.label)+'</div><div class="bstack">'+
+    r.vals.map((v,i)=>{ const s=series[i]; return '<div class="bline'+(v?'':' zero')+'" data-tip="'+esc(r.label)+' · '+s.name+': '+fmtNum(v)+(s.unit||'')+'"><div class="btrack"><div class="bfill" style="width:'+(v/max*100)+'%;background:'+s.color+'"></div></div><span class="bval">'+fmtNum(v)+(s.unit||'')+'</span></div>'; }).join('')+
+    '</div></div>').join('') + '</div>';
+}
+
+/* =========================================================================
+   STAMPA / ESPORTAZIONE
+   ========================================================================= */
+function printDay(k){
+  const list = DAYS[k]||[];
+  if(!list.length){ toast('Nessun evento da stampare','warn'); return; }
+  const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td>'+esc(en.ac?en.ac.cs:'')+'</td><td>'+esc(en.ac?en.ac.side:'')+'</td><td>'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
+    '<td><b>'+esc(en.evs.map(e=>e.label).join(' + '))+'</b></td><td>'+esc(en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '))+'</td><td>'+esc(en.spot?spotLabel(en.spot):'')+'</td></tr>').join('');
+  const now = new Date();
+  $('printArea').innerHTML =
+    '<div class="pr-head"><div class="pr-brand">'+(LOGO_URL()?'<img src="'+LOGO_URL()+'" alt="">':'')+'<div><h1>Cronologia Guzzi Twr</h1><div class="pr-sub">Torre di Controllo · Registro eventi</div></div></div><div class="pr-date">'+fmtDayLong(k)+'</div></div>'+
+    '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<div class="pr-foot"><span>Totale eventi: <b>'+list.length+'</b></span><span>Stampato il '+fmtDayShort(dayKey(now))+' alle '+pad(now.getHours())+':'+pad(now.getMinutes())+'</span></div>'+
+    '<div class="pr-sign">Il Controllore di Torre &nbsp; ______________________________</div>';
+  setTimeout(()=>window.print(), 50);
+}
+function LOGO_URL(){ const i=$('logoImg'); return i && i.complete && i.naturalWidth ? i.getAttribute('src') : ''; }
+function download(name, text, type){
+  const blob = new Blob([text], {type}); const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+}
+function exportCsv(k){
+  const list = DAYS[k]||[];
+  if(!list.length){ toast('Nessun evento da esportare','warn'); return; }
+  const q = s => '"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+  const lines = [['Data','Ora','Callsign','Side Number','Gruppo Volo','Tipo','Evento','Dettagli','Spot'].map(q).join(';')];
+  list.forEach(en=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
+    en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.spot?spotLabel(en.spot):''].map(q).join(';')));
+  download('Cronologia Guzzi Twr '+k+'.csv', '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
+}
+async function exportBackup(){
+  const days = await getJSON('/api/range', null, 3);
+  if(!days){ toast('Server non raggiungibile','err'); return; }
+  DIRTY.forEach((v,k)=>{ if(k!=='config') days[k]=DAYS[k]||[]; });
+  download('Cronologia Guzzi Twr backup '+dayKey()+'.json', JSON.stringify({ app:'Cronologia Guzzi Twr', exported:new Date().toISOString(), config:CFG, days }, null, 1), 'application/json');
+  toast('Backup esportato','ok');
+}
+
+/* =========================================================================
+   EVENTI UI
+   ========================================================================= */
+function bindUI(){
+  qsa('[data-icon]').forEach(el=>{ el.insertAdjacentHTML('afterbegin', I[el.dataset.icon]); });
+  $('btnMenu').innerHTML = I.menu;
+  $('btnAcAdd').innerHTML = I.plus; $('btnAcArch').innerHTML = I.archive;
+  $('btnEvAdd').innerHTML = I.plus; $('btnEvEdit').innerHTML = I.pencil;
+  $('btnClear').innerHTML = I.x; $('btnSave').innerHTML = I.save+'SALVA';
+  $('btnHistPrev').innerHTML = I.chevL; $('btnHistNext').innerHTML = I.chevR;
+  // logo in alto a sinistra: logo.png (o logo.jpg) nella cartella dell'app, altrimenti stemma di riserva
+  const img = $('logoImg'), srcs = ['logo.png','logo.jpg'];
+  const nextLogo = ()=>{ const i = srcs.indexOf(img.getAttribute('src'))+1; if(i>0 && i<srcs.length) img.src = srcs[i]; else $('logoBox').innerHTML = LOGO_SVG; };
+  img.onerror = nextLogo; if(img.complete && !img.naturalWidth) nextLogo();
+
+  $('btnMenu').onclick = ()=> setSidebar($('app').classList.contains('sb-closed'));
+  $('nav').addEventListener('click', e=>{ const b=e.target.closest('[data-view]'); if(b) showView(b.dataset.view); });
+  $('btnAcAdd').onclick = ()=> openAcModal(CFG.aircraft.length ? 'arch' : 'new');
+  $('btnAcArch').onclick = ()=> openAcModal('arch');
+  $('btnEvAdd').onclick = ()=> openEvForm(null, ()=>{ queueSave('config'); renderPanel(); });
+  $('btnEvEdit').onclick = openEvManager;
+  $('btnClear').onclick = clearSel;
+  $('btnSave').onclick = ()=> register(null);
+  $('btnSort').onclick = ()=>{ SORT_DESC=!SORT_DESC; lsSet('gt.sortDesc', SORT_DESC); renderLog(); if(VIEW==='storico') renderHistLog(); toast(SORT_DESC?'Più recenti in alto':'Più recenti in basso','info'); };
+  $('btnPrintToday').onclick = ()=> printDay(TODAY);
+  $('btnHistPrint').onclick = ()=> printDay(HIST_DAY);
+  $('btnHistCsv').onclick = ()=> exportCsv(HIST_DAY);
+  $('btnHistPrev').onclick = ()=> histStep(-1);
+  $('btnHistNext').onclick = ()=> histStep(1);
+  $('btnBackup').onclick = exportBackup;
+
+  $('acGrid').addEventListener('click', e=>{
+    const x = e.target.closest('[data-hide]'); if(x){ e.stopPropagation(); hideAc(x.dataset.hide); return; }
+    if(e.target.closest('[data-acadd]')){ openAcModal(CFG.aircraft.length ? 'arch' : 'new'); return; }
+    const c = e.target.closest('[data-ac]'); if(c) onAcClick(c.dataset.ac);
+  });
+  $('acGrid').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('[data-ac]')){ e.preventDefault(); onAcClick(e.target.dataset.ac); } });
+  $('evGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-ev]'); if(b) onEvClick(b.dataset.ev); });
+  $('deck').addEventListener('click', e=>{ const b=e.target.closest('[data-spot]'); if(b) onSpotClick(b.dataset.spot, b); });
+  bindLog($('cronLog')); bindLog($('histLog'));
+
+  $('cal').addEventListener('click', e=>{
+    const cm = e.target.closest('[data-cm]');
+    if(cm){ const n=Number(cm.dataset.cm); if(n===0){ const t=new Date(); CAL_MONTH=new Date(t.getFullYear(),t.getMonth(),1); if(INDEX[TODAY]) loadHistDay(TODAY); } else CAL_MONTH=new Date(CAL_MONTH.getFullYear(), CAL_MONTH.getMonth()+n, 1); renderCal(); return; }
+    const d = e.target.closest('[data-day]'); if(d && !d.disabled) loadHistDay(d.dataset.day);
+  });
+  $('recent').addEventListener('click', e=>{ const d=e.target.closest('[data-day]'); if(d){ const p=parseDay(d.dataset.day); CAL_MONTH=new Date(p.getFullYear(),p.getMonth(),1); loadHistDay(d.dataset.day); } });
+  $('stPeriods').addEventListener('click', e=>{ const b=e.target.closest('[data-p]'); if(b){ ST_PERIOD=b.dataset.p; renderStats(); } });
+  ['stFrom','stTo'].forEach(id=>$(id).addEventListener('change', ()=>{ ST_PERIOD='custom'; renderStats(); }));
+
+  document.addEventListener('keydown', e=>{
+    const top = MODALS[MODALS.length-1];
+    if(e.key==='Escape'){ if(top) top.close(); else if(VIEW==='cronologia') clearSel(); return; }
+    if(top){
+      if(e.key==='Enter' && !e.shiftKey && e.target.tagName!=='TEXTAREA' && !e.target.closest('button')){
+        const p = top.root.querySelector('[data-primary]'); if(p){ e.preventDefault(); p.click(); }
+      }
+      return;
+    }
+    if(VIEW==='cronologia' && (e.key==='F2' || (e.ctrlKey && (e.key==='Enter' || e.key==='s')))){ e.preventDefault(); if(SEL.ev.length) register(null); }
+  });
+}
+
+/* =========================================================================
+   AVVIO
+   ========================================================================= */
+function normalizeCfg(c){
+  const o = (c && typeof c==='object' && !Array.isArray(c)) ? c : {};
+  let fresh = false;
+  if(!Array.isArray(o.aircraft)) o.aircraft = [];
+  o.aircraft.forEach(a=>{ a.id=a.id||uid(); a.active=!!a.active; a.callsign=a.callsign||''; });
+  if(!Array.isArray(o.events) || !o.events.length){ o.events = defaultEvents(); fresh = true; }
+  o.events.forEach(e=>{ e.id=e.id||('c_'+uid()); e.label=e.label||'Evento'; e.color=e.color||'#38bdf8'; if(!MODAL_TYPES[e.modal]) e.modal='none'; if(!(e.stat in STAT_TYPES)) e.stat=''; e.combo=!!e.combo; e.hidden=!!e.hidden; });
+  if(!o.tipoColor || typeof o.tipoColor!=='object') o.tipoColor = {};
+  if(!o.recent || typeof o.recent!=='object') o.recent = {};
+  if(!Array.isArray(o.recent.carico)) o.recent.carico = [];
+  o.version = 1;
+  return { cfg:o, fresh };
+}
+function showOffline(){
+  if(document.querySelector('.offline')) return;
+  const d = document.createElement('div'); d.className='offline';
+  d.innerHTML = '<div class="box"><svg class="i big" viewBox="0 0 24 24">'+P.server+'</svg><h3>Server non raggiungibile</h3>'+
+    '<p>L\'app salva i dati sul database locale tramite il server PowerShell.<br>Avvia <b>APRI_APP.bat</b> (oppure <b>start-server.bat</b>) e poi premi <b>Riprova</b>.</p>'+
+    '<button class="btn blue" id="btnRetry">'+I.refresh+'Riprova</button></div>';
+  document.body.appendChild(d);
+  $('btnRetry').onclick = ()=>{ d.remove(); boot(); };
+}
+async function boot(){
+  const raw = await getJSON('/api/config', null, 8);
+  if(raw===null){ showOffline(); return; }
+  const n = normalizeCfg(raw); CFG = n.cfg;
+  TODAY = dayKey();
+  const list = await getJSON('/api/day?d='+TODAY, [], 4);
+  DAYS[TODAY] = Array.isArray(list) ? list : [];
+  sortDay(TODAY);
+  INDEX = await getJSON('/api/days', {}, 4) || {};
+  const info = await getJSON('/api/info', null, 2);
+  if(info && info.dataDir) $('sbDb').innerHTML = '<b>Database locale</b><br>'+esc(info.dataDir);
+  READY = true;
+  if(n.fresh) queueSave('config', true);
+  renderCron();
+  showView(VIEW);
+}
+bindUI();
+setSidebar(lsGet('gt.sidebar', innerWidth>=1100));
+tick(); setInterval(tick, 1000);
+setInterval(async()=>{ try{ await api('GET','/api/ping'); setServer(true); if(DIRTY.size && !flushing) flush(); }catch(e){ setServer(false); } }, 15000);
+boot();
+</script>
+</body>
+</html>
