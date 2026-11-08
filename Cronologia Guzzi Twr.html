@@ -155,7 +155,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .mstat{font-size:12px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:5px 10px;border-radius:20px;white-space:nowrap}
 .mstat b{color:var(--text);font-family:var(--font-d);font-size:13px;margin-left:3px}
 .logbox{flex:1;min-height:0;overflow:auto;background:linear-gradient(180deg,#0e1a30,#0b1527);border:1px solid var(--border);border-radius:var(--radius)}
-.lhead,.lrow{display:grid;grid-template-columns:84px minmax(120px,190px) minmax(0,1fr) 96px 76px;gap:12px;align-items:center;padding:10px 14px}
+.lhead,.lrow{display:grid;grid-template-columns:84px minmax(120px,180px) minmax(0,1.15fr) minmax(150px,1fr) 96px 76px;gap:12px;align-items:center;padding:10px 14px}
 .lhead{position:sticky;top:0;z-index:2;background:var(--panel2);border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding-top:9px;padding-bottom:9px}
 .lrow{border-bottom:1px solid #1a2b4a;transition:background .15s}
 .lrow:hover{background:#14254230}
@@ -176,6 +176,17 @@ input[type=date],input[type=time]{color-scheme:dark}
 .l-spot{text-align:center}
 .spotbadge{display:inline-block;padding:4px 9px;border-radius:8px;font-family:var(--font-d);font-size:12.5px;font-weight:700;color:var(--gold);background:#2a220a;border:1px solid #5c4a12;white-space:nowrap}
 .l-act{display:flex;gap:6px;justify-content:flex-end}
+/* colonna Note: modificabile con un clic sulla cella */
+.l-note{min-width:0;align-self:stretch;display:flex;align-items:center;margin:-5px 0;padding:6px 10px;border-radius:9px;border:1px dashed transparent;cursor:text;font-size:13px;color:#e6edf8;line-height:1.4;white-space:pre-wrap;word-break:break-word;transition:.12s}
+.l-note:hover{border-color:var(--border2);background:#0a142699}
+.l-note.has{box-shadow:inset 3px 0 0 #f5c54299;background:#f5c54208}
+.l-note .note-ph{display:inline-flex;align-items:center;gap:6px;color:var(--muted2);font-size:12px;font-weight:600;opacity:0;transition:.12s;white-space:nowrap}
+.l-note .note-ph svg{width:13px;height:13px}
+.lrow:hover .l-note .note-ph{opacity:1}
+.l-note.editing{cursor:auto;border:1px solid var(--accent);background:var(--bg2);box-shadow:0 0 0 3px #38bdf826;flex-direction:column;align-items:stretch;gap:4px}
+.note-ed{width:100%;min-height:36px;resize:none;overflow:hidden;background:transparent;border:none;outline:none;color:var(--text);font:inherit;font-size:13px;line-height:1.4;padding:0}
+.note-hint{font-size:10.5px;color:var(--muted2);line-height:1.5}
+.note-hint kbd{font-family:var(--font);font-size:10px;padding:0 5px;border-radius:4px;border:1px solid var(--border2);background:var(--panel2);color:var(--muted)}
 .empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
 .empty svg{width:46px;height:46px;color:#33507e;margin-bottom:10px}
 .empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
@@ -413,6 +424,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 /* responsive */
 @media(max-width:1320px){
   .cro{grid-template-columns:minmax(0,1fr) 500px}
+  .lhead,.lrow{grid-template-columns:76px minmax(110px,150px) minmax(0,1.15fr) minmax(130px,1fr) 86px 76px;gap:10px}
   .clk.date{display:none}
 }
 @media(max-width:1100px){
@@ -423,14 +435,14 @@ input[type=date],input[type=time]{color-scheme:dark}
   .logbox{max-height:60vh}
   .ctrl{border-left:none;border-top:1px solid var(--border)}
   .crumb,.srv span:last-child{display:none}
-  .lhead,.lrow{grid-template-columns:70px minmax(100px,150px) minmax(0,1fr) 80px 72px}
+  .lhead,.lrow{grid-template-columns:70px minmax(110px,160px) minmax(0,1.15fr) minmax(130px,1fr) 84px 72px}
 }
 @media(max-width:760px){
   .clocks .clk:not(.z){display:none}
   .brand .sub{display:none}
   .lhead{display:none}
-  .lrow{grid-template-columns:64px minmax(0,1fr) 72px;grid-template-areas:"t a s" "t e x"}
-  .l-time{grid-area:t}.l-ac{grid-area:a}.l-ev{grid-area:e}.l-spot{grid-area:s}.l-act{grid-area:x}
+  .lrow{grid-template-columns:64px minmax(0,1fr) 72px;grid-template-areas:"t a s" "t e x" "t n n"}
+  .l-time{grid-area:t}.l-ac{grid-area:a}.l-ev{grid-area:e}.l-spot{grid-area:s}.l-act{grid-area:x}.l-note{grid-area:n;margin:0}
   .spots{grid-template-columns:repeat(5,1fr)}
 }
 
@@ -451,6 +463,7 @@ input[type=date],input[type=time]{color-scheme:dark}
   #printArea th,#printArea td{border:1px solid #777;padding:4px 6px;text-align:left;vertical-align:top}
   #printArea th{background:#e8e8e8;font-size:8.5pt;text-transform:uppercase}
   #printArea td.t{font-family:Consolas,monospace;font-weight:bold;white-space:nowrap}
+  #printArea td.nw{white-space:nowrap}
   #printArea tr{page-break-inside:avoid}
   .pr-foot{display:flex;justify-content:space-between;margin-top:14px;font-size:9pt}
   .pr-sign{margin-top:28px;text-align:right;font-size:10pt}
@@ -464,7 +477,7 @@ input[type=date],input[type=time]{color-scheme:dark}
   <header class="topbar">
     <button class="hamb" id="btnMenu" data-tip="Mostra / nascondi menu" aria-label="Menu"></button>
     <div class="brand">
-      <div class="logo" id="logoBox"><img src="logo.png" alt="Stemma" id="logoImg"></div>
+      <div class="logo" id="logoBox"><img src="logo.png" alt="Stemma Nave Trieste" id="logoImg"></div>
       <div>
         <h1>Cronologia <b>Guzzi</b> Twr</h1>
         <div class="sub">Torre di Controllo · Registro eventi</div>
@@ -675,10 +688,9 @@ const P = {
   tower:'<path d="M9 22l1-9h4l1 9M6.5 13h11M8 13 6.5 7h11L16 13M12 7V3.5M9.5 3.5h5"/>'
 };
 const I = new Proxy({}, { get:(t,k)=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+(P[k]||'')+'</svg>' });
-const LOGO_SVG = '<svg viewBox="0 0 64 64" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3a6b"/><stop offset="1" stop-color="#0a1a33"/></linearGradient></defs>'+
-  '<circle cx="32" cy="32" r="29" fill="url(#lg)" stroke="#f5c542" stroke-width="3"/><circle cx="32" cy="32" r="24" fill="none" stroke="#f5c54255" stroke-width="1"/>'+
-  '<g fill="none" stroke="#f5c542" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="32" cy="16.5" r="3.2"/><path d="M32 20v26M25 25h14M18 36c1.5 7 7 11 14 11s12.5-4 14-11M18 36l-3 3M18 36l4 1.5M46 36l3 3M46 36l-4 1.5"/></g>'+
-  '<path d="M8 30h12M44 30h12" stroke="#38bdf8" stroke-width="2.4" stroke-linecap="round"/></svg>';
+/* Stemma Nave TRIESTE (L9890) ridisegnato in vettoriale: usato se nella cartella non c'e' logo.png / logo.jpg */
+const LOGO_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160"> <defs> <radialGradient id="rg" cx="38%" cy="30%" r="80%"><stop offset="0" stop-color="#fbfbfb"/><stop offset=".55" stop-color="#c9c9c9"/><stop offset="1" stop-color="#8d8d8d"/></radialGradient> <linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e2e2e2"/><stop offset=".5" stop-color="#a9a9a9"/><stop offset="1" stop-color="#7c7c7c"/></linearGradient> <clipPath id="cp"><circle cx="80" cy="80" r="54"/></clipPath> <path id="tp" d="M21.5 106 A61 61 0 1 1 138.5 106"/> <path id="bp" d="M34.4 134.4 A71 71 0 0 0 125.6 134.4"/> </defs> <circle cx="80" cy="80" r="77.5" fill="url(#rg)" stroke="#3d3d3d" stroke-width="2.5"/> <circle cx="80" cy="80" r="56.5" fill="#fff" stroke="#4a4a4a" stroke-width="2"/> <g clip-path="url(#cp)"> <path d="M80 100 L2 145 L6 48 Z" fill="#0b8a3e"/> <path d="M80 100 L158 145 L154 48 Z" fill="#cf2734"/> </g> <g fill="url(#sg)" stroke="#3f3f3f" stroke-width="1.6" stroke-linejoin="round"> <path d="M70 89 L36 77 L42 87 L69 100 Z"/> <path d="M90 89 L124 77 L118 87 L91 100 Z"/> <path d="M72 104 L56 113 L75 112 Z"/> <path d="M88 104 L104 113 L85 112 Z"/> <path d="M80 66 L92 92 L80 131 L68 92 Z"/> </g> <path d="M80 70 L80 127" stroke="#efefef" stroke-width="1"/> <rect x="38.5" y="45" width="83" height="23" fill="#fff" stroke="#111" stroke-width="2.4"/> <text x="80" y="62.5" text-anchor="middle" font-family="Arial Black,Segoe UI Black,Arial,sans-serif" font-weight="900" font-size="16" letter-spacing="1.3" fill="#111">TRIESTE</text> <g font-family="Arial,Segoe UI,sans-serif" font-weight="800" fill="#fdfdfd" stroke="#262626" stroke-width="1.1" paint-order="stroke" text-anchor="middle"> <text font-size="15" letter-spacing="3.6"><textPath href="#tp" startOffset="50%">FULGE SUPER MARE</textPath></text> <text font-size="13.5" letter-spacing="2"><textPath href="#bp" startOffset="50%">L9890</textPath></text> </g> <g fill="#f2c200" stroke="#6b5300" stroke-width=".8"> <path transform="translate(26 118)" d="M0-6 1.8-1.9 6.3-1.9 2.6.9 4 5.2 0 2.6-4 5.2-2.6.9-6.3-1.9-1.8-1.9Z"/> <path transform="translate(134 118)" d="M0-6 1.8-1.9 6.3-1.9 2.6.9 4 5.2 0 2.6-4 5.2-2.6.9-6.3-1.9-1.8-1.9Z"/> </g> </svg>';
+const LOGO_DATA = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO_SVG);
 
 /* ------------------------------ Costanti ------------------------------ */
 const SPOTS = ['1','2','3','4','5','6','7','8','9','Hangar','Isole'];
@@ -996,7 +1008,7 @@ function statsChips(list){
   list.forEach(en=>en.evs.forEach(ev=>{ if(ev.stat==='decollo') c.dec++; if(ev.stat==='appontaggio') c.app++; }));
   return '<span class="mstat">Eventi<b>'+c.tot+'</b></span><span class="mstat">Decolli<b>'+c.dec+'</b></span><span class="mstat">Appontaggi<b>'+c.app+'</b></span>';
 }
-const LOG_HEAD = '<div class="lhead"><div>Ora</div><div>A/C</div><div>Evento · dettagli</div><div style="text-align:center">Spot</div><div></div></div>';
+const LOG_HEAD = '<div class="lhead"><div>Ora</div><div>A/C</div><div>Evento · dettagli</div><div>Note</div><div style="text-align:center">Spot</div><div></div></div>';
 function rowHTML(en, day, hl){
   const ac = en.ac;
   const pills = en.evs.map(ev=>'<span class="evpill" style="'+cvars(ev.color)+'"><i></i>'+esc(ev.label)+'</span>').join('');
@@ -1005,8 +1017,13 @@ function rowHTML(en, day, hl){
     '<div class="l-time">'+fmtTime(en.ts)+'<small>:'+fmtSec(en.ts)+'</small></div>'+
     '<div class="l-ac">'+(ac ? '<b style="'+cvars(tipoColor(ac.tipo))+'">'+esc(ac.cs)+'</b><span>'+[ac.side,ac.tipo].filter(Boolean).map(esc).join(' · ')+'</span>' : '<span class="none">—</span>')+'</div>'+
     '<div class="l-ev"><div class="pills">'+pills+'</div>'+(dets.length?'<div class="l-det">'+dets.map(esc).join(' · ')+'</div>':'')+'</div>'+
+    noteCellHTML(en)+
     '<div class="l-spot">'+(en.spot?'<span class="spotbadge">'+esc(spotLabel(en.spot))+'</span>':'')+'</div>'+
     '<div class="l-act"><button class="iconbtn" data-act="edit" data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-act="del" data-tip="Elimina">'+I.trash+'</button></div></div>';
+}
+function noteCellHTML(en){
+  return '<div class="l-note'+(en.note?' has':'')+'" data-note data-tip="Clic per '+(en.note?'modificare':'aggiungere')+' la nota">'+
+    (en.note ? esc(en.note) : '<span class="note-ph">'+I.pencil+'Aggiungi nota</span>')+'</div>';
 }
 function logHTML(list, day, hl, emptyMsg){
   if(!list.length) return '<div class="empty">'+I.tower+'<b>'+emptyMsg[0]+'</b>'+emptyMsg[1]+'</div>';
@@ -1229,6 +1246,7 @@ function openEdit(day, id){
     '<div class="fgrp"><label>Evento</label><div class="evgrid" data-f="evs"></div></div>'+
     '<div data-f="det"></div>'+
     '<div class="fgrp"><label>Spot</label><div class="chipgrp" data-k="spot" data-f="spot">'+chip('','Nessuno',!en.spot)+SPOTS.map(s=>chip(s, spotLabel(s), en.spot===s)).join('')+'</div></div>'+
+    '<div class="fgrp"><label>Note</label><textarea data-f="note" maxlength="500" style="min-height:64px" placeholder="Nota facoltativa…">'+esc(en.note||'')+'</textarea></div>'+
     '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div><div class="ferr" hidden></div>';
   openModal({
     title:'Modifica evento', icon:mIcon('pencil'), size:'mid', body,
@@ -1277,6 +1295,7 @@ function openEdit(day, id){
         let spot = sc && sc.dataset.v ? sc.dataset.v : null;
         const mv = evs.find(x=>x.modal==='move' && x.det && x.det.a); if(mv) spot = mv.det.a;
         en.ts = base.toISOString(); en.ac = ac; en.evs = evs; en.spot = spot;
+        const nv = String(R.querySelector('[data-f="note"]').value||'').trim(); if(nv) en.note = nv; else delete en.note;
         evs.forEach(x=>{ if(x.modal==='carico' && x.det && x.det.txt) rememberRecent(x.det.txt); });
         sortDay(day); m.close();
         refreshAfterChange(day); queueSave(day);
@@ -1294,8 +1313,39 @@ async function deleteEntry(day, id){
   DAYS[day] = DAYS[day].filter(x=>x.id!==id);
   setIndex(day); refreshAfterChange(day); queueSave(day);
 }
+function startNoteEdit(cell){
+  const row = cell.closest('.lrow'), day = row.dataset.day, id = row.dataset.id;
+  const en = findEntry(day, id); if(!en) return;
+  cell.classList.add('editing'); cell.removeAttribute('data-tip');
+  cell.innerHTML = '<textarea class="note-ed" rows="1" maxlength="500" placeholder="Scrivi una nota…">'+esc(en.note||'')+'</textarea>'+
+    '<div class="note-hint" title="Maiusc+Invio per andare a capo"><kbd>Invio</kbd> salva · <kbd>Esc</kbd> annulla</div>';
+  const ta = cell.querySelector('textarea');
+  const fit = ()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; };
+  let done = false;
+  const finish = save=>{
+    if(done) return; done = true;
+    const v = ta.value.trim(), changed = save && v!==(en.note||'');
+    if(changed){ if(v) en.note = v; else delete en.note; }
+    cell.outerHTML = noteCellHTML(en);
+    if(changed){
+      queueSave(day);
+      // la stessa giornata puo' essere visibile anche nell'altra vista: la riallineo
+      if(row.closest('#histLog') && day===TODAY) renderLog();
+    }
+  };
+  ta.addEventListener('input', fit);
+  ta.addEventListener('keydown', e=>{
+    e.stopPropagation();
+    if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); finish(true); }
+    else if(e.key==='Escape'){ e.preventDefault(); finish(false); }
+  });
+  ta.addEventListener('blur', ()=>finish(true));
+  fit(); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
+}
 function bindLog(el){
   el.addEventListener('click', e=>{
+    const n = e.target.closest('[data-note]');
+    if(n){ if(!n.classList.contains('editing')) startNoteEdit(n); return; }
     const b = e.target.closest('[data-act]'); if(!b) return;
     const row = b.closest('.lrow');
     if(b.dataset.act==='edit') openEdit(row.dataset.day, row.dataset.id);
@@ -1630,12 +1680,12 @@ function pairBars(rows, series, keepZero){
 function printDay(k){
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da stampare','warn'); return; }
-  const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td>'+esc(en.ac?en.ac.cs:'')+'</td><td>'+esc(en.ac?en.ac.side:'')+'</td><td>'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
-    '<td><b>'+esc(en.evs.map(e=>e.label).join(' + '))+'</b></td><td>'+esc(en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '))+'</td><td>'+esc(en.spot?spotLabel(en.spot):'')+'</td></tr>').join('');
+  const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td class="nw">'+esc(en.ac?en.ac.cs:'')+'</td><td class="nw">'+esc(en.ac?en.ac.side:'')+'</td><td class="nw">'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
+    '<td><b>'+esc(en.evs.map(e=>e.label).join(' + '))+'</b></td><td>'+esc(en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '))+'</td><td>'+esc(en.note||'')+'</td><td class="nw">'+esc(en.spot?spotLabel(en.spot):'')+'</td></tr>').join('');
   const now = new Date();
   $('printArea').innerHTML =
     '<div class="pr-head"><div class="pr-brand">'+(LOGO_URL()?'<img src="'+LOGO_URL()+'" alt="">':'')+'<div><h1>Cronologia Guzzi Twr</h1><div class="pr-sub">Torre di Controllo · Registro eventi</div></div></div><div class="pr-date">'+fmtDayLong(k)+'</div></div>'+
-    '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Note</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
     '<div class="pr-foot"><span>Totale eventi: <b>'+list.length+'</b></span><span>Stampato il '+fmtDayShort(dayKey(now))+' alle '+pad(now.getHours())+':'+pad(now.getMinutes())+'</span></div>'+
     '<div class="pr-sign">Il Controllore di Torre &nbsp; ______________________________</div>';
   setTimeout(()=>window.print(), 50);
@@ -1650,9 +1700,9 @@ function exportCsv(k){
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da esportare','warn'); return; }
   const q = s => '"'+String(s==null?'':s).replace(/"/g,'""')+'"';
-  const lines = [['Data','Ora','Callsign','Side Number','Gruppo Volo','Tipo','Evento','Dettagli','Spot'].map(q).join(';')];
+  const lines = [['Data','Ora','Callsign','Side Number','Gruppo Volo','Tipo','Evento','Dettagli','Note','Spot'].map(q).join(';')];
   list.forEach(en=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
-    en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.spot?spotLabel(en.spot):''].map(q).join(';')));
+    en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.note||'', en.spot?spotLabel(en.spot):''].map(q).join(';')));
   download('Cronologia Guzzi Twr '+k+'.csv', '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
 }
 async function exportBackup(){
@@ -1675,7 +1725,7 @@ function bindUI(){
   $('btnHistPrev').innerHTML = I.chevL; $('btnHistNext').innerHTML = I.chevR;
   // logo in alto a sinistra: logo.png (o logo.jpg) nella cartella dell'app, altrimenti stemma di riserva
   const img = $('logoImg'), srcs = ['logo.png','logo.jpg'];
-  const nextLogo = ()=>{ const i = srcs.indexOf(img.getAttribute('src'))+1; if(i>0 && i<srcs.length) img.src = srcs[i]; else $('logoBox').innerHTML = LOGO_SVG; };
+  const nextLogo = ()=>{ const i = srcs.indexOf(img.getAttribute('src'))+1; if(i>0 && i<srcs.length) img.src = srcs[i]; else { img.onerror = null; img.src = LOGO_DATA; } };
   img.onerror = nextLogo; if(img.complete && !img.naturalWidth) nextLogo();
 
   $('btnMenu').onclick = ()=> setSidebar($('app').classList.contains('sb-closed'));

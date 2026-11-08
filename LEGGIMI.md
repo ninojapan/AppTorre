@@ -13,7 +13,7 @@ browser. Funziona anche **offline**. Si avvia come *Gestione O.S.L. Nave TRIESTE
 | `start-server.bat` | Avvio manuale del solo server (utile per debug o percorsi di rete UNC). |
 | `server.ps1` | Server HTTP in PowerShell puro su `http://localhost:5040`. |
 | `Cronologia Guzzi Twr.html` | L'app in un unico file (HTML, CSS e JS). |
-| `logo.png` | **Da aggiungere tu**: lo stemma mostrato in alto a sinistra e nelle stampe (va bene anche `logo.jpg`). Se manca, l'app mostra uno stemma di riserva. |
+| `logo.png` | **Facoltativo**: l'immagine originale dello stemma (va bene anche `logo.jpg`). Se presente ha la precedenza; se manca, l'app mostra lo stemma di Nave TRIESTE (L9890) ridisegnato in vettoriale, in alto a sinistra e nelle stampe. |
 | `DATI/` | **Database locale, creato in automatico** (vedi sotto). |
 
 ### Database locale (`DATI/`)
@@ -32,7 +32,8 @@ compresa. La cartella `DATI/` non viene caricata su GitHub (`.gitignore`).
 ## Come si avvia
 
 1. Copia l'intera cartella su un PC **Windows**.
-2. Salva lo stemma come **`logo.png`** in questa cartella (stesso nome, tutto minuscolo).
+2. (Facoltativo) Salva l'immagine originale dello stemma come **`logo.png`** in questa cartella
+   (stesso nome, tutto minuscolo): sostituisce lo stemma vettoriale incluso nell'app.
 3. Doppio clic su **`APRI_APP.bat`**.
 4. Si apre Microsoft Edge su `http://localhost:5040`. Se non si apre da solo,
    vai a quell'indirizzo con qualunque browser.
@@ -83,7 +84,12 @@ in tre aree. I pulsanti selezionati **restano premuti** fino alla registrazione.
 
 Sequenza tipica: **A/C → Evento → Spot** (registrato).
 `Esc` annulla la selezione. Su ogni riga: **matita** per modificare (ora,
-A/C, evento, dettagli, spot) e **cestino** per eliminare (con conferma).
+A/C, evento, dettagli, spot, note) e **cestino** per eliminare (con conferma).
+
+**Colonna Note** (dopo *Evento · dettagli*): **clic sulla cella** per scrivere o
+modificare la nota direttamente nella riga. **Invio** salva, **Maiusc+Invio** va a
+capo, **Esc** annulla; anche cliccando altrove la nota viene salvata. Le note
+compaiono anche nella stampa e nel CSV, e si possono modificare pure dallo Storico.
 Il pulsante con le frecce inverte l'ordine (più recenti in alto o in basso).
 **Stampa** produce il registro del giorno in A4 orizzontale, con lo spazio
 per la firma del Controllore di Torre.
@@ -93,7 +99,8 @@ per la firma del Controllore di Torre.
 Calendario mensile in cui sono **evidenziati solo i giorni con cronologia
 salvata** (con il numero di eventi). Clic su un giorno per caricarlo; frecce
 per passare al giorno precedente o successivo con cronologia. Le righe si
-possono modificare ed eliminare; **Stampa** e **CSV** (apribile con Excel)
+possono modificare ed eliminare e le note si scrivono con un clic sulla cella;
+**Stampa** e **CSV** (apribile con Excel)
 per il giorno selezionato.
 
 ### Statistiche
