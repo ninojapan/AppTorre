@@ -13,7 +13,7 @@ browser. Funziona anche **offline**. Si avvia come *Gestione O.S.L. Nave TRIESTE
 | `start-server.bat` | Avvio manuale del solo server (utile per debug o percorsi di rete UNC). |
 | `server.ps1` | Server HTTP in PowerShell puro su `http://localhost:5040`. |
 | `Cronologia Guzzi Twr.html` | L'app in un unico file (HTML, CSS e JS). |
-| `logo.png` | **Facoltativo**: l'immagine originale dello stemma (va bene anche `logo.jpg`). Se presente ha la precedenza; se manca, l'app mostra lo stemma di Nave TRIESTE (L9890) ridisegnato in vettoriale, in alto a sinistra e nelle stampe. |
+| `logo.png` | Stemma di Nave TRIESTE (L9890) mostrato in alto a sinistra e nelle stampe. Per cambiarlo basta sostituire il file (va bene anche `logo.jpg`); se manca, l'app usa una versione vettoriale dello stemma inclusa nel codice. |
 | `DATI/` | **Database locale, creato in automatico** (vedi sotto). |
 
 ### Database locale (`DATI/`)
@@ -32,12 +32,10 @@ compresa. La cartella `DATI/` non viene caricata su GitHub (`.gitignore`).
 ## Come si avvia
 
 1. Copia l'intera cartella su un PC **Windows**.
-2. (Facoltativo) Salva l'immagine originale dello stemma come **`logo.png`** in questa cartella
-   (stesso nome, tutto minuscolo): sostituisce lo stemma vettoriale incluso nell'app.
-3. Doppio clic su **`APRI_APP.bat`**.
-4. Si apre Microsoft Edge su `http://localhost:5040`. Se non si apre da solo,
+2. Doppio clic su **`APRI_APP.bat`**.
+3. Si apre Microsoft Edge su `http://localhost:5040`. Se non si apre da solo,
    vai a quell'indirizzo con qualunque browser.
-5. Per chiudere: chiudi la finestra PowerShell minimizzata.
+4. Per chiudere: chiudi la finestra PowerShell minimizzata.
 
 > La porta è la **5040**: diversa da OSL TRIESTE (5030), quindi le due app
 > possono girare insieme sullo stesso PC. Per cambiarla modifica `$Port` in
