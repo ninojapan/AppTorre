@@ -155,7 +155,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .mstat{font-size:12px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--border);padding:5px 10px;border-radius:20px;white-space:nowrap}
 .mstat b{color:var(--text);font-family:var(--font-d);font-size:13px;margin-left:3px}
 .logbox{flex:1;min-height:0;overflow:auto;background:linear-gradient(180deg,#0e1a30,#0b1527);border:1px solid var(--border);border-radius:var(--radius)}
-.lhead,.lrow{display:grid;grid-template-columns:84px minmax(120px,180px) minmax(0,1.15fr) minmax(150px,1fr) 96px 76px;gap:12px;align-items:center;padding:10px 14px}
+.lhead,.lrow{display:grid;grid-template-columns:84px minmax(120px,180px) minmax(160px,1.15fr) minmax(140px,1fr) 96px 76px;gap:12px;align-items:center;padding:10px 14px}
 .lhead{position:sticky;top:0;z-index:2;background:var(--panel2);border-bottom:1px solid var(--border);font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;padding-top:9px;padding-bottom:9px}
 .lrow{border-bottom:1px solid #1a2b4a;transition:background .15s}
 .lrow:hover{background:#14254230}
@@ -202,14 +202,15 @@ input[type=date],input[type=time]{color-scheme:dark}
 .psec-h .iconbtn{width:30px;height:30px}
 
 /* A/C chips */
-.acgrid{display:flex;flex-wrap:wrap;gap:8px}
-.acchip{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:112px;padding:8px 26px 8px 12px;border-radius:12px;cursor:pointer;user-select:none;
+/* A/C ed Eventi: stessa griglia, tasselli tutti della stessa dimensione */
+.acgrid,.evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:10px 7px}
+.acchip{position:relative;display:flex;flex-direction:column;justify-content:center;min-width:0;height:48px;padding:0 22px 0 12px;border-radius:11px;cursor:pointer;user-select:none;
   background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--c);transition:.12s;outline:none}
 .acchip:hover{border-color:var(--cg);border-left-color:var(--c)}
 .acchip:focus-visible{box-shadow:0 0 0 3px #38bdf855}
 .acchip.on{background:var(--cb);border-color:var(--c);box-shadow:0 0 0 1px var(--c) inset,0 6px 18px var(--cb)}
-.acchip .ac-cs{font-family:var(--font-d);font-size:15px;font-weight:700;letter-spacing:.5px;white-space:nowrap}
-.acchip .ac-meta{font-size:11.5px;color:var(--muted);white-space:nowrap;display:flex;gap:6px}
+.acchip .ac-cs{font-family:var(--font-d);font-size:15px;font-weight:700;letter-spacing:.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acchip .ac-meta{font-size:11.5px;color:var(--muted);white-space:nowrap;display:flex;gap:6px;overflow:hidden}
 .acchip .ac-meta b{color:#cfe0f7}
 .acchip .ac-pos{position:absolute;top:-8px;right:8px;font-family:var(--font-d);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;background:#2a220a;border:1px solid #5c4a12;color:var(--gold);display:flex;align-items:center;gap:3px}
 .acchip .ac-pos.fly{background:#0b2a40;border-color:#1c5c86;color:var(--accent)}
@@ -219,18 +220,24 @@ input[type=date],input[type=time]{color-scheme:dark}
 .acchip:hover .ac-x{opacity:1}
 .acchip .ac-x:hover{color:var(--red);background:#3a1010}
 .acchip.on::after{content:"";position:absolute;left:-4px;top:-1px;bottom:-1px;width:4px;border-radius:12px 0 0 12px;background:var(--c)}
-.acadd{min-width:64px;border-radius:12px;border:1px dashed var(--border2);background:transparent;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800;font-size:13px;padding:8px 12px}
+.acadd{height:48px;min-width:0;border-radius:11px;border:1px dashed var(--border2);background:transparent;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800;font-size:13px;padding:0 12px}
 .acadd:hover{background:#0e2a3f;border-color:var(--accent)}
-.acempty{font-size:12.5px;color:var(--muted2);align-self:center;padding:0 6px}
+.acempty{grid-column:1/-1;font-size:12.5px;color:var(--muted2);align-self:center;padding:0 6px}
 
 /* Event buttons */
-.evgrid{display:flex;flex-wrap:wrap;gap:6px}
-.evbtn{position:relative;display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:9px;border:1px solid var(--border);background:var(--panel);font-size:13px;font-weight:700;color:#c9d6ea;transition:.12s;line-height:1.1}
+.evbtn{position:relative;display:flex;align-items:center;gap:0;height:48px;min-width:0;padding:0 14px 0 25px;border-radius:11px;border:1px solid var(--border);background:var(--panel);font-size:12.5px;font-weight:700;color:#c9d6ea;transition:.12s;line-height:1.15;text-align:left}
+.evbtn .evl{flex:1;min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow-wrap:break-word}
+#evGrid .evbtn .dot,.evgrid .evbtn .dot{position:absolute;left:11px;top:50%;margin-top:-4px}
 .evbtn .dot{width:8px;height:8px;border-radius:50%;background:var(--c);flex:0 0 auto;box-shadow:0 0 6px var(--cg)}
 .evbtn:hover{border-color:var(--cg);color:var(--text)}
 .evbtn.on{background:var(--cb);border-color:var(--c);color:#fff;box-shadow:0 0 0 1px var(--c) inset,0 4px 14px var(--cb)}
-.evbtn .evm{font-size:10px;color:var(--muted2);margin-left:-2px;letter-spacing:1px}
-.evbtn .evd{font-size:11px;font-weight:700;color:var(--c);background:#00000040;border-radius:6px;padding:2px 6px;margin-left:2px;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.evbtn .evm{position:absolute;right:6px;bottom:2px;font-size:11px;line-height:1;color:var(--muted2);letter-spacing:1px}
+.evbtn .evk{position:absolute;right:5px;top:5px;display:flex;color:var(--muted2);transition:.12s}
+.evbtn .evk svg{width:12px;height:12px}
+.evbtn:hover .evk{color:var(--c)}
+.evbtn.hit{animation:evhit .7s ease}
+@keyframes evhit{0%{background:var(--c);color:#04121f;box-shadow:0 0 0 4px var(--cg)}100%{}}
+.evbtn .evd{position:absolute;top:-9px;right:6px;max-width:calc(100% - 12px);font-size:10px;font-weight:800;line-height:1.4;color:var(--c);background:#0b1424;border:1px solid var(--c);border-radius:20px;padding:1px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* Spot deck */
 .deck{position:relative;border-radius:16px;padding:12px;background:
@@ -393,11 +400,61 @@ input[type=date],input[type=time]{color-scheme:dark}
 .tag{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:6px;border:1px solid var(--border2);color:var(--muted);white-space:nowrap}
 .tag.stat{color:var(--gold);border-color:#5c4a12;background:#2a220a}
 .tag.combo{color:var(--violet);border-color:#4b3c86;background:#1d1838}
+.tag.reg{color:var(--accent);border-color:#1c5c86;background:#0b2436}
 .erow .acts{display:flex;gap:5px;justify-content:flex-end}
 .swatches{display:flex;flex-wrap:wrap;gap:7px}
 .swatch{width:30px;height:30px;border-radius:9px;border:2px solid transparent;box-shadow:inset 0 0 0 1px #0006}
 .swatch.on{border-color:#fff;transform:scale(1.08)}
+.prev .evbtn{width:150px}
 .prev{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);margin-bottom:14px}
+
+/* orologio termine autonomia (Normal OPS) */
+.clock{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:10px 14px}
+.ck-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.ck-col button{width:58px;height:26px;border-radius:9px;border:1px solid var(--border);background:var(--panel2);display:flex;align-items:center;justify-content:center}
+.ck-col button:hover{border-color:var(--accent)}
+.ck-col button svg{width:16px;height:16px}
+.ck-in{width:58px;height:50px;text-align:center;font-family:var(--mono);font-size:30px;font-weight:700;background:#060c18;color:#d6f3ff;border:1px solid var(--border2);border-radius:10px;outline:none;padding:0}
+.ck-in:focus{border-color:var(--accent);box-shadow:0 0 0 3px #38bdf833}
+.ck-sep{font-family:var(--mono);font-size:30px;font-weight:700;color:var(--muted)}
+.ck-info{margin-left:auto;text-align:right}
+.ck-lab{display:block;font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--muted2);text-transform:uppercase}
+.ck-info b{font-family:var(--font-d);font-size:20px;color:var(--muted)}
+.clock.ok .ck-info b{color:#4ade80}.clock.warn .ck-info b{color:#facc15}.clock.crit .ck-info b{color:#f87171}
+
+/* ================= A/C IN VOLO ================= */
+.flyview{height:100%;overflow:auto;padding:16px 18px 30px}
+.fly-leg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.fly-leg span{display:flex;align-items:center;gap:6px}
+.fly-leg i{width:13px;height:13px;border-radius:4px;border:2px solid}
+.flygrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+.fbox{--st:#3b5b8c;position:relative;background:linear-gradient(180deg,var(--panel2),var(--panel));border:2px solid var(--st);border-radius:18px;padding:16px 18px;box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 24px -8px var(--st);display:flex;flex-direction:column;gap:12px}
+.fbox.ok{--st:var(--green)}.fbox.warn{--st:#facc15}.fbox.crit{--st:var(--red)}
+.fbox.exp{animation:critpulse 1.2s infinite}
+@keyframes critpulse{50%{box-shadow:0 10px 30px rgba(0,0,0,.4),0 0 36px 2px #ef444499}}
+.fb-h{display:flex;align-items:flex-start;gap:10px}
+.fb-cs{font-family:var(--font-d);font-size:25px;font-weight:700;letter-spacing:.6px;display:block;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fb-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+.fb-sub b{color:var(--text)}
+.fb-tipo{margin-left:auto;flex:0 0 auto;font-size:12px;font-weight:800;padding:4px 10px;border-radius:8px;background:var(--cb);border:1px solid var(--cg)}
+.fb-grid{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px}
+.fb-cell{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:8px 12px;min-width:0}
+.fb-k{font-size:10px;font-weight:800;letter-spacing:1.2px;color:var(--muted2);text-transform:uppercase}
+.fb-v{font-family:var(--font-d);font-size:19px;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fb-rem{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:10px 12px}
+.fb-big{font-family:var(--font-d);font-size:32px;font-weight:700;color:var(--st);letter-spacing:.5px;line-height:1.15}
+.fbox.none .fb-big{font-size:15px;color:var(--muted);font-family:var(--font);font-weight:600;padding:8px 0 4px}
+.fb-bar{height:6px;border-radius:6px;background:#ffffff12;margin:8px 0 7px;overflow:hidden}
+.fb-bar i{display:block;height:100%;width:0;background:var(--st);border-radius:6px;transition:width .5s}
+.fb-meta{font-size:12px;color:var(--muted)}
+.fb-meta b{color:var(--text);font-family:var(--mono);font-size:13px}
+.fb-act{display:flex;gap:8px}
+.fb-act .btn{flex:1}
+.nbadge{margin-left:auto;min-width:24px;height:22px;padding:0 7px;border-radius:20px;display:none;align-items:center;justify-content:center;font-size:12px;font-weight:800;background:var(--panel3);color:var(--accent);border:1px solid var(--border2)}
+.nbadge.on{display:inline-flex}
+.nbadge.ok{background:#0e2a1a;color:#4ade80;border-color:#1f7a45}
+.nbadge.warn{background:#2a220a;color:#facc15;border-color:#8a6b14}
+.nbadge.crit{background:#3a1010;color:#fca5a5;border-color:#7a2020}
 
 /* ================= TOAST (alto a destra, minimal) ================= */
 #toasts{position:fixed;top:13px;right:14px;z-index:300;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none}
@@ -422,9 +479,17 @@ input[type=date],input[type=time]{color-scheme:dark}
 .offline svg.big{width:52px;height:52px;color:var(--red)}
 
 /* responsive */
+.sb-backdrop{display:none}
+@media(max-width:1500px){
+  /* schermi stretti: il menu si apre sopra il contenuto e non gli toglie spazio */
+  .app,.app.sb-closed{grid-template-columns:0 minmax(0,1fr)}
+  .sidebar{position:fixed;left:0;top:var(--top);bottom:0;width:var(--sbw);z-index:60;box-shadow:14px 0 40px rgba(0,0,0,.55);transition:transform .25s ease}
+  .app.sb-closed .sidebar{transform:translateX(-100%);box-shadow:none}
+  .app:not(.sb-closed) .sb-backdrop{display:block;position:fixed;top:var(--top);left:0;right:0;bottom:0;z-index:55;background:#03060c99;backdrop-filter:blur(2px)}
+}
 @media(max-width:1320px){
   .cro{grid-template-columns:minmax(0,1fr) 500px}
-  .lhead,.lrow{grid-template-columns:76px minmax(110px,150px) minmax(0,1.15fr) minmax(130px,1fr) 86px 76px;gap:10px}
+  .lhead,.lrow{grid-template-columns:76px minmax(110px,150px) minmax(140px,1.15fr) minmax(110px,1fr) 86px 76px;gap:10px}
   .clk.date{display:none}
 }
 @media(max-width:1100px){
@@ -435,7 +500,7 @@ input[type=date],input[type=time]{color-scheme:dark}
   .logbox{max-height:60vh}
   .ctrl{border-left:none;border-top:1px solid var(--border)}
   .crumb,.srv span:last-child{display:none}
-  .lhead,.lrow{grid-template-columns:70px minmax(110px,160px) minmax(0,1.15fr) minmax(130px,1fr) 84px 72px}
+  .lhead,.lrow{grid-template-columns:70px minmax(110px,160px) minmax(140px,1.15fr) minmax(110px,1fr) 84px 72px}
 }
 @media(max-width:760px){
   .clocks .clk:not(.z){display:none}
@@ -499,6 +564,7 @@ input[type=date],input[type=time]{color-scheme:dark}
       <div class="sb-lab">Menu</div>
       <nav id="nav">
         <button class="navbtn" data-view="cronologia"><span class="ni" data-icon="list"></span><span class="nt"><b>Cronologia</b><small>Registrazione eventi del giorno</small></span></button>
+        <button class="navbtn" data-view="involo"><span class="ni" data-icon="plane"></span><span class="nt"><b>A/C in Volo</b><small>Autonomia residua</small></span><span class="nbadge" id="flyBadge"></span></button>
         <button class="navbtn" data-view="storico"><span class="ni" data-icon="calendar"></span><span class="nt"><b>Storico</b><small>Consulta per data</small></span></button>
         <button class="navbtn" data-view="statistiche"><span class="ni" data-icon="chart"></span><span class="nt"><b>Statistiche</b><small>Conteggi e riepiloghi</small></span></button>
       </nav>
@@ -508,6 +574,8 @@ input[type=date],input[type=time]{color-scheme:dark}
       </div>
     </div>
   </aside>
+
+  <div class="sb-backdrop" id="sbBackdrop"></div>
 
   <!-- ================= MAIN ================= -->
   <main class="main">
@@ -561,6 +629,19 @@ input[type=date],input[type=time]{color-scheme:dark}
             <button class="btn btn-save" id="btnSave" data-tip="Registra senza spot (F2)"></button>
           </div>
         </div>
+      </div>
+    </section>
+
+    <!-- ========== A/C IN VOLO ========== -->
+    <section class="view" id="view-involo">
+      <div class="flyview">
+        <div class="loghead">
+          <h2><span data-icon="plane"></span>A/C in Volo</h2>
+          <span class="ld" id="flyCount"></span>
+          <div class="spacer"></div>
+          <div class="fly-leg"><span><i style="border-color:var(--green)"></i>Autonomia &ge; 1 h</span><span><i style="border-color:#facc15"></i>30&ndash;59 min</span><span><i style="border-color:var(--red)"></i>&lt; 30 min</span></div>
+        </div>
+        <div class="flygrid" id="flyGrid"></div>
       </div>
     </section>
 
@@ -696,7 +777,7 @@ const LOGO_DATA = 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO_SV
 const SPOTS = ['1','2','3','4','5','6','7','8','9','Hangar','Isole'];
 const NUM_SPOTS = SPOTS.filter(s=>/^\d+$/.test(s));
 const AREA_SPOTS = SPOTS.filter(s=>!/^\d+$/.test(s));
-const MOVE_PLACES = ['Hangar','1','2','3','4','5','6','7','8','9'];
+const MOVE_PLACES = ['Hangar','1','2','3','4','5','6','7','8','9','Isole'];
 const isNum = s => /^\d+$/.test(String(s));
 const spotLabel = s => (s==null||s==='') ? '—' : (isNum(s) ? 'Spot '+s : String(s));
 const spotShort = s => isNum(s) ? 'S'+s : (s==='Hangar' ? 'HGR' : s==='Isole' ? 'ISOLE' : String(s));
@@ -705,6 +786,11 @@ const posLabel = p => p==='VOLO' ? 'In volo' : spotLabel(p);
 const MODAL_TYPES = {
   none:'Nessuna finestra', move:'Movimento (da → a)', fasi:'Inizio / Fine', fasiLt:'Inizio / Fine + litri',
   normalops:'Endurance + POB', personale:'Imbarco / Sbarco + n° persone', carico:'Cosa trasporta / carico', testo:'Testo libero'
+};
+const REG_TYPES = {
+  spot:'Standard: con uno spot o con il pulsante Salva',
+  subito:'Subito al clic / alla conferma della finestra (con gli A/C selezionati)',
+  solo:'Un clic: registra subito, senza A/C né spot'
 };
 const STAT_TYPES = {
   '':'Nessuna', decollo:'Decollo', appontaggio:'Appontaggio', fuel:'Carburante · Fuel', hotref:'Carburante · HotRef',
@@ -715,15 +801,16 @@ const TIPO_COLORS = ['#38bdf8','#f59e0b','#a78bfa','#22c55e','#f472b6','#2dd4bf'
 const TIPI_SUGG = ['SH-90A','NH-90','EH-101','SH-101A','UH-101A','AB-212','AV-8B+','F-35B'];
 
 function defaultEvents(){
+  // [id, nome, colore, finestra, statistica, combinabile, registrazione]
   return [
-    ['ops','Ops di volo','#38bdf8'],
-    ['fod','FodWalk','#f59e0b'],
-    ['deck','Deck Ready','#22c55e'],
-    ['move','Move','#a78bfa','move'],
-    ['sem','Prova Semaforo','#2dd4bf'],
-    ['giallo','Giallo','#facc15'],
-    ['rosso','Rosso','#ef4444'],
-    ['verde','Verde','#22c55e'],
+    ['ops','Ops di volo','#38bdf8','none','',false,'solo'],
+    ['fod','FodWalk','#f59e0b','none','',false,'solo'],
+    ['deck','Deck Ready','#22c55e','none','',false,'solo'],
+    ['move','Move','#a78bfa','move','',false,'subito'],
+    ['sem','Prova Semaforo','#2dd4bf','none','',false,'solo'],
+    ['giallo','Giallo','#facc15','none','',false,'solo'],
+    ['rosso','Rosso','#ef4444','none','',false,'solo'],
+    ['verde','Verde','#22c55e','none','',false,'solo'],
     ['tacchi','Tacchi','#f97316','none','',true],
     ['rizze','Rizze','#f97316','none','',true],
     ['fuel','Fuel','#f59e0b','fasiLt','fuel'],
@@ -735,15 +822,15 @@ function defaultEvents(){
     ['normalops','Normal OPS','#818cf8','normalops'],
     ['appontaggio','Appontaggio','#22c55e','none','appontaggio'],
     ['personale','Personale','#f472b6','personale','personale'],
-    ['elsx','Elev. Sx','#a3e635','carico','elev_sx'],
-    ['eldx','Elev. Dx','#a3e635','carico','elev_dx'],
-    ['elpr','Elev. Mun. Prora','#e879f9','carico','elev_prora'],
-    ['elpo','Elev. Mun. Poppa','#e879f9','carico','elev_poppa'],
-    ['nlock','Norck Lock','#94a3b8'],
+    ['elsx','Elev. Sx','#a3e635','carico','elev_sx',false,'subito'],
+    ['eldx','Elev. Dx','#a3e635','carico','elev_dx',false,'subito'],
+    ['elpr','Elev. Mun. Prora','#e879f9','carico','elev_prora',false,'subito'],
+    ['elpo','Elev. Mun. Poppa','#e879f9','carico','elev_poppa',false,'subito'],
+    ['nlock','Norco Lock','#94a3b8'],
     ['fold','Fold','#94a3b8'],
     ['unfold','Unfold','#94a3b8'],
     ['testo','Testo','#e2e8f0','testo']
-  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], hidden:false }));
+  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', hidden:false }));
 }
 
 /* ------------------------------ Stato ------------------------------ */
@@ -901,18 +988,20 @@ function confirmBox(o){
 }
 
 /* ------------------------------ Navigazione / orologio ------------------------------ */
-const VIEW_LAB = { cronologia:['list','Cronologia'], storico:['calendar','Storico'], statistiche:['chart','Statistiche'] };
+const VIEW_LAB = { cronologia:['list','Cronologia'], involo:['plane','A/C in Volo'], storico:['calendar','Storico'], statistiche:['chart','Statistiche'] };
 function showView(v){
   VIEW = v;
   qsa('.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+v));
   qsa('#nav .navbtn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
   $('crumb').innerHTML = I[VIEW_LAB[v][0]]+VIEW_LAB[v][1];
   if(v==='cronologia') renderCron();
+  if(v==='involo') renderFlight();
   if(v==='storico') openHistory();
   if(v==='statistiche') renderStats();
-  if(innerWidth<1100) setSidebar(false);
+  if(sbOverlay()) setSidebar(false);
 }
-function setSidebar(open){ $('app').classList.toggle('sb-closed', !open); lsSet('gt.sidebar', open); }
+const sbOverlay = () => matchMedia('(max-width:1500px)').matches;
+function setSidebar(open){ $('app').classList.toggle('sb-closed', !open); if(!sbOverlay()) lsSet('gt.sidebar', open); }
 function tick(){
   const d = new Date();
   $('clkLoc').textContent = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
@@ -920,31 +1009,42 @@ function tick(){
   $('clkDate').textContent = pad(d.getDate())+' '+MESI[d.getMonth()].slice(0,3).toUpperCase()+' '+d.getFullYear();
   const k = dayKey(d);
   if(READY && k!==TODAY) rollDay(k);
+  if(READY){ updateFlightTimers(); if(d.getSeconds()%5===0) updateFlightBadge(); }
 }
 function rollDay(k){
   TODAY = k;
   if(!DAYS[k]) DAYS[k] = [];
   if(VIEW==='cronologia') renderCron();
   if(VIEW==='storico') { renderCal(); renderRecent(); }
+  if(VIEW==='involo') renderFlight();
   toast('Nuovo giorno: '+fmtDayShort(k),'info');
 }
 
 /* =========================================================================
    CRONOLOGIA
    ========================================================================= */
-function positions(){
-  // ultima posizione nota di ogni A/C (dalla cronologia di oggi)
-  const pos = {};
-  (DAYS[TODAY]||[]).forEach(en=>{
+function prevDayKey(k){ const d=parseDay(k); d.setDate(d.getDate()-1); return dayKey(d); }
+function recentEntries(){ return (DAYS[prevDayKey(TODAY)]||[]).concat(DAYS[TODAY]||[]); }
+function acStates(){
+  // stato di ogni A/C dalle cronologie di ieri e oggi: posizione, in volo, ultimo Normal OPS
+  const st = {};
+  recentEntries().forEach(en=>{
     if(!en.ac) return;
-    let p = null;
-    en.evs.forEach(ev=>{ if(ev.modal==='move' && ev.det && ev.det.a) p = ev.det.a; });
-    if(p==null && en.spot) p = en.spot;
-    if(en.evs.some(ev=>ev.stat==='decollo')) p = 'VOLO';
-    if(p!=null) pos[en.ac.id] = p;
+    const s = st[en.ac.id] || (st[en.ac.id] = { ac:en.ac, pos:null });
+    s.ac = en.ac;
+    const dec = en.evs.some(e=>e.stat==='decollo');
+    const nops = en.evs.find(e=>e.modal==='normalops' && e.det);
+    const mv = en.evs.find(e=>e.modal==='move' && e.det && e.det.a);
+    if(dec){ s.pos='VOLO'; s.since=en.ts; s.nops=null; s.nopsTs=null; }
+    else if(nops){ if(s.pos!=='VOLO'){ s.pos='VOLO'; s.since=en.ts; } }
+    else if(mv) s.pos = mv.det.a;
+    else if(en.spot) s.pos = en.spot;
+    else if(en.evs.some(e=>e.stat==='appontaggio')) s.pos = null;
+    if(nops && s.pos==='VOLO'){ s.nops = nops.det; s.nopsTs = en.ts; }
   });
-  return pos;
+  return st;
 }
+function positions(){ const st=acStates(), pos={}; Object.keys(st).forEach(id=>{ if(st[id].pos) pos[id]=st[id].pos; }); return pos; }
 function renderCron(hl){ renderLog(hl); renderPanel(); }
 function renderPanel(){ renderAcGrid(); renderEvGrid(); renderSpots(); renderComposer(); }
 
@@ -970,9 +1070,15 @@ function renderEvGrid(){
   $('evGrid').innerHTML = CFG.events.filter(e=>!e.hidden).map(e=>{
     const s = SEL.ev.find(x=>x.id===e.id);
     const d = s && s.det ? detText(e.modal, s.det) : '';
-    const tip = (e.modal!=='none' ? 'Apre: '+MODAL_TYPES[e.modal] : '') + (e.combo ? (e.modal!=='none'?' · ':'')+'Combinabile con altri eventi combinabili' : '');
+    const tip = [
+      e.reg==='solo' ? 'Un clic: registra subito, senza A/C né spot' : e.reg==='subito' ? 'Registra subito'+(e.modal!=='none'?' alla conferma':'')+' (con gli A/C selezionati)' : '',
+      e.modal!=='none' ? 'Apre: '+MODAL_TYPES[e.modal] : '',
+      e.combo ? 'Combinabile con altri eventi combinabili' : ''
+    ].filter(Boolean).join(' · ');
     return '<button class="evbtn'+(s?' on':'')+'" data-ev="'+e.id+'" style="'+cvars(e.color)+'"'+(tip?' data-tip="'+esc(tip)+'"':'')+'>'+
-      '<span class="dot"></span><span>'+esc(e.label)+'</span>'+(e.modal!=='none'&&!d?'<span class="evm">…</span>':'')+(d?'<span class="evd">'+esc(d)+'</span>':'')+'</button>';
+      '<span class="dot"></span><span class="evl">'+esc(e.label)+'</span>'+
+      (e.reg==='solo' ? '<span class="evk">'+I.zap+'</span>' : e.modal!=='none' ? '<span class="evm">…</span>' : '')+
+      (d?'<span class="evd">'+esc(d)+'</span>':'')+'</button>';
   }).join('') || '<span class="acempty">Nessun evento visibile — usa la matita per gestirli.</span>';
 }
 function renderSpots(){
@@ -1058,44 +1164,64 @@ function applyEvSel(ev, det){
 }
 function onEvClick(id){
   const ev = getEv(id); if(!ev) return;
+  // "un clic": registra subito l'evento da solo (senza A/C ne' spot), la selezione resta com'e'
+  if(ev.reg==='solo'){
+    if(ev.modal==='none') registerSolo(ev, null);
+    else openDetModal(ev, suggestDet(ev), det=>registerSolo(ev, det));
+    return;
+  }
   const i = SEL.ev.findIndex(s=>s.id===id);
   if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
-  if(ev.modal==='none'){ applyEvSel(ev,null); renderPanel(); return; }
-  openDetModal(ev, suggestDet(ev), det=>{
-    if(ev.modal==='move'){ applyEvSel(ev, det); register(det.a); }
-    else { applyEvSel(ev, det); renderPanel(); }
-  });
+  const done = det=>{ applyEvSel(ev, det); if(ev.reg==='subito') register(null); else renderPanel(); };
+  if(ev.modal==='none') done(null);
+  else openDetModal(ev, suggestDet(ev), done);
 }
 function onSpotClick(s, btn){
   if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
   register(s);
   const nb = qsa('#deck [data-spot]').find(b=>b.dataset.spot===s); if(nb) nb.classList.add('hit');
 }
-function register(spot){
-  if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
+const evSnap = (e, det) => ({ id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det: det ? clone(det) : null });
+function addEntries(acs, evs, spot){
   const now = new Date(), k = dayKey(now);
   if(k!==TODAY) rollDay(k);
   if(!DAYS[k]) DAYS[k] = [];
-  const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? { id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det:s.det?clone(s.det):null } : null; }).filter(Boolean);
   // se c'e' un Move, lo spot e' la destinazione
   const mv = evs.find(e=>e.modal==='move' && e.det && e.det.a);
   if(mv) spot = mv.det.a;
-  const acs = SEL.ac.map(getAc).filter(Boolean);
   const ts = now.toISOString(), ids = [];
   (acs.length ? acs : [null]).forEach(a=>{
     const en = { id:uid(), ts, ac: a ? acSnap(a) : null, evs: clone(evs), spot: spot||null };
     DAYS[k].push(en); ids.push(en.id);
   });
-  // memorizza i "carichi" usati per suggerirli in futuro
-  evs.forEach(e=>{ if(e.modal==='carico' && e.det && e.det.txt) rememberRecent(e.det.txt); });
-  sortDay(k); setIndex(k);
-  SEL.ac=[]; SEL.ev=[];
-  renderCron(ids);
-  queueSave(k);
+  rememberFrom(evs);
+  sortDay(k); setIndex(k); queueSave(k);
+  return ids;
 }
-function rememberRecent(txt){
-  const r = CFG.recent.carico.filter(x=>x.toLowerCase()!==txt.toLowerCase());
-  r.unshift(txt); CFG.recent.carico = r.slice(0,12);
+function afterRegister(ids){ renderCron(ids); if(VIEW==='involo') renderFlight(); updateFlightBadge(); }
+function register(spot){
+  if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
+  const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
+  const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot);
+  SEL.ac=[]; SEL.ev=[];
+  afterRegister(ids);
+}
+function registerSolo(ev, det){
+  afterRegister(addEntries([], [evSnap(ev, det)], null));
+  const b = qsa('#evGrid [data-ev]').find(x=>x.dataset.ev===ev.id); if(b) b.classList.add('hit');
+}
+function rememberFrom(evs){
+  // memorizza carichi e armamenti usati per riproporli con un clic
+  evs.forEach(e=>{
+    if(!e.det) return;
+    if(e.modal==='carico' && e.det.txt) rememberRecent('carico', e.det.txt);
+    if(e.modal==='normalops' && e.det.weapon) rememberRecent('weapon', e.det.weapon);
+  });
+}
+function rememberRecent(kind, txt){
+  if(!Array.isArray(CFG.recent[kind])) CFG.recent[kind] = [];
+  const r = CFG.recent[kind].filter(x=>x.toLowerCase()!==txt.toLowerCase());
+  r.unshift(txt); CFG.recent[kind] = r.slice(0,12);
   queueSave('config', true);
 }
 
@@ -1104,7 +1230,8 @@ function rememberRecent(txt){
    ========================================================================= */
 const chip = (v, label, on, ic) => '<button type="button" class="chip'+(on?' on':'')+'" data-v="'+esc(v)+'">'+(ic?I[ic]:'')+esc(label)+'</button>';
 const stepper = (k, v) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="0" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
-function detForm(ev, det){
+const fmtShort = v => { const h=Math.floor(v/60), m=v%60; return h ? h+'h'+(m?pad(m):'') : m+'′'; };
+function detForm(ev, det, ref){
   det = det||{};
   switch(ev.modal){
     case 'move': return '<div class="fgrp"><label>Da</label><div class="chipgrp" data-k="da">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.da===p)).join('')+'</div></div>'+
@@ -1113,8 +1240,21 @@ function detForm(ev, det){
     case 'fasiLt': return '<div class="fgrp"><div class="chipgrp big" data-k="fase">'+chip('inizio','Inizio',det.fase==='inizio','play')+chip('fine','Fine',det.fase==='fine','stop')+'</div></div>'+
       (ev.modal==='fasiLt' ? '<div class="fgrp ltbox'+(det.fase==='fine'?'':' hide')+'"><label>Quantità (lt)</label><input type="number" inputmode="numeric" min="0" step="1" data-k="lt" value="'+esc(det.lt!=null?det.lt:'')+'" placeholder="es. 1200"'+(det.fase==='fine'?' autofocus':'')+'>'+
         '<div class="quick">'+[100,250,500,1000].map(v=>'<button type="button" class="qbtn" data-add="'+v+'" data-for="lt">+'+v+'</button>').join('')+'<button type="button" class="qbtn" data-zero="lt">Azzera</button></div></div>' : '');
-    case 'normalops': return '<div class="row2"><div class="fgrp"><label>Endurance</label><input type="text" data-k="end" value="'+esc(det.end||'')+'" placeholder="es. 2+30" autofocus></div>'+
-                             '<div class="fgrp"><label>POB</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div></div>';
+    case 'normalops': {
+      const end = /^\d{1,2}:\d{2}$/.test(det.end||'') ? det.end : '';
+      const hm = end ? end.split(':') : ['',''];
+      const recW = CFG.recent.weapon||[];
+      return '<div class="fgrp"><label>Endurance · ora termine autonomia</label>'+
+        '<div class="clock" data-ref="'+esc(ref||new Date().toISOString())+'"><input type="hidden" data-k="end" value="'+end+'">'+
+          '<div class="ck-col"><button type="button" data-ck="h" data-d="1" data-tip="Ora +1">'+I.up+'</button><input class="ck-in" data-ckp="h" inputmode="numeric" maxlength="2" placeholder="--" value="'+(hm[0]?pad(hm[0]):'')+'"><button type="button" data-ck="h" data-d="-1" data-tip="Ora −1">'+I.down+'</button></div>'+
+          '<span class="ck-sep">:</span>'+
+          '<div class="ck-col"><button type="button" data-ck="m" data-d="1" data-tip="+5 minuti">'+I.up+'</button><input class="ck-in" data-ckp="m" inputmode="numeric" maxlength="2" placeholder="--" value="'+(hm[1]||'')+'"><button type="button" data-ck="m" data-d="-1" data-tip="−5 minuti">'+I.down+'</button></div>'+
+          '<div class="ck-info"><span class="ck-lab">Autonomia</span><b data-ckrem>—</b></div></div>'+
+        '<div class="quick">'+[30,60,90,120,150,180,210,240].map(v=>'<button type="button" class="qbtn" data-ckadd="'+v+'">+'+fmtShort(v)+'</button>').join('')+'<button type="button" class="qbtn" data-ckclr>Azzera</button></div></div>'+
+        '<div class="row2"><div class="fgrp"><label>POB</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div>'+
+        '<div class="fgrp"><label>Weapon</label><input type="text" data-k="weapon" value="'+esc(det.weapon||'')+'" placeholder="es. MK46 ×2" list="dlWeapon"><datalist id="dlWeapon">'+recW.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
+        (recW.length ? '<div class="quick">'+recW.slice(0,6).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="weapon">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div></div>';
+    }
     case 'personale': return '<div class="fgrp"><div class="chipgrp big" data-k="dir">'+chip('imbarco','Imbarco',det.dir!=='sbarco','down')+chip('sbarco','Sbarco',det.dir==='sbarco','up')+'</div></div>'+
                              '<div class="fgrp"><label>N° persone</label>'+stepper('n', det.n!=null?det.n:1)+'</div>';
     case 'carico': {
@@ -1139,7 +1279,16 @@ function detRead(ev, box){
       if(fase==='fine'){ const s=v('lt').replace(/\./g,'').replace(',','.'); if(s!==''){ const n=Number(s); if(!isFinite(n)||n<0) return {err:'Quantità in litri non valida'}; det.lt=Math.round(n); } }
       return {det};
     }
-    case 'normalops': { const end=v('end'), pob=v('pob'); if(!end && pob==='') return {err:'Inserisci Endurance e/o POB'}; const det={}; if(end) det.end=end; if(pob!=='') det.pob=Math.max(0,parseInt(pob,10)||0); return {det}; }
+    case 'normalops': {
+      const ck = box.querySelector('.clock'), end=v('end'), pob=v('pob'), weapon=v('weapon');
+      if(ck && !end && qsa('.ck-in', ck).some(x=>x.value!=='')) return {err:'Ora di termine autonomia non valida'};
+      if(!end && pob==='' && !weapon) return {err:'Inserisci almeno termine autonomia, POB o Weapon'};
+      const det = {};
+      if(end){ det.end = end; det.endTs = endTsFrom(end, clockRef(ck)).toISOString(); }
+      if(pob!=='') det.pob = Math.max(0, parseInt(pob,10)||0);
+      if(weapon) det.weapon = weapon;
+      return {det};
+    }
     case 'personale': { const dir=g('dir'); const n=parseInt(v('n'),10)||0; if(!dir) return {err:'Seleziona Imbarco o Sbarco'}; if(n<1) return {err:'Inserisci il numero di persone'}; return {det:{dir,n}}; }
     case 'carico': { const txt=v('txt'); return {det: txt ? {txt} : {}}; }
     case 'testo': { const txt=v('txt'); if(!txt) return {err:'Scrivi il testo dell\'evento'}; return {det:{txt}}; }
@@ -1152,7 +1301,7 @@ function detText(modal, det){
     case 'move': return det.da&&det.a ? spotLabel(det.da)+' → '+spotLabel(det.a) : '';
     case 'fasi': return det.fase==='fine'?'Fine':det.fase==='inizio'?'Inizio':'';
     case 'fasiLt': return det.fase==='inizio'?'Inizio':det.fase==='fine'?('Fine'+(det.lt!=null?' · '+fmtNum(det.lt)+' lt':'')):'';
-    case 'normalops': return [det.end?'Endurance '+det.end:'', det.pob!=null?'POB '+det.pob:''].filter(Boolean).join(' · ');
+    case 'normalops': return [det.endTs ? 'Termine aut. '+det.end : (det.end ? 'Endurance '+det.end : ''), det.pob!=null?'POB '+det.pob:'', det.weapon?'Weapon '+det.weapon:''].filter(Boolean).join(' · ');
     case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+' · '+det.n+' pers.' : '';
     case 'carico': case 'testo': return det.txt||'';
   }
@@ -1171,10 +1320,39 @@ function suggestDet(ev){
     return { fase: last && last.det && last.det.fase==='inizio' ? 'fine' : 'inizio' };
   }
   if(ev.modal==='personale') return { dir:'imbarco', n:1 };
+  if(ev.modal==='normalops'){
+    // ripropone i dati dell'ultimo Normal OPS dello stesso A/C in volo
+    const st = acId ? acStates()[acId] : null, n = st && st.pos==='VOLO' ? st.nops : null;
+    return n ? { end: /^\d{1,2}:\d{2}$/.test(n.end||'') ? n.end : '', pob:n.pob, weapon:n.weapon } : {};
+  }
   return {};
+}
+/* --- orologio "termine autonomia" --- */
+function clockRef(ck){ return new Date(ck && ck.dataset.ref ? ck.dataset.ref : Date.now()); }
+function endTsFrom(hhmm, ref){
+  const m = String(hhmm||'').match(/^(\d{1,2}):(\d{2})$/); if(!m) return null;
+  const d = new Date(ref); d.setHours(Number(m[1]), Number(m[2]), 0, 0);
+  if(d.getTime() < ref.getTime() - 6*3600000) d.setDate(d.getDate()+1);   // es. ore 23:30 -> termine 01:30 del giorno dopo
+  return d;
+}
+function setClock(ck, h, m){
+  ck.querySelector('[data-ckp="h"]').value = h==null ? '' : pad(h);
+  ck.querySelector('[data-ckp="m"]').value = m==null ? '' : pad(m);
+  syncClock(ck);
+}
+function syncClock(ck){
+  const hi = ck.querySelector('[data-ckp="h"]'), mi = ck.querySelector('[data-ckp="m"]');
+  const h = hi.value==='' ? NaN : parseInt(hi.value,10), m = mi.value==='' ? NaN : parseInt(mi.value,10);
+  const hid = ck.querySelector('[data-k="end"]'), rem = ck.querySelector('[data-ckrem]');
+  ck.classList.remove('ok','warn','crit');
+  if(!(h>=0 && h<=23 && m>=0 && m<=59)){ hid.value=''; rem.textContent = (hi.value||mi.value) ? 'ora non valida' : '—'; return; }
+  hid.value = pad(h)+':'+pad(m);
+  const ref = clockRef(ck), r = remInfo(endTsFrom(hid.value, ref).getTime(), ref.getTime());
+  ck.classList.add(r.cls); rem.textContent = r.txt;
 }
 function syncDet(box){
   if(!box) return;
+  const ck = box.querySelector('.clock'); if(ck) syncClock(ck);
   const lt = box.querySelector('.ltbox');
   if(lt){
     const f = box.querySelector('.chipgrp[data-k="fase"] .chip.on');
@@ -1201,14 +1379,36 @@ function bindDet(root){
     if(z){ const i=z.closest('.detbox').querySelector('[data-k="'+z.dataset.zero+'"]'); i.value=''; i.focus(); return; }
     const f = e.target.closest('[data-fill]');
     if(f){ const i=f.closest('.detbox').querySelector('[data-k="'+f.dataset.for+'"]'); i.value=f.dataset.fill; i.focus(); return; }
+    const kb = e.target.closest('[data-ck]');
+    if(kb){
+      const ck = kb.closest('.clock');
+      let h = parseInt(ck.querySelector('[data-ckp="h"]').value,10), m = parseInt(ck.querySelector('[data-ckp="m"]').value,10);
+      if(isNaN(h) || isNaN(m)){ const t = new Date(Math.ceil(clockRef(ck).getTime()/300000)*300000); h=t.getHours(); m=t.getMinutes(); }
+      else if(kb.dataset.ck==='h') h = (h+Number(kb.dataset.d)+24)%24;
+      else { let t = h*60 + Math.round(m/5)*5 + 5*Number(kb.dataset.d); t = (t%1440+1440)%1440; h = Math.floor(t/60); m = t%60; }  // i minuti fanno scattare l'ora
+      setClock(ck, h, m); return;
+    }
+    const ka = e.target.closest('[data-ckadd]');
+    if(ka){ const ck=ka.closest('.fgrp').querySelector('.clock'); const t=new Date(Math.ceil((clockRef(ck).getTime()+Number(ka.dataset.ckadd)*60000)/60000)*60000); setClock(ck, t.getHours(), t.getMinutes()); return; }
+    const kc = e.target.closest('[data-ckclr]');
+    if(kc){ setClock(kc.closest('.fgrp').querySelector('.clock'), null, null); return; }
   });
+  root.addEventListener('input', e=>{
+    if(!e.target.matches('.ck-in')) return;
+    e.target.value = e.target.value.replace(/\D/g,'').slice(0,2);
+    const ck = e.target.closest('.clock'); syncClock(ck);
+    if(e.target.dataset.ckp==='h' && e.target.value.length===2){ const mi=ck.querySelector('[data-ckp="m"]'); mi.focus(); mi.select(); }
+  });
+  root.addEventListener('change', e=>{ if(e.target.matches('.ck-in') && e.target.value.length===1) { e.target.value = pad(e.target.value); syncClock(e.target.closest('.clock')); } });
 }
-function openDetModal(ev, det, onOk){
-  const isMove = ev.modal==='move';
+function openDetModal(ev, det, onOk, opts){
+  opts = opts||{};
+  const direct = opts.direct!=null ? opts.direct : (ev.reg==='solo' || ev.reg==='subito');
+  const okLabel = opts.okLabel || (direct ? (ev.modal==='move' ? 'Registra movimento' : 'Registra') : 'Conferma');
   openModal({
-    title: esc(ev.label), icon: mDot(ev.color),
+    title: opts.title || esc(ev.label), icon: mDot(ev.color),
     body: '<div class="detbox">'+detForm(ev, det)+'</div><div class="ferr" hidden></div>',
-    foot: '<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn '+(isMove?'':'blue')+'" data-primary data-ok>'+I.check+(isMove?'Registra movimento':'Conferma')+'</button>',
+    foot: '<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn '+(direct?'':'blue')+'" data-primary data-ok>'+I.check+okLabel+'</button>',
     onMount(m){
       const box = m.root.querySelector('.detbox');
       bindDet(m.root); syncDet(box);
@@ -1227,6 +1427,8 @@ function openDetModal(ev, det, onOk){
 function findEntry(day, id){ return (DAYS[day]||[]).find(x=>x.id===id); }
 function refreshAfterChange(day){
   if(day===TODAY) renderCron();
+  if(VIEW==='involo') renderFlight();
+  updateFlightBadge();
   if(VIEW==='storico'){ renderHistLog(); renderCal(); renderRecent(); }
 }
 function openEdit(day, id){
@@ -1256,8 +1458,8 @@ function openEdit(day, id){
       bindDet(R);
       const captureDet = ()=>{ qsa('.detbox[data-ev]', detZone).forEach(b=>{ const s=sel.find(x=>x.id===b.dataset.ev); const e=getP(b.dataset.ev); if(s&&e){ const r=detRead(e,b); if(!r.err) s.det=r.det; } }); };
       const draw = ()=>{
-        evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span>'+esc(e.label)+'</button>').join('');
-        detZone.innerHTML = sel.map(s=>{ const e=getP(s.id); if(!e||e.modal==='none') return ''; return '<div class="detsec"><div class="detsec-h"><i style="background:'+e.color+'"></i>'+esc(e.label)+'</div><div class="detbox" data-ev="'+e.id+'">'+detForm(e, s.det)+'</div></div>'; }).join('');
+        evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span><span class="evl">'+esc(e.label)+'</span></button>').join('');
+        detZone.innerHTML = sel.map(s=>{ const e=getP(s.id); if(!e||e.modal==='none') return ''; return '<div class="detsec"><div class="detsec-h"><i style="background:'+e.color+'"></i>'+esc(e.label)+'</div><div class="detbox" data-ev="'+e.id+'">'+detForm(e, s.det, en.ts)+'</div></div>'; }).join('');
         qsa('.detbox', detZone).forEach(syncDet);
       };
       evBox.addEventListener('click', e=>{
@@ -1296,7 +1498,7 @@ function openEdit(day, id){
         const mv = evs.find(x=>x.modal==='move' && x.det && x.det.a); if(mv) spot = mv.det.a;
         en.ts = base.toISOString(); en.ac = ac; en.evs = evs; en.spot = spot;
         const nv = String(R.querySelector('[data-f="note"]').value||'').trim(); if(nv) en.note = nv; else delete en.note;
-        evs.forEach(x=>{ if(x.modal==='carico' && x.det && x.det.txt) rememberRecent(x.det.txt); });
+        rememberFrom(evs);
         sortDay(day); m.close();
         refreshAfterChange(day); queueSave(day);
       };
@@ -1475,7 +1677,7 @@ function openEvManager(){
           '<div class="erow'+(e.hidden?' off':'')+'" data-id="'+e.id+'"><div class="ord"><button class="iconbtn" data-mv="-1"'+(i===0?' disabled':'')+' data-tip="Sposta su">'+I.up+'</button><button class="iconbtn" data-mv="1"'+(i===CFG.events.length-1?' disabled':'')+' data-tip="Sposta giù">'+I.down+'</button></div>'+
           '<div class="en"><i style="background:'+e.color+';box-shadow:0 0 8px '+e.color+'"></i>'+esc(e.label)+'</div>'+
           '<div class="ed">'+(e.modal!=='none'?MODAL_TYPES[e.modal]:'<span style="opacity:.6">Nessuna finestra</span>')+'</div>'+
-          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+'</div>'+
+          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+(e.reg==='solo'?'<span class="tag reg">Un clic</span>':e.reg==='subito'?'<span class="tag reg">Subito</span>':'')+'</div>'+
           '<div class="acts"><button class="iconbtn" data-vis data-tip="'+(e.hidden?'Mostra':'Nascondi')+' in Cronologia">'+(e.hidden?I.eyeOff:I.eye)+'</button><button class="iconbtn" data-ed data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-del data-tip="Elimina">'+I.trash+'</button></div></div>').join('');
       };
       const changed = ()=>{ queueSave('config'); renderPanel(); draw(); };
@@ -1503,7 +1705,7 @@ function openEvManager(){
 }
 function openEvForm(ev, after){
   const isNew = !ev;
-  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, hidden:false };
+  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, reg:'spot', hidden:false };
   openModal({
     title: isNew?'Nuovo evento':'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid',
     body:'<div class="prev" data-prev></div>'+
@@ -1511,23 +1713,105 @@ function openEvForm(ev, after){
       '<div class="fgrp"><label>Colore</label><div class="swatches">'+PALETTE.map(c=>'<button type="button" class="swatch'+(c===e.color?' on':'')+'" data-c="'+c+'" style="background:'+c+'"></button>').join('')+'</div></div>'+
       '<div class="row2"><div class="fgrp"><label>Finestra dettagli al clic</label><select data-e="modal">'+Object.keys(MODAL_TYPES).map(k=>'<option value="'+k+'"'+(k===e.modal?' selected':'')+'>'+MODAL_TYPES[k]+'</option>').join('')+'</select></div>'+
       '<div class="fgrp"><label>Conteggia nelle statistiche come</label><select data-e="stat">'+Object.keys(STAT_TYPES).map(k=>'<option value="'+k+'"'+(k===e.stat?' selected':'')+'>'+STAT_TYPES[k]+'</option>').join('')+'</select></div></div>'+
+      '<div class="fgrp"><label>Registrazione</label><select data-e="reg">'+Object.keys(REG_TYPES).map(k=>'<option value="'+k+'"'+(k===e.reg?' selected':'')+'>'+REG_TYPES[k]+'</option>').join('')+'</select></div>'+
       '<label class="chk"><input type="checkbox" data-e="combo"'+(e.combo?' checked':'')+'>Combinabile: selezionabile insieme ad altri eventi combinabili (es. Tacchi + Rizze)</label>'+
       '<label class="chk"><input type="checkbox" data-e="visible"'+(!e.hidden?' checked':'')+'>Visibile nella Cronologia</label><div class="ferr" hidden></div>',
     foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+(isNew?'Aggiungi':'Salva')+'</button>',
     onMount(m){
       const R = m.root, val = k => R.querySelector('[data-e="'+k+'"]');
-      const prev = ()=>{ R.querySelector('[data-prev]').innerHTML = '<span class="muted" style="font-size:12px">Anteprima</span><button type="button" class="evbtn on" style="'+cvars(e.color)+'"><span class="dot"></span>'+esc(val('label').value||'Evento')+'</button>'; };
+      const prev = ()=>{ R.querySelector('[data-prev]').innerHTML = '<span class="muted" style="font-size:12px">Anteprima</span><button type="button" class="evbtn on" style="'+cvars(e.color)+'"><span class="dot"></span><span class="evl">'+esc(val('label').value||'Evento')+'</span></button>'; };
       R.addEventListener('click', ev2=>{ const s=ev2.target.closest('[data-c]'); if(s){ e.color=s.dataset.c; qsa('.swatch',R).forEach(x=>x.classList.toggle('on',x===s)); prev(); } });
       val('label').addEventListener('input', prev); prev();
       R.querySelector('[data-ok]').onclick = ()=>{
         const label = val('label').value.trim();
         if(!label) return showErr(m,'Inserisci il nome dell\'evento');
-        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, combo:val('combo').checked, hidden:!val('visible').checked });
+        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, reg:val('reg').value, combo:val('combo').checked, hidden:!val('visible').checked });
         if(isNew) CFG.events.push(e); else Object.assign(ev, e);
         m.close(); after && after();
       };
     }
   });
+}
+
+/* =========================================================================
+   A/C IN VOLO
+   ========================================================================= */
+const nopsEvent = () => CFG.events.find(e=>e.modal==='normalops');
+const appEvent = () => CFG.events.find(e=>e.stat==='appontaggio');
+function fmtDur(min){ const h=Math.floor(min/60), m=min%60; return h ? h+' h '+pad(m)+' min' : m+' min'; }
+function fmtClock(ms){ const d=new Date(ms); return pad(d.getHours())+':'+pad(d.getMinutes()); }
+function remInfo(end, now){
+  // verde >= 1 h · giallo 30-59 min · rosso < 30 min
+  if(end==null) return { cls:'none', min:null, txt:'Autonomia non impostata — premi Normal OPS' };
+  const min = Math.floor((end-now)/60000);
+  return { cls: min>=60 ? 'ok' : min>=30 ? 'warn' : 'crit', min, txt: min<0 ? 'Scaduta da '+fmtDur(-min) : fmtDur(min) };
+}
+function nopsEnd(n, nTs){
+  if(!n) return null;
+  if(n.endTs) return new Date(n.endTs).getTime();
+  const m = String(n.end||'').match(/^(\d{1,2})\+(\d{1,2})$/);   // vecchio formato "2+30" = durata dal report
+  return m && nTs ? new Date(nTs).getTime() + (Number(m[1])*60+Number(m[2]))*60000 : null;
+}
+function flightsInAir(){
+  const st = acStates();
+  return Object.keys(st).filter(id=>st[id].pos==='VOLO').map(id=>{
+    const s = st[id];
+    return { id, ac:s.ac, since:s.since, nops:s.nops||{}, end:nopsEnd(s.nops, s.nopsTs), start: new Date(s.nopsTs||s.since).getTime() };
+  });
+}
+function renderFlight(){
+  const fl = flightsInAir().sort((a,b)=>((a.end==null)-(b.end==null)) || ((a.end||0)-(b.end||0)) || String(a.ac.cs).localeCompare(String(b.ac.cs)));
+  $('flyCount').textContent = fl.length ? pl(fl.length,'aeromobile in volo','aeromobili in volo') : '';
+  const nEv = nopsEvent(), aEv = appEvent();
+  $('flyGrid').innerHTML = fl.length ? fl.map(f=>{
+    const ac = f.ac, n = f.nops;
+    return '<div class="fbox" data-fac="'+esc(f.id)+'" data-end="'+(f.end==null?'':f.end)+'" data-start="'+(f.start||'')+'" style="'+cvars(tipoColor(ac.tipo))+'">'+
+      '<div class="fb-h"><div style="min-width:0"><b class="fb-cs">'+esc(ac.cs)+'</b><div class="fb-sub">Side <b>'+esc(ac.side||'—')+'</b>'+(ac.gr?' · '+esc(ac.gr):'')+'</div></div><span class="fb-tipo">'+esc(ac.tipo||'N/D')+'</span></div>'+
+      '<div class="fb-grid"><div class="fb-cell"><div class="fb-k">POB</div><div class="fb-v">'+(n.pob!=null?esc(n.pob):'—')+'</div></div>'+
+      '<div class="fb-cell"><div class="fb-k">Weapon</div><div class="fb-v"'+(n.weapon?' data-tip="'+esc(n.weapon)+'"':'')+'>'+esc(n.weapon||'—')+'</div></div></div>'+
+      '<div class="fb-rem"><div class="fb-k">Autonomia residua</div><div class="fb-big" data-rem></div><div class="fb-bar"><i data-bar></i></div>'+
+      '<div class="fb-meta">Termine <b>'+(f.end!=null?fmtClock(f.end):'—')+'</b> · Decollo <b>'+(f.since?fmtTime(f.since):'—')+'</b></div></div>'+
+      '<div class="fb-act">'+(nEv?'<button class="btn small ghost" data-fops>'+I.refresh+esc(nEv.label)+'</button>':'')+(aEv?'<button class="btn small ghost" data-fland>'+I.down+esc(aEv.label)+'</button>':'')+'</div></div>';
+  }).join('') : '<div class="empty" style="grid-column:1/-1">'+I.plane+'<b>Nessun aeromobile in volo</b>Gli A/C compaiono qui dopo un <b>Decollo</b> (o un <b>Normal OPS</b>) e spariscono con l\'<b>Appontaggio</b>.</div>';
+  updateFlightTimers();
+}
+function updateFlightTimers(){
+  const now = Date.now();
+  qsa('#flyGrid .fbox').forEach(b=>{
+    const end = b.dataset.end ? Number(b.dataset.end) : null, start = b.dataset.start ? Number(b.dataset.start) : null;
+    const r = remInfo(end, now);
+    b.classList.remove('ok','warn','crit','none','exp'); b.classList.add(r.cls);
+    if(r.min!=null && r.min<0) b.classList.add('exp');
+    b.querySelector('[data-rem]').textContent = r.txt;
+    b.querySelector('[data-bar]').style.width = (end!=null && start && end>start) ? Math.max(0, Math.min(100, (end-now)/(end-start)*100))+'%' : '0%';
+  });
+}
+function updateFlightBadge(){
+  const fl = flightsInAir(), now = Date.now(), b = $('flyBadge');
+  b.textContent = fl.length; b.className = 'nbadge'+(fl.length?' on':'');
+  if(fl.length){
+    const c = fl.map(f=>remInfo(f.end, now).cls);
+    b.classList.add(c.includes('crit')?'crit':c.includes('warn')?'warn':c.includes('ok')?'ok':'none');
+  }
+}
+function onFlightClick(e){
+  const box = e.target.closest('.fbox'); if(!box) return;
+  const f = flightsInAir().find(x=>x.id===box.dataset.fac); if(!f) return;
+  if(e.target.closest('[data-fops]')){
+    const ev = nopsEvent(), n = f.nops;
+    openDetModal(ev, { end: /^\d{1,2}:\d{2}$/.test(n.end||'') ? n.end : '', pob:n.pob, weapon:n.weapon }, det=>{
+      const a = getAc(f.id) || { id:f.id, callsign:f.ac.cs, side:f.ac.side, gruppo:f.ac.gr, tipo:f.ac.tipo };
+      afterRegister(addEntries([a], [evSnap(ev, det)], null));
+    }, { title: esc(ev.label)+' · '+esc(f.ac.cs), okLabel:'Registra', direct:true });
+  }
+  if(e.target.closest('[data-fland]')){
+    const ev = appEvent(), a = getAc(f.id);
+    if(!a){ toast('A/C non presente in archivio','warn'); return; }
+    if(!a.active){ a.active = true; queueSave('config', true); }
+    SEL.ac = [a.id]; SEL.ev = [{ id:ev.id, det:null }];
+    showView('cronologia');
+    toast('Tocca lo spot di appontaggio di '+a.callsign,'info');
+  }
 }
 
 /* =========================================================================
@@ -1753,6 +2037,7 @@ function bindUI(){
   $('evGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-ev]'); if(b) onEvClick(b.dataset.ev); });
   $('deck').addEventListener('click', e=>{ const b=e.target.closest('[data-spot]'); if(b) onSpotClick(b.dataset.spot, b); });
   bindLog($('cronLog')); bindLog($('histLog'));
+  $('flyGrid').addEventListener('click', onFlightClick);
 
   $('cal').addEventListener('click', e=>{
     const cm = e.target.closest('[data-cm]');
@@ -1785,10 +2070,17 @@ function normalizeCfg(c){
   if(!Array.isArray(o.aircraft)) o.aircraft = [];
   o.aircraft.forEach(a=>{ a.id=a.id||uid(); a.active=!!a.active; a.callsign=a.callsign||''; });
   if(!Array.isArray(o.events) || !o.events.length){ o.events = defaultEvents(); fresh = true; }
-  o.events.forEach(e=>{ e.id=e.id||('c_'+uid()); e.label=e.label||'Evento'; e.color=e.color||'#38bdf8'; if(!MODAL_TYPES[e.modal]) e.modal='none'; if(!(e.stat in STAT_TYPES)) e.stat=''; e.combo=!!e.combo; e.hidden=!!e.hidden; });
+  const DEF = {}; defaultEvents().forEach(d=>{ DEF[d.id]=d; });
+  o.events.forEach(e=>{
+    e.id=e.id||('c_'+uid()); e.label=e.label||'Evento'; e.color=e.color||'#38bdf8'; if(!MODAL_TYPES[e.modal]) e.modal='none'; if(!(e.stat in STAT_TYPES)) e.stat=''; e.combo=!!e.combo; e.hidden=!!e.hidden;
+    // aggiornamenti di versione: modalita' di registrazione e nome "Norco Lock"
+    if(!REG_TYPES[e.reg]){ e.reg = DEF[e.id] ? DEF[e.id].reg : 'spot'; fresh = true; }
+    if(e.id==='nlock' && e.label==='Norck Lock'){ e.label = 'Norco Lock'; fresh = true; }
+  });
   if(!o.tipoColor || typeof o.tipoColor!=='object') o.tipoColor = {};
   if(!o.recent || typeof o.recent!=='object') o.recent = {};
   if(!Array.isArray(o.recent.carico)) o.recent.carico = [];
+  if(!Array.isArray(o.recent.weapon)) o.recent.weapon = [];
   o.version = 1;
   return { cfg:o, fresh };
 }
@@ -1810,15 +2102,21 @@ async function boot(){
   DAYS[TODAY] = Array.isArray(list) ? list : [];
   sortDay(TODAY);
   INDEX = await getJSON('/api/days', {}, 4) || {};
+  // anche ieri: serve per gli A/C decollati prima della mezzanotte
+  const yk = prevDayKey(TODAY);
+  if(INDEX[yk]){ const yl = await getJSON('/api/day?d='+yk, [], 3); DAYS[yk] = Array.isArray(yl) ? yl : []; sortDay(yk); }
   const info = await getJSON('/api/info', null, 2);
   if(info && info.dataDir) $('sbDb').innerHTML = '<b>Database locale</b><br>'+esc(info.dataDir);
   READY = true;
   if(n.fresh) queueSave('config', true);
   renderCron();
   showView(VIEW);
+  updateFlightBadge();
 }
 bindUI();
-setSidebar(lsGet('gt.sidebar', innerWidth>=1100));
+setSidebar(sbOverlay() ? false : lsGet('gt.sidebar', true));
+// menu sovrapposto: un clic sul velo scuro lo chiude (senza attivare i pulsanti sottostanti)
+$('sbBackdrop').addEventListener('click', ()=>setSidebar(false));
 tick(); setInterval(tick, 1000);
 setInterval(async()=>{ try{ await api('GET','/api/ping'); setServer(true); if(DIRTY.size && !flushing) flush(); }catch(e){ setServer(false); } }, 15000);
 boot();

@@ -44,14 +44,18 @@ compresa. La cartella `DATI/` non viene caricata su GitHub (`.gitignore`).
 ## Come si usa
 
 Il **menu laterale** si apre e si chiude con il pulsante ☰ in alto a sinistra:
-**Cronologia**, **Storico**, **Statistiche**. In alto a destra ci sono data,
+**Cronologia**, **A/C in Volo**, **Storico**, **Statistiche**. Sugli schermi
+più stretti di 1500 px (es. portatili 1366×768) il menu si apre sopra il
+contenuto e si chiude scegliendo una sezione o con un clic sul velo scuro.
+In alto a destra ci sono data,
 ora **locale** e ora **Zulu**, e lo stato del server. Ogni salvataggio riuscito
 è confermato da un piccolo avviso in alto a destra.
 
 ### Cronologia (giorno in corso)
 
 A sinistra le righe della cronologia di oggi; a destra il pannello comandi
-in tre aree. I pulsanti selezionati **restano premuti** fino alla registrazione.
+in tre aree. I pulsanti di A/C ed Eventi sono tasselli tutti della stessa
+misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
 
 1. **A/C**: il pulsante **+** apre la finestra *Aeromobili*:
    - **Nuovo A/C**: Callsign, Side Number, Gruppo Volo, Tipo. Resta in archivio
@@ -61,21 +65,31 @@ in tre aree. I pulsanti selezionati **restano premuti** fino alla registrazione.
      "Tutti / Nessuno in gestione" agisce sul filtro corrente.
    - Sul pulsante di un A/C, la **×** (al passaggio del mouse) lo toglie dalla
      gestione: resta in archivio. Il badge in alto mostra l'ultima posizione
-     nota oggi (`S3`, `HGR`, `VOLO`).
+     nota (`S3`, `HGR`, `VOLO`).
    - Puoi selezionare **più A/C insieme**: viene registrata una riga per ciascuno.
 2. **Eventi**: pulsanti minimal personalizzabili (**+** per aggiungere, matita
-   per modificare, ordinare, nascondere o eliminare). Alcuni aprono una piccola
-   finestra:
-   - **Move**: da / a (Hangar, Spot 1–9). La conferma registra subito il movimento.
+   per modificare, ordinare, nascondere o eliminare).
+   - **Un clic** (icona ⚡): **Ops di volo, FodWalk, Deck Ready, Prova Semaforo,
+     Giallo, Rosso, Verde** vengono registrati subito, senza A/C né spot.
+     Gli A/C eventualmente selezionati restano selezionati.
+   - Alcuni eventi aprono una piccola finestra (icona …):
+   - **Move**: da / a (Hangar, Spot 1–9, Isole). La conferma registra subito il movimento.
    - **Fuel**, **HotRef**: Inizio / Fine; su Fine anche i **litri**. Se l'ultima
      registrazione dello stesso A/C era "Inizio", propone già "Fine".
-   - **Normal OPS**: Endurance e POB.
+   - **Normal OPS**: **Endurance** con un orologio per impostare l'**ora di
+     termine dell'autonomia** (frecce ore e minuti, oppure +30′, +1h, +1h30… da
+     adesso), **POB** e **Weapon** (testo libero; gli armamenti già usati vengono
+     riproposti). L'autonomia residua appare subito in verde, giallo o rosso.
    - **Personale**: Imbarco o Sbarco e numero di persone.
    - **Elev. Sx / Dx / Mun. Prora / Mun. Poppa**: cosa trasporta (i carichi
-     già usati vengono riproposti con un clic).
+     già usati vengono riproposti con un clic). **Registra** nella finestra
+     scrive subito la riga, senza premere Salva.
    - **Testo**: testo libero per gli eventi fuori norma.
    - **Tacchi** e **Rizze** si possono selezionare **insieme** (eventi
      "combinabili", impostabili anche per gli eventi nuovi).
+   - Nella finestra di modifica di ogni evento, la voce **Registrazione** sceglie
+     come si registra: *standard* (spot o Salva), *subito* (al clic o alla
+     conferma, con gli A/C selezionati) oppure *un clic* (subito, senza A/C né spot).
 3. **Spot**: 1–9, Hangar, Isole. **Toccando uno spot l'evento viene registrato
    subito** con data e ora. Se l'evento non ha spot premi **SALVA** in basso a
    destra (oppure **F2**).
@@ -91,6 +105,21 @@ compaiono anche nella stampa e nel CSV, e si possono modificare pure dallo Stori
 Il pulsante con le frecce inverte l'ordine (più recenti in alto o in basso).
 **Stampa** produce il registro del giorno in A4 orizzontale, con lo spazio
 per la firma del Controllore di Torre.
+
+### A/C in Volo
+
+Un riquadro per ogni aeromobile in volo con **Callsign**, **Side**, **POB**,
+**Weapon** e **autonomia residua** in ore e minuti, aggiornata ogni secondo.
+Il bordo è **verde** con 1 ora o più, **giallo** da 30 a 59 minuti, **rosso**
+sotto i 30 minuti (lampeggia se l'autonomia è scaduta). Un A/C compare dopo il
+**Decollo** (o un **Normal OPS**) e sparisce con l'**Appontaggio** o con uno spot.
+POB, Weapon e ora di termine vengono dall'ultimo **Normal OPS** di quel volo.
+
+- **Normal OPS** sul riquadro: aggiorna i dati (finestra già compilata) e lo registra in cronologia.
+- **Appontaggio** sul riquadro: torna alla Cronologia con A/C ed evento già
+  selezionati; basta toccare lo spot.
+- Nel menu, accanto ad *A/C in Volo*, il numero di A/C in volo è colorato con lo
+  stato più critico.
 
 ### Storico
 
