@@ -131,7 +131,7 @@ capo, **Esc** annulla; anche cliccando altrove la nota viene salvata. Le note
 compaiono anche nella stampa e nel CSV, e si possono modificare pure dallo Storico.
 Il pulsante con le frecce inverte l'ordine (più recenti in alto o in basso).
 **Stampa** produce il registro del giorno in A4 orizzontale, con lo spazio
-per la firma del Controllore di Torre.
+per la firma dell'AUCV.
 
 ### A/C in Volo
 

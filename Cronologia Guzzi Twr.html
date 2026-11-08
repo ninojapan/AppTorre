@@ -2071,7 +2071,7 @@ function printDay(k){
     '<div class="pr-head"><div class="pr-brand">'+(LOGO_URL()?'<img src="'+LOGO_URL()+'" alt="">':'')+'<div><h1>Cronologia Guzzi Twr</h1><div class="pr-sub">Torre di Controllo · Registro eventi</div></div></div><div class="pr-date">'+fmtDayLong(k)+'</div></div>'+
     '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Note</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
     '<div class="pr-foot"><span>Totale eventi: <b>'+list.length+'</b></span><span>Stampato il '+fmtDayShort(dayKey(now))+' alle '+pad(now.getHours())+':'+pad(now.getMinutes())+'</span></div>'+
-    '<div class="pr-sign">Il Controllore di Torre &nbsp; ______________________________</div>';
+    '<div class="pr-sign">L\'AUCV &nbsp; ______________________________</div>';
   setTimeout(()=>window.print(), 50);
 }
 function LOGO_URL(){ const i=$('logoImg'); return i && i.complete && i.naturalWidth ? i.getAttribute('src') : ''; }
