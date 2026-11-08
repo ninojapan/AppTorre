@@ -148,6 +148,15 @@ POB, Weapon e ora di termine vengono dall'ultimo **Normal OPS** di quel volo.
 - Nel menu, accanto ad *A/C in Volo*, il numero di A/C in volo è colorato con lo
   stato più critico.
 
+**Avviso autonomia**: in qualunque sezione ti trovi, quando un A/C in volo scende
+**sotto i 60 minuti** (giallo) si apre una finestra di avviso; una seconda quando
+scende **sotto i 30 minuti** (rosso, bordo lampeggiante). La finestra mostra
+Callsign, Side, tipo, autonomia residua aggiornata al secondo, ora di termine e
+POB; più A/C insieme compaiono nella stessa finestra. Si chiude solo con
+**Preso visione** (o **Vai ad A/C in Volo**), non cliccando fuori. Ogni avviso
+compare una sola volta per soglia, anche dopo aver ricaricato la pagina; con un
+nuovo **Normal OPS** (nuova ora di termine) gli avvisi ripartono.
+
 ### Storico
 
 Calendario mensile in cui sono **evidenziati solo i giorni con cronologia

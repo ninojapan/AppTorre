@@ -351,6 +351,29 @@ input[type=date],input[type=time]{color-scheme:dark}
 .modal{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border2);border-radius:20px;box-shadow:0 30px 80px rgba(0,0,0,.6);width:100%;max-width:470px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;animation:pop .16s ease}
 .modal.wide{max-width:820px}
 .modal.mid{max-width:620px}
+/* avviso autonomia (giallo < 60 min, rosso < 30 min) */
+.modal.alertm{max-width:620px;border-width:2px}
+.modal.alertm.warn{border-color:#facc15;box-shadow:0 0 0 4px #facc1530,0 30px 80px rgba(0,0,0,.6)}
+.modal.alertm.crit{border-color:var(--red);box-shadow:0 0 0 4px #ef444430,0 30px 80px rgba(0,0,0,.6);animation:pop .16s ease,alertpulse 1.4s infinite}
+@keyframes alertpulse{50%{box-shadow:0 0 0 9px #ef444420,0 30px 80px rgba(0,0,0,.6)}}
+.modal.alertm .modal-head{border-radius:18px 18px 0 0}
+.modal.alertm.warn .modal-head{background:linear-gradient(90deg,#facc1526,transparent 70%)}
+.modal.alertm.crit .modal-head{background:linear-gradient(90deg,#ef444430,transparent 70%)}
+.modal.alertm.warn .mh-ic{background:#facc15;color:#1f1400}
+.modal.alertm.crit .mh-ic{background:var(--red);color:#fff}
+.modal.alertm .modal-head h3{letter-spacing:1.5px}
+.fa-intro{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+.fa-list{display:flex;flex-direction:column;gap:8px}
+.fa-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr) auto;gap:14px;align-items:center;padding:12px 14px;border-radius:12px;background:var(--bg2);border:1px solid var(--border);border-left:5px solid}
+.fa-row.warn{border-left-color:#facc15}.fa-row.crit{border-left-color:var(--red)}
+.fa-l b{font-family:var(--font-d);font-size:21px;letter-spacing:.5px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fa-l span{font-size:12px;color:var(--muted)}
+.fa-m{font-weight:800;font-size:13.5px}
+.fa-row.warn .fa-m{color:#fde68a}.fa-row.crit .fa-m{color:#fca5a5}
+.fa-m small{display:block;color:var(--muted);font-weight:600;margin-top:3px;font-size:12px}
+.fa-r{font-family:var(--font-d);font-size:27px;font-weight:700;white-space:nowrap;text-align:right}
+.fa-row.warn .fa-r{color:#facc15}.fa-row.crit .fa-r{color:#f87171}
+.fa-exp{display:block;font-family:var(--font);font-size:11px;font-weight:800;letter-spacing:1.5px;line-height:1.2}
 @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:none;opacity:1}}
 .modal-head{padding:15px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex:0 0 auto}
 .modal-head h3{margin:0;font-family:var(--font-d);font-size:18px;letter-spacing:.4px;flex:1}
@@ -963,7 +986,7 @@ function openModal(o){
     ov, root: ov.querySelector('.modal'),
     close(){ if(m.closed) return; m.closed=true; ov.remove(); const i=MODALS.indexOf(m); if(i>=0) MODALS.splice(i,1); if(o.onClose) o.onClose(); }
   };
-  ov.addEventListener('mousedown', e=>{ if(e.target===ov) m.close(); });
+  if(!o.sticky) ov.addEventListener('mousedown', e=>{ if(e.target===ov) m.close(); });
   ov.addEventListener('click', e=>{ if(e.target.closest('[data-close]')) m.close(); });
   MODALS.push(m);
   if(o.onMount) o.onMount(m);
@@ -1012,7 +1035,7 @@ function tick(){
   $('clkDate').textContent = pad(d.getDate())+' '+MESI[d.getMonth()].slice(0,3).toUpperCase()+' '+d.getFullYear();
   const k = dayKey(d);
   if(READY && k!==TODAY) rollDay(k);
-  if(READY){ updateFlightTimers(); if(d.getSeconds()%5===0) updateFlightBadge(); }
+  if(READY){ updateFlightTimers(); checkFlightAlerts(); if(d.getSeconds()%5===0) updateFlightBadge(); }
 }
 function rollDay(k){
   TODAY = k;
@@ -1893,6 +1916,63 @@ function updateFlightBadge(){
     const c = fl.map(f=>remInfo(f.end, now).cls);
     b.classList.add(c.includes('crit')?'crit':c.includes('warn')?'warn':c.includes('ok')?'ok':'none');
   }
+}
+/* --- avviso autonomia: finestra in qualunque sezione quando un A/C in volo scende sotto 60 e sotto 30 minuti --- */
+const ALERT = { shown:new Set(), items:[], m:null };
+const ackList = () => lsGet('gt.flyAck', []);
+function ackAlerts(keys){ const a = ackList(); keys.forEach(k=>{ if(!a.includes(k)) a.push(k); }); lsSet('gt.flyAck', a.slice(-300)); }
+function checkFlightAlerts(){
+  const now = Date.now(), acked = ackList(), fresh = [];
+  flightsInAir().forEach(f=>{
+    if(f.end==null) return;
+    const min = Math.floor((f.end-now)/60000);
+    const lvl = min<30 ? 'crit' : min<60 ? 'warn' : null;
+    if(!lvl) return;
+    const base = f.id+'|'+f.end, key = base+'|'+lvl;   // nuovo Normal OPS (nuovo termine) = nuovi avvisi
+    if(ALERT.shown.has(key) || acked.includes(key)) return;
+    ALERT.shown.add(key);
+    const keys = [key];
+    if(lvl==='crit'){ ALERT.shown.add(base+'|warn'); keys.push(base+'|warn'); }   // gia' rosso: niente avviso giallo
+    fresh.push({ lvl, f, keys });
+  });
+  if(fresh.length) showFlightAlert(fresh); else updateAlertTimers();
+}
+function showFlightAlert(fresh){
+  fresh.forEach(n=>{ ALERT.items = ALERT.items.filter(i=>i.f.id!==n.f.id); ALERT.items.push(n); });
+  if(!ALERT.m){
+    ALERT.m = openModal({
+      title:'ATTENZIONE · AUTONOMIA', icon:mIcon('alert'), size:'alertm', sticky:true,
+      body:'<p class="fa-intro">Autonomia residua ridotta per i seguenti A/C in volo:</p><div class="fa-list" data-alist></div>',
+      foot:'<button class="btn ghost" data-goinvolo>'+I.plane+'Vai ad A/C in Volo</button><span class="grow"></span><button class="btn" data-primary data-ok>'+I.check+'Preso visione</button>',
+      onMount(m){
+        m.root.querySelector('[data-ok]').onclick = ()=>m.close();
+        m.root.querySelector('[data-goinvolo]').onclick = ()=>{ m.close(); showView('involo'); };
+      },
+      onClose(){ ackAlerts([].concat(...ALERT.items.map(i=>i.keys))); ALERT.items = []; ALERT.m = null; }
+    });
+  }
+  renderAlert();
+}
+function renderAlert(){
+  const m = ALERT.m; if(!m) return;
+  const crit = ALERT.items.some(i=>i.lvl==='crit');
+  m.root.classList.toggle('crit', crit); m.root.classList.toggle('warn', !crit);
+  const list = ALERT.items.slice().sort((a,b)=>(a.lvl==='crit'?0:1)-(b.lvl==='crit'?0:1) || a.f.end-b.f.end);
+  m.root.querySelector('[data-alist]').innerHTML = list.map(i=>{
+    const f = i.f, ac = f.ac, n = f.nops||{};
+    return '<div class="fa-row '+i.lvl+'" data-aend="'+f.end+'"><div class="fa-l"><b>'+esc(ac.cs)+'</b><span>Side '+esc(ac.side||'—')+(ac.tipo?' · '+esc(ac.tipo):'')+'</span></div>'+
+      '<div class="fa-m">'+(i.lvl==='crit'?'Autonomia inferiore a 30 minuti':'Autonomia inferiore a 60 minuti')+'<small>Termine '+fmtClock(f.end)+(n.pob!=null?' · POB '+esc(n.pob):'')+'</small></div>'+
+      '<div class="fa-r" data-arem></div></div>';
+  }).join('');
+  updateAlertTimers();
+}
+function updateAlertTimers(){
+  if(!ALERT.m) return;
+  const now = Date.now();
+  qsa('[data-aend]', ALERT.m.root).forEach(r=>{
+    const min = Math.floor((Number(r.dataset.aend)-now)/60000);
+    r.querySelector('[data-arem]').innerHTML = min<0 ? '<span class="fa-exp">SCADUTA da</span>'+fmtDur(-min) : fmtDur(min);
+  });
 }
 function onFlightClick(e){
   const box = e.target.closest('.fbox'); if(!box) return;
