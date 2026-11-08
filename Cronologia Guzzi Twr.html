@@ -223,6 +223,8 @@ input[type=date],input[type=time]{color-scheme:dark}
 .acadd{height:48px;min-width:0;border-radius:11px;border:1px dashed var(--border2);background:transparent;color:var(--accent);display:flex;align-items:center;justify-content:center;gap:4px;font-weight:800;font-size:13px;padding:0 12px}
 .acadd:hover{background:#0e2a3f;border-color:var(--accent)}
 .acempty{grid-column:1/-1;font-size:12.5px;color:var(--muted2);align-self:center;padding:0 6px}
+.acgrid.need{animation:needac 1.1s ease;border-radius:12px}
+@keyframes needac{0%,100%{outline:2px solid transparent;outline-offset:5px}15%,45%,75%{outline:2px solid var(--red);outline-offset:5px}}
 
 /* Event buttons */
 .evbtn{position:relative;display:flex;align-items:center;gap:0;height:48px;min-width:0;padding:0 14px 0 25px;border-radius:11px;border:1px solid var(--border);background:var(--panel);font-size:12.5px;font-weight:700;color:#c9d6ea;transition:.12s;line-height:1.15;text-align:left}
@@ -401,6 +403,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .tag.stat{color:var(--gold);border-color:#5c4a12;background:#2a220a}
 .tag.combo{color:var(--violet);border-color:#4b3c86;background:#1d1838}
 .tag.reg{color:var(--accent);border-color:#1c5c86;background:#0b2436}
+.tag.need{color:#fca5a5;border-color:#7a2020;background:#2a1010}
 .erow .acts{display:flex;gap:5px;justify-content:flex-end}
 .swatches{display:flex;flex-wrap:wrap;gap:7px}
 .swatch{width:30px;height:30px;border-radius:9px;border:2px solid transparent;box-shadow:inset 0 0 0 1px #0006}
@@ -801,12 +804,12 @@ const TIPO_COLORS = ['#38bdf8','#f59e0b','#a78bfa','#22c55e','#f472b6','#2dd4bf'
 const TIPI_SUGG = ['SH-90A','NH-90','EH-101','SH-101A','UH-101A','AB-212','AV-8B+','F-35B'];
 
 function defaultEvents(){
-  // [id, nome, colore, finestra, statistica, combinabile, registrazione]
+  // [id, nome, colore, finestra, statistica, combinabile, registrazione, richiede A/C]
   return [
     ['ops','Ops di volo','#38bdf8','none','',false,'solo'],
     ['fod','FodWalk','#f59e0b','none','',false,'solo'],
     ['deck','Deck Ready','#22c55e','none','',false,'solo'],
-    ['move','Move','#a78bfa','move','',false,'subito'],
+    ['move','Move','#a78bfa','move','',false,'subito',true],
     ['sem','Prova Semaforo','#2dd4bf','none','',false,'solo'],
     ['giallo','Giallo','#facc15','none','',false,'solo'],
     ['rosso','Rosso','#ef4444','none','',false,'solo'],
@@ -830,7 +833,7 @@ function defaultEvents(){
     ['fold','Fold','#94a3b8'],
     ['unfold','Unfold','#94a3b8'],
     ['testo','Testo','#e2e8f0','testo']
-  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', hidden:false }));
+  ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', needAc:!!a[7], hidden:false }));
 }
 
 /* ------------------------------ Stato ------------------------------ */
@@ -1073,7 +1076,8 @@ function renderEvGrid(){
     const tip = [
       e.reg==='solo' ? 'Un clic: registra subito, senza A/C né spot' : e.reg==='subito' ? 'Registra subito'+(e.modal!=='none'?' alla conferma':'')+' (con gli A/C selezionati)' : '',
       e.modal!=='none' ? 'Apre: '+MODAL_TYPES[e.modal] : '',
-      e.combo ? 'Combinabile con altri eventi combinabili' : ''
+      e.combo ? 'Combinabile con altri eventi combinabili' : '',
+      e.needAc ? 'Richiede un A/C selezionato' : ''
     ].filter(Boolean).join(' · ');
     return '<button class="evbtn'+(s?' on':'')+'" data-ev="'+e.id+'" style="'+cvars(e.color)+'"'+(tip?' data-tip="'+esc(tip)+'"':'')+'>'+
       '<span class="dot"></span><span class="evl">'+esc(e.label)+'</span>'+
@@ -1172,6 +1176,7 @@ function onEvClick(id){
   }
   const i = SEL.ev.findIndex(s=>s.id===id);
   if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
+  if(ev.needAc && !SEL.ac.length){ needAcError(ev); return; }
   const done = det=>{ applyEvSel(ev, det); if(ev.reg==='subito') register(null); else renderPanel(); };
   if(ev.modal==='none') done(null);
   else openDetModal(ev, suggestDet(ev), done);
@@ -1199,8 +1204,15 @@ function addEntries(acs, evs, spot){
   return ids;
 }
 function afterRegister(ids){ renderCron(ids); if(VIEW==='involo') renderFlight(); updateFlightBadge(); }
+function needAcMsg(ev){ return ev.label+': seleziona prima l\'A/C'+(ev.modal==='move'?' da movimentare':''); }
+function needAcError(ev){
+  toast(needAcMsg(ev),'err');
+  const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
+}
 function register(spot){
   if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
+  const need = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needAc);
+  if(need && !SEL.ac.length){ needAcError(need); return; }
   const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
   const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot);
   SEL.ac=[]; SEL.ev=[];
@@ -1491,6 +1503,8 @@ function openEdit(day, id){
         }
         if(!evs.length) return showErr(m,'Seleziona almeno un evento');
         const acv = R.querySelector('[data-f="ac"]').value;
+        const need = sel.map(x=>getP(x.id)).find(x=>x && x.needAc);
+        if(need && !acv) return showErr(m, needAcMsg(need));
         let ac = null;
         if(acv){ const a=getAc(acv); ac = a ? acSnap(a) : (en.ac && en.ac.id===acv ? en.ac : null); }
         const sc = R.querySelector('[data-f="spot"] .chip.on');
@@ -1677,7 +1691,7 @@ function openEvManager(){
           '<div class="erow'+(e.hidden?' off':'')+'" data-id="'+e.id+'"><div class="ord"><button class="iconbtn" data-mv="-1"'+(i===0?' disabled':'')+' data-tip="Sposta su">'+I.up+'</button><button class="iconbtn" data-mv="1"'+(i===CFG.events.length-1?' disabled':'')+' data-tip="Sposta giù">'+I.down+'</button></div>'+
           '<div class="en"><i style="background:'+e.color+';box-shadow:0 0 8px '+e.color+'"></i>'+esc(e.label)+'</div>'+
           '<div class="ed">'+(e.modal!=='none'?MODAL_TYPES[e.modal]:'<span style="opacity:.6">Nessuna finestra</span>')+'</div>'+
-          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+(e.reg==='solo'?'<span class="tag reg">Un clic</span>':e.reg==='subito'?'<span class="tag reg">Subito</span>':'')+'</div>'+
+          '<div class="tags">'+(e.stat?'<span class="tag stat">'+esc(STAT_TYPES[e.stat])+'</span>':'')+(e.combo?'<span class="tag combo">Combinabile</span>':'')+(e.reg==='solo'?'<span class="tag reg">Un clic</span>':e.reg==='subito'?'<span class="tag reg">Subito</span>':'')+(e.needAc?'<span class="tag need">Richiede A/C</span>':'')+'</div>'+
           '<div class="acts"><button class="iconbtn" data-vis data-tip="'+(e.hidden?'Mostra':'Nascondi')+' in Cronologia">'+(e.hidden?I.eyeOff:I.eye)+'</button><button class="iconbtn" data-ed data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-del data-tip="Elimina">'+I.trash+'</button></div></div>').join('');
       };
       const changed = ()=>{ queueSave('config'); renderPanel(); draw(); };
@@ -1705,7 +1719,7 @@ function openEvManager(){
 }
 function openEvForm(ev, after){
   const isNew = !ev;
-  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, reg:'spot', hidden:false };
+  const e = ev ? clone(ev) : { id:'c_'+uid(), label:'', color:PALETTE[0], modal:'none', stat:'', combo:false, reg:'spot', needAc:false, hidden:false };
   openModal({
     title: isNew?'Nuovo evento':'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid',
     body:'<div class="prev" data-prev></div>'+
@@ -1714,6 +1728,7 @@ function openEvForm(ev, after){
       '<div class="row2"><div class="fgrp"><label>Finestra dettagli al clic</label><select data-e="modal">'+Object.keys(MODAL_TYPES).map(k=>'<option value="'+k+'"'+(k===e.modal?' selected':'')+'>'+MODAL_TYPES[k]+'</option>').join('')+'</select></div>'+
       '<div class="fgrp"><label>Conteggia nelle statistiche come</label><select data-e="stat">'+Object.keys(STAT_TYPES).map(k=>'<option value="'+k+'"'+(k===e.stat?' selected':'')+'>'+STAT_TYPES[k]+'</option>').join('')+'</select></div></div>'+
       '<div class="fgrp"><label>Registrazione</label><select data-e="reg">'+Object.keys(REG_TYPES).map(k=>'<option value="'+k+'"'+(k===e.reg?' selected':'')+'>'+REG_TYPES[k]+'</option>').join('')+'</select></div>'+
+      '<label class="chk"><input type="checkbox" data-e="needAc"'+(e.needAc?' checked':'')+'>Richiede un A/C selezionato (senza A/C mostra un errore, es. Move)</label>'+
       '<label class="chk"><input type="checkbox" data-e="combo"'+(e.combo?' checked':'')+'>Combinabile: selezionabile insieme ad altri eventi combinabili (es. Tacchi + Rizze)</label>'+
       '<label class="chk"><input type="checkbox" data-e="visible"'+(!e.hidden?' checked':'')+'>Visibile nella Cronologia</label><div class="ferr" hidden></div>',
     foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+(isNew?'Aggiungi':'Salva')+'</button>',
@@ -1725,7 +1740,8 @@ function openEvForm(ev, after){
       R.querySelector('[data-ok]').onclick = ()=>{
         const label = val('label').value.trim();
         if(!label) return showErr(m,'Inserisci il nome dell\'evento');
-        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, reg:val('reg').value, combo:val('combo').checked, hidden:!val('visible').checked });
+        if(val('reg').value==='solo' && val('needAc').checked) return showErr(m,'Un evento "un clic" si registra senza A/C: togli "Richiede un A/C" oppure cambia la registrazione');
+        Object.assign(e, { label, modal:val('modal').value, stat:val('stat').value, reg:val('reg').value, needAc:val('needAc').checked, combo:val('combo').checked, hidden:!val('visible').checked });
         if(isNew) CFG.events.push(e); else Object.assign(ev, e);
         m.close(); after && after();
       };
@@ -2075,6 +2091,7 @@ function normalizeCfg(c){
     e.id=e.id||('c_'+uid()); e.label=e.label||'Evento'; e.color=e.color||'#38bdf8'; if(!MODAL_TYPES[e.modal]) e.modal='none'; if(!(e.stat in STAT_TYPES)) e.stat=''; e.combo=!!e.combo; e.hidden=!!e.hidden;
     // aggiornamenti di versione: modalita' di registrazione e nome "Norco Lock"
     if(!REG_TYPES[e.reg]){ e.reg = DEF[e.id] ? DEF[e.id].reg : 'spot'; fresh = true; }
+    if(typeof e.needAc!=='boolean'){ e.needAc = DEF[e.id] ? DEF[e.id].needAc : false; fresh = true; }
     if(e.id==='nlock' && e.label==='Norck Lock'){ e.label = 'Norco Lock'; fresh = true; }
   });
   if(!o.tipoColor || typeof o.tipoColor!=='object') o.tipoColor = {};

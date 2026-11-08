@@ -74,6 +74,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      Gli A/C eventualmente selezionati restano selezionati.
    - Alcuni eventi aprono una piccola finestra (icona …):
    - **Move**: da / a (Hangar, Spot 1–9, Isole). La conferma registra subito il movimento.
+     **Serve almeno un A/C selezionato**: senza A/C compare l'errore "Move: seleziona prima
+     l'A/C da movimentare", l'area A/C si evidenzia in rosso e la finestra non si apre.
    - **Fuel**, **HotRef**: Inizio / Fine; su Fine anche i **litri**. Se l'ultima
      registrazione dello stesso A/C era "Inizio", propone già "Fine".
    - **Normal OPS**: **Endurance** con un orologio per impostare l'**ora di
@@ -90,6 +92,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
    - Nella finestra di modifica di ogni evento, la voce **Registrazione** sceglie
      come si registra: *standard* (spot o Salva), *subito* (al clic o alla
      conferma, con gli A/C selezionati) oppure *un clic* (subito, senza A/C né spot).
+     L'opzione **Richiede un A/C selezionato** (attiva su Move) blocca l'evento con un
+     errore se nessun A/C è selezionato; puoi attivarla anche su altri eventi.
 3. **Spot**: 1–9, Hangar, Isole. **Toccando uno spot l'evento viene registrato
    subito** con data e ora. Se l'evento non ha spot premi **SALVA** in basso a
    destra (oppure **F2**).
