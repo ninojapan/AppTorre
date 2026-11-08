@@ -814,24 +814,24 @@ function defaultEvents(){
     ['giallo','Giallo','#facc15','none','',false,'solo'],
     ['rosso','Rosso','#ef4444','none','',false,'solo'],
     ['verde','Verde','#22c55e','none','',false,'solo'],
-    ['tacchi','Tacchi','#f97316','none','',true],
-    ['rizze','Rizze','#f97316','none','',true],
-    ['fuel','Fuel','#f59e0b','fasiLt','fuel'],
-    ['hotref','HotRef','#fb7185','fasiLt','hotref'],
-    ['apu','APU/IPP','#2dd4bf'],
-    ['mim','MIM','#60a5fa'],
-    ['ingaggio','Ingaggio','#818cf8'],
-    ['decollo','Decollo','#38bdf8','none','decollo'],
-    ['normalops','Normal OPS','#818cf8','normalops'],
-    ['appontaggio','Appontaggio','#22c55e','none','appontaggio'],
-    ['personale','Personale','#f472b6','personale','personale'],
+    ['tacchi','Tacchi','#f97316','none','',true,'spot',true],
+    ['rizze','Rizze','#f97316','none','',true,'spot',true],
+    ['fuel','Fuel','#f59e0b','fasiLt','fuel',false,'spot',true],
+    ['hotref','HotRef','#fb7185','fasiLt','hotref',false,'spot',true],
+    ['apu','APU/IPP','#2dd4bf','none','',false,'spot',true],
+    ['mim','MIM','#60a5fa','none','',false,'spot',true],
+    ['ingaggio','Ingaggio','#818cf8','none','',false,'spot',true],
+    ['decollo','Decollo','#38bdf8','none','decollo',false,'spot',true],
+    ['normalops','Normal OPS','#818cf8','normalops','',false,'spot',true],
+    ['appontaggio','Appontaggio','#22c55e','none','appontaggio',false,'spot',true],
+    ['personale','Personale','#f472b6','personale','personale',false,'spot',true],
     ['elsx','Elev. Sx','#a3e635','carico','elev_sx',false,'subito'],
     ['eldx','Elev. Dx','#a3e635','carico','elev_dx',false,'subito'],
     ['elpr','Elev. Mun. Prora','#e879f9','carico','elev_prora',false,'subito'],
     ['elpo','Elev. Mun. Poppa','#e879f9','carico','elev_poppa',false,'subito'],
-    ['nlock','Norco Lock','#94a3b8'],
-    ['fold','Fold','#94a3b8'],
-    ['unfold','Unfold','#94a3b8'],
+    ['nlock','Norco Lock','#94a3b8','none','',false,'spot',true],
+    ['fold','Fold','#94a3b8','none','',false,'spot',true],
+    ['unfold','Unfold','#94a3b8','none','',false,'spot',true],
     ['testo','Testo','#e2e8f0','testo']
   ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', needAc:!!a[7], hidden:false }));
 }
@@ -1105,9 +1105,11 @@ function renderComposer(){
   $('cmpRow').innerHTML =
     '<span class="cmp-k">A/C</span>'+(acs.length ? acs.map(a=>'<span class="cmp-tag" style="'+cvars(tipoColor(a.tipo))+'">'+esc(a.callsign)+'</span>').join('') : '<span class="muted">—</span>')+
     '<span class="cmp-sep">|</span><span class="cmp-k">Evento</span>'+(evs.length ? evs.map(x=>{ const d=x.det?detText(x.e.modal,x.det):''; return '<span class="cmp-tag" style="'+cvars(x.e.color)+'">'+esc(x.e.label)+(d?' · '+esc(d):'')+'</span>'; }).join('') : '<span class="muted">—</span>');
+  const sp = deckSpots(acs);
   $('cmpHint').innerHTML = evs.length
     ? I.pin+'<span>Tocca uno <b>SPOT</b> per registrare, oppure premi <b>SALVA</b></span>'
-    : '<span>Seleziona A/C (facoltativo) ed evento</span>';
+    : sp ? I.pin+'<span>A/C su <b>'+esc(Array.from(new Set(Object.values(sp))).map(spotLabel).join(', '))+'</b>: gli eventi dell\'A/C si registrano subito</span>'
+    : '<span>Seleziona l\'A/C ed evento</span>';
   $('btnSave').disabled = !evs.length;
   $('btnClear').disabled = !acs.length && !evs.length;
 }
@@ -1177,7 +1179,18 @@ function onEvClick(id){
   const i = SEL.ev.findIndex(s=>s.id===id);
   if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
   if(ev.needAc && !SEL.ac.length){ needAcError(ev); return; }
-  const done = det=>{ applyEvSel(ev, det); if(ev.reg==='subito') register(null); else renderPanel(); };
+  // A/C gia' su uno spot: l'evento si registra subito su quello spot (per ogni A/C selezionato)
+  const auto = ev.needAc && ev.reg==='spot' ? deckSpots(SEL.ac.map(getAc).filter(Boolean)) : null;
+  const done = det=>{
+    if(auto){
+      // Tacchi/Rizze: se l'altro e' appena stato registrato sugli stessi A/C, si aggiunge a quella riga
+      const merged = !det && mergeCombo(ev);
+      if(merged){ SEL.ac=[]; SEL.ev=[]; afterRegister(merged); hitSpots(Object.values(auto)); return; }
+      applyEvSel(ev, det); register(null, auto); hitSpots(Object.values(auto)); return;
+    }
+    applyEvSel(ev, det); if(ev.reg==='subito') register(null); else renderPanel();
+  };
+  if(auto && ev.modal!=='none'){ openDetModal(ev, suggestDet(ev), done, { direct:true }); return; }
   if(ev.modal==='none') done(null);
   else openDetModal(ev, suggestDet(ev), done);
 }
@@ -1187,7 +1200,8 @@ function onSpotClick(s, btn){
   const nb = qsa('#deck [data-spot]').find(b=>b.dataset.spot===s); if(nb) nb.classList.add('hit');
 }
 const evSnap = (e, det) => ({ id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det: det ? clone(det) : null });
-function addEntries(acs, evs, spot){
+let LAST_REG = null;   // ultima registrazione (per unire Tacchi + Rizze)
+function addEntries(acs, evs, spot, spotByAc){
   const now = new Date(), k = dayKey(now);
   if(k!==TODAY) rollDay(k);
   if(!DAYS[k]) DAYS[k] = [];
@@ -1196,25 +1210,47 @@ function addEntries(acs, evs, spot){
   if(mv) spot = mv.det.a;
   const ts = now.toISOString(), ids = [];
   (acs.length ? acs : [null]).forEach(a=>{
-    const en = { id:uid(), ts, ac: a ? acSnap(a) : null, evs: clone(evs), spot: spot||null };
+    const en = { id:uid(), ts, ac: a ? acSnap(a) : null, evs: clone(evs), spot: (mv ? spot : (a && spotByAc && spotByAc[a.id]) || spot) || null };
     DAYS[k].push(en); ids.push(en.id);
   });
   rememberFrom(evs);
   sortDay(k); setIndex(k); queueSave(k);
+  LAST_REG = { day:k, ids, at:Date.now() };
   return ids;
 }
 function afterRegister(ids){ renderCron(ids); if(VIEW==='involo') renderFlight(); updateFlightBadge(); }
+function deckSpots(acs){
+  // { idA/C: spot } se TUTTI gli A/C hanno gia' uno spot assegnato (1-9, Hangar, Isole), altrimenti null
+  if(!acs.length) return null;
+  const pos = positions(), out = {};
+  for(const a of acs){ if(!SPOTS.includes(pos[a.id])) return null; out[a.id] = pos[a.id]; }
+  return out;
+}
+function hitSpots(list){ list.forEach(s=>{ const b=qsa('#deck [data-spot]').find(x=>x.dataset.spot===s); if(b){ b.classList.remove('hit'); void b.offsetWidth; b.classList.add('hit'); } }); }
+function mergeCombo(ev){
+  if(!ev.combo || !LAST_REG || Date.now()-LAST_REG.at > 120000) return null;
+  const list = DAYS[LAST_REG.day]||[];
+  const ens = LAST_REG.ids.map(id=>list.find(x=>x.id===id));
+  if(!ens.length || ens.some(x=>!x)) return null;
+  const sel = SEL.ac.slice().sort().join(','), was = ens.map(x=>x.ac?x.ac.id:'').sort().join(',');
+  if(sel!==was) return null;
+  const okEvs = ens.every(x=>x.evs.every(e=>{ const c=getEv(e.id); return c && c.combo && e.id!==ev.id; }));
+  if(!okEvs) return null;
+  ens.forEach(x=>x.evs.push(evSnap(ev, null)));
+  queueSave(LAST_REG.day); LAST_REG.at = Date.now();
+  return LAST_REG.ids.slice();
+}
 function needAcMsg(ev){ return ev.label+': seleziona prima l\'A/C'+(ev.modal==='move'?' da movimentare':''); }
 function needAcError(ev){
   toast(needAcMsg(ev),'err');
   const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
 }
-function register(spot){
+function register(spot, spotByAc){
   if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
   const need = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needAc);
   if(need && !SEL.ac.length){ needAcError(need); return; }
   const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
-  const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot);
+  const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot, spotByAc);
   SEL.ac=[]; SEL.ev=[];
   afterRegister(ids);
 }
@@ -1728,7 +1764,7 @@ function openEvForm(ev, after){
       '<div class="row2"><div class="fgrp"><label>Finestra dettagli al clic</label><select data-e="modal">'+Object.keys(MODAL_TYPES).map(k=>'<option value="'+k+'"'+(k===e.modal?' selected':'')+'>'+MODAL_TYPES[k]+'</option>').join('')+'</select></div>'+
       '<div class="fgrp"><label>Conteggia nelle statistiche come</label><select data-e="stat">'+Object.keys(STAT_TYPES).map(k=>'<option value="'+k+'"'+(k===e.stat?' selected':'')+'>'+STAT_TYPES[k]+'</option>').join('')+'</select></div></div>'+
       '<div class="fgrp"><label>Registrazione</label><select data-e="reg">'+Object.keys(REG_TYPES).map(k=>'<option value="'+k+'"'+(k===e.reg?' selected':'')+'>'+REG_TYPES[k]+'</option>').join('')+'</select></div>'+
-      '<label class="chk"><input type="checkbox" data-e="needAc"'+(e.needAc?' checked':'')+'>Richiede un A/C selezionato (senza A/C mostra un errore, es. Move)</label>'+
+      '<label class="chk"><input type="checkbox" data-e="needAc"'+(e.needAc?' checked':'')+'>Richiede un A/C selezionato: senza A/C mostra un errore; se l\'A/C è già su uno spot si registra subito lì</label>'+
       '<label class="chk"><input type="checkbox" data-e="combo"'+(e.combo?' checked':'')+'>Combinabile: selezionabile insieme ad altri eventi combinabili (es. Tacchi + Rizze)</label>'+
       '<label class="chk"><input type="checkbox" data-e="visible"'+(!e.hidden?' checked':'')+'>Visibile nella Cronologia</label><div class="ferr" hidden></div>',
     foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+(isNew?'Aggiungi':'Salva')+'</button>',
@@ -2098,7 +2134,13 @@ function normalizeCfg(c){
   if(!o.recent || typeof o.recent!=='object') o.recent = {};
   if(!Array.isArray(o.recent.carico)) o.recent.carico = [];
   if(!Array.isArray(o.recent.weapon)) o.recent.weapon = [];
-  o.version = 1;
+  if((Number(o.version)||1) < 2){
+    // v2: questi eventi devono essere abbinati a un A/C
+    const NEED = ['move','tacchi','rizze','fuel','hotref','apu','mim','ingaggio','decollo','normalops','appontaggio','personale','nlock','fold','unfold'];
+    o.events.forEach(e=>{ if(NEED.includes(e.id)) e.needAc = true; });
+    fresh = true;
+  }
+  o.version = 2;
   return { cfg:o, fresh };
 }
 function showOffline(){

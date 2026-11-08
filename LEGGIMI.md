@@ -69,6 +69,18 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
    - Puoi selezionare **più A/C insieme**: viene registrata una riga per ciascuno.
 2. **Eventi**: pulsanti minimal personalizzabili (**+** per aggiungere, matita
    per modificare, ordinare, nascondere o eliminare).
+   - **Abbinati a un A/C**: **Move, Tacchi, Rizze, Fuel, HotRef, APU/IPP, MIM,
+     Ingaggio, Decollo, Normal OPS, Appontaggio, Personale, Norco Lock, Fold,
+     Unfold** richiedono un A/C selezionato: senza A/C compare un errore, l'area
+     A/C si evidenzia in rosso e **non viene salvato nulla**.
+   - **Salvataggio immediato**: se l'A/C selezionato ha **già uno spot assegnato**
+     (1–9, Hangar, Isole: lo vedi nel badge sul pulsante dell'A/C) l'evento viene
+     registrato **subito su quello spot**, alla conferma della finestra per Fuel,
+     HotRef e Personale. Con più A/C selezionati, ogni riga prende lo spot del suo
+     A/C. Se l'A/C non ha uno spot (es. **in volo**), l'evento resta selezionato e
+     si tocca lo spot (es. l'Appontaggio) oppure si preme **SALVA**.
+   - **Tacchi + Rizze**: se premi Rizze (o Tacchi) sullo stesso A/C entro 2 minuti
+     dall'altro, viene aggiunto alla stessa riga ("Tacchi + Rizze").
    - **Un clic** (icona ⚡): **Ops di volo, FodWalk, Deck Ready, Prova Semaforo,
      Giallo, Rosso, Verde** vengono registrati subito, senza A/C né spot.
      Gli A/C eventualmente selezionati restano selezionati.
@@ -92,13 +104,15 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
    - Nella finestra di modifica di ogni evento, la voce **Registrazione** sceglie
      come si registra: *standard* (spot o Salva), *subito* (al clic o alla
      conferma, con gli A/C selezionati) oppure *un clic* (subito, senza A/C né spot).
-     L'opzione **Richiede un A/C selezionato** (attiva su Move) blocca l'evento con un
-     errore se nessun A/C è selezionato; puoi attivarla anche su altri eventi.
+     L'opzione **Richiede un A/C selezionato** blocca l'evento con un errore se
+     nessun A/C è selezionato e lo registra subito se l'A/C è già su uno spot;
+     puoi attivarla o disattivarla per ogni evento.
 3. **Spot**: 1–9, Hangar, Isole. **Toccando uno spot l'evento viene registrato
    subito** con data e ora. Se l'evento non ha spot premi **SALVA** in basso a
    destra (oppure **F2**).
 
-Sequenza tipica: **A/C → Evento → Spot** (registrato).
+Sequenza tipica: **A/C → Evento** (registrato subito se l'A/C è già su uno spot),
+altrimenti **A/C → Evento → Spot**.
 `Esc` annulla la selezione. Su ogni riga: **matita** per modificare (ora,
 A/C, evento, dettagli, spot, note) e **cestino** per eliminare (con conferma).
 
