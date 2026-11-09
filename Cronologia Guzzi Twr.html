@@ -1452,7 +1452,7 @@ function rememberRecent(kind, txt){
    DETTAGLI EVENTO (modal piccoli)
    ========================================================================= */
 const chip = (v, label, on, ic) => '<button type="button" class="chip'+(on?' on':'')+'" data-v="'+esc(v)+'">'+(ic?I[ic]:'')+esc(label)+'</button>';
-const stepper = (k, v) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="0" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
+const stepper = (k, v, min) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="'+(min||0)+'" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
 const fmtShort = v => { const h=Math.floor(v/60), m=v%60; return h ? h+'h'+(m?pad(m):'') : m+'′'; };
 const optChip = (v, title, desc, on, badge) => '<button type="button" class="chip opt'+(on?' on':'')+'" data-v="'+esc(v)+'"><b>'+esc(title)+'</b><span>'+esc(desc)+'</span>'+(badge?'<em>'+esc(badge)+'</em>':'')+'</button>';
 function detForm(ev, det, ref, occ){
@@ -1479,7 +1479,7 @@ function detForm(ev, det, ref, occ){
           '<div class="ck-col"><button type="button" data-ck="m" data-d="1" data-tip="+5 minuti">'+I.up+'</button><input class="ck-in" data-ckp="m" inputmode="numeric" maxlength="2" placeholder="--" value="'+(hm[1]||'')+'"><button type="button" data-ck="m" data-d="-1" data-tip="−5 minuti">'+I.down+'</button></div>'+
           '<div class="ck-info"><span class="ck-lab">Autonomia</span><b data-ckrem>—</b></div></div>'+
         '<div class="quick">'+[30,60,90,120,150,180,210,240].map(v=>'<button type="button" class="qbtn" data-ckadd="'+v+'">+'+fmtShort(v)+'</button>').join('')+'<button type="button" class="qbtn" data-ckclr>Azzera</button></div></div>'+
-        '<div class="row2"><div class="fgrp"><label>POB *</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div>'+
+        '<div class="row2"><div class="fgrp"><label>POB *</label>'+stepper('pob', det.pob!=null?det.pob:'', 1)+'</div>'+
         '<div class="fgrp"><label>Weapon</label><input type="text" data-k="weapon" value="'+esc(det.weapon||'')+'" placeholder="es. MK46 ×2" list="dlWeapon"><datalist id="dlWeapon">'+recW.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
         (recW.length ? '<div class="quick">'+recW.slice(0,6).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="weapon">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div></div>';
     }
@@ -1515,9 +1515,10 @@ function detRead(ev, box){
       if(ck && !end && qsa('.ck-in', ck).some(x=>x.value!=='')) return {err:'Ora di termine autonomia non valida'};
       const miss = []; if(!end) miss.push('Endurance (ora termine autonomia)'); if(pob==='') miss.push('POB');
       if(miss.length) return {err:'Obbligatorio: '+miss.join(' e ')};
+      if(!/^\d+$/.test(pob) || parseInt(pob,10)<1) return {err:'POB non valido: deve essere almeno 1'};
       const det = {};
       if(end){ det.end = end; det.endTs = endTsFrom(end, clockRef(ck)).toISOString(); }
-      if(pob!=='') det.pob = Math.max(0, parseInt(pob,10)||0);
+      det.pob = parseInt(pob,10);
       if(weapon) det.weapon = weapon;
       return {det};
     }
@@ -1621,7 +1622,7 @@ function bindDet(root){
       return;
     }
     const s = e.target.closest('[data-step]');
-    if(s){ const i=s.closest('.detbox').querySelector('[data-k="'+s.dataset.for+'"]'); i.value=Math.max(0,(parseInt(i.value,10)||0)+Number(s.dataset.step)); return; }
+    if(s){ const i=s.closest('.detbox').querySelector('[data-k="'+s.dataset.for+'"]'); i.value=Math.max(Number(i.min)||0,(parseInt(i.value,10)||0)+Number(s.dataset.step)); return; }
     const q = e.target.closest('[data-add]');
     if(q){ const i=q.closest('.detbox').querySelector('[data-k="'+q.dataset.for+'"]'); i.value=(parseInt(i.value,10)||0)+Number(q.dataset.add); i.focus(); return; }
     const z = e.target.closest('[data-zero]');

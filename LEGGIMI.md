@@ -108,7 +108,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      termine dell'autonomia** (frecce ore e minuti, oppure +30′, +1h, +1h30… da
      adesso), **POB** e **Weapon** (testo libero; gli armamenti già usati vengono
      riproposti). **Endurance e POB sono obbligatori**: se ne manca uno il
-     salvataggio non avviene ("Obbligatorio: …"). Weapon è facoltativo. L'autonomia residua appare subito in verde, giallo o rosso.
+     salvataggio non avviene ("Obbligatorio: …"); il **POB deve essere almeno 1**
+     (con 0 non si salva). Weapon è facoltativo. L'autonomia residua appare subito in verde, giallo o rosso.
      **Solo per A/C in volo** (dopo il **Decollo**): con un A/C a terra compare
      l'errore "Normal OPS: … non è in volo — registra prima il Decollo" e non si
      salva nulla. Per un A/C in volo si registra **subito alla conferma** della
