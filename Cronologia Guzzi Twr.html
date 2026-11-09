@@ -135,6 +135,14 @@ input[type=date],input[type=time]{color-scheme:dark}
 .chip.on{color:#04121f;background:linear-gradient(180deg,var(--accent),var(--accent-d));border-color:var(--accent);box-shadow:0 3px 12px #0ea5e944}
 .chipgrp.big .chip{flex:1;justify-content:center;padding:16px 12px;font-size:16px;border-radius:13px}
 .chipgrp.big .chip svg{width:20px;height:20px}
+.chipgrp.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chip.opt{position:relative;flex-direction:column;align-items:flex-start;gap:3px;padding:10px 12px;text-align:left;border-radius:12px}
+.chip.opt b{font-family:var(--font-d);font-size:15px;letter-spacing:.5px}
+.chip.opt span{font-size:12px;font-weight:600;opacity:.9}
+.chip.opt em{position:absolute;top:-8px;right:8px;font-style:normal;font-size:10px;font-weight:800;padding:1px 7px;border-radius:20px;background:#2a220a;border:1px solid #8a6b14;color:var(--gold)}
+.chip.opt.on em{background:#0b2436;border-color:#04121f;color:#d6f3ff}
+.herfbox{background:#1a1408;border:1px solid #5c4a12;border-radius:12px;padding:10px 12px 12px}
+.herfbox > label{color:var(--gold)!important}
 .stepper{display:flex;align-items:center;gap:8px}
 .stepper button{width:46px;height:46px;border-radius:12px;border:1px solid var(--border);background:var(--panel2);font-size:24px;line-height:1;flex:0 0 auto}
 .stepper button:hover{border-color:var(--accent)}
@@ -183,8 +191,11 @@ input[type=date],input[type=time]{color-scheme:dark}
 .l-note .note-ph{display:inline-flex;align-items:center;gap:6px;color:var(--muted2);font-size:12px;font-weight:600;opacity:0;transition:.12s;white-space:nowrap}
 .l-note .note-ph svg{width:13px;height:13px}
 .lrow:hover .l-note .note-ph{opacity:1}
-.l-note.editing{cursor:auto;border:1px solid var(--accent);background:var(--bg2);box-shadow:0 0 0 3px #38bdf826;flex-direction:column;align-items:stretch;gap:4px}
-.note-ed{width:100%;min-height:36px;resize:none;overflow:hidden;background:transparent;border:none;outline:none;color:var(--text);font:inherit;font-size:13px;line-height:1.4;padding:0}
+.l-note.editing{position:relative;cursor:auto;border:1px solid var(--accent);background:var(--bg2);box-shadow:0 0 0 3px #38bdf826;flex-direction:column;align-items:stretch;gap:4px}
+.note-x{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:7px;border:1px solid var(--border2);background:var(--panel2);color:var(--muted);display:flex;align-items:center;justify-content:center;padding:0}
+.note-x svg{width:13px;height:13px;stroke-width:2.6}
+.note-x:hover{color:#fff;background:var(--red);border-color:var(--red)}
+.note-ed{width:100%;min-height:36px;resize:none;overflow:hidden;background:transparent;border:none;outline:none;color:var(--text);font:inherit;font-size:13px;line-height:1.4;padding:0 26px 0 0}
 .note-hint{font-size:10.5px;color:var(--muted2);line-height:1.5}
 .note-hint kbd{font-family:var(--font);font-size:10px;padding:0 5px;border-radius:4px;border:1px solid var(--border2);background:var(--panel2);color:var(--muted)}
 .empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
@@ -545,6 +556,10 @@ input[type=date],input[type=time]{color-scheme:dark}
 
 /* ================= STAMPA ================= */
 #printArea{display:none}
+.spr-list{display:flex;flex-direction:column;gap:2px;margin:6px 0 10px}
+.spr-tools{display:flex;gap:8px;margin-bottom:6px}
+.spr-per{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:10px 12px;margin-bottom:12px;font-size:13px;color:var(--muted)}
+.spr-per b{color:var(--text)}
 @media print{
   @page{size:A4 landscape;margin:12mm}
   html,body{background:#fff!important;color:#000;overflow:visible;height:auto}
@@ -563,6 +578,25 @@ input[type=date],input[type=time]{color-scheme:dark}
   #printArea td.nw{white-space:nowrap}
   #printArea tr{page-break-inside:avoid}
   .pr-foot{display:flex;justify-content:space-between;margin-top:14px;font-size:9pt}
+  /* stampa a colori, come nell'app (statistiche) */
+  html.print-color,html.print-color body{background:#060c18!important;color:var(--text)!important}
+  html.print-color,html.print-color *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+  html.print-color #printArea{font-family:var(--font);font-size:12px;padding:8mm 9mm;background:#060c18;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+  html.print-color .pc-head{display:flex;align-items:center;gap:14px;padding:12px 16px;margin-bottom:12px;border-radius:14px;background:linear-gradient(180deg,#12223f,#0b162b);border:1px solid var(--border);position:relative;overflow:hidden}
+  html.print-color .pc-head::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--it-green) 0 33.3%,#fff 33.3% 66.6%,var(--it-red) 66.6% 100%)}
+  html.print-color .pc-head img{width:52px;height:52px;object-fit:contain}
+  html.print-color .pc-head h1{margin:0;font-family:var(--font-d);font-size:22px;letter-spacing:.5px}
+  html.print-color .pc-head .pc-sub{font-size:10px;color:var(--muted);font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+  html.print-color .pc-per{margin-left:auto;text-align:right;font-size:11px;color:var(--muted)}
+  html.print-color .pc-per b{display:block;font-family:var(--font-d);font-size:15px;color:var(--text)}
+  html.print-color #printArea .kpis{grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:12px}
+  html.print-color #printArea .kpi .k-val{font-size:25px}
+  html.print-color #printArea .kpi .k-lab{padding-right:26px}
+  html.print-color #printArea .kpi .k-ic{top:10px;right:10px}
+  html.print-color #printArea .kpi .k-ic svg{width:20px;height:20px}
+  html.print-color #printArea .stgrid{grid-template-columns:1fr 1fr;gap:12px}
+  html.print-color #printArea .panelbox{break-inside:avoid;page-break-inside:avoid;padding:14px 16px}
+  html.print-color #printArea .bfill{transition:none}
   .pr-sign{margin-top:28px;text-align:right;font-size:10pt}
 }
 </style>
@@ -708,15 +742,16 @@ input[type=date],input[type=time]{color-scheme:dark}
           <div class="spacer"></div>
           <div class="periods" id="stPeriods"></div>
           <div class="range"><input type="date" id="stFrom"><span>→</span><input type="date" id="stTo"></div>
+          <button class="btn ghost small" id="btnStPrint"><span data-icon="printer"></span>Stampa / PDF</button>
         </div>
         <div class="kpis" id="stKpis"></div>
         <div class="stgrid">
-          <div class="panelbox"><h3><span data-icon="plane"></span>Decolli e appontaggi per tipo A/C</h3><div class="ph-sub" id="stTipoSub"></div><div id="stTipo"></div></div>
-          <div class="panelbox"><h3><span data-icon="pin"></span>Decolli e appontaggi per spot</h3><div class="ph-sub">Spot in cui è stato registrato l'evento</div><div id="stSpot"></div></div>
-          <div class="panelbox"><h3><span data-icon="elev"></span>Movimentazioni elevatori</h3><div class="ph-sub">Numero di movimentazioni registrate</div><div id="stElev"></div></div>
-          <div class="panelbox"><h3><span data-icon="fuel"></span>Carburante erogato per tipo A/C</h3><div class="ph-sub">Litri registrati alla <b>Fine</b> di Fuel e HotRef</div><div id="stFuel"></div></div>
-          <div class="panelbox"><h3><span data-icon="users"></span>Personale imbarcato / sbarcato</h3><div class="ph-sub">Numero di persone</div><div id="stPers"></div></div>
-          <div class="panelbox"><h3><span data-icon="zap"></span>Eventi registrati</h3><div class="ph-sub">Conteggio per tipo di evento</div><div id="stEv"></div></div>
+          <div class="panelbox" data-sp="tipo"><h3><span data-icon="plane"></span>Decolli e appontaggi per tipo A/C</h3><div class="ph-sub" id="stTipoSub"></div><div id="stTipo"></div></div>
+          <div class="panelbox" data-sp="spot"><h3><span data-icon="pin"></span>Decolli e appontaggi per spot</h3><div class="ph-sub">Spot in cui è stato registrato l'evento</div><div id="stSpot"></div></div>
+          <div class="panelbox" data-sp="elev"><h3><span data-icon="elev"></span>Movimentazioni elevatori</h3><div class="ph-sub">Numero di movimentazioni registrate</div><div id="stElev"></div></div>
+          <div class="panelbox" data-sp="fuel"><h3><span data-icon="fuel"></span>Carburante erogato per tipo A/C</h3><div class="ph-sub">Litri registrati alla <b>Fine</b> di Fuel e HotRef</div><div id="stFuel"></div></div>
+          <div class="panelbox" data-sp="pers"><h3><span data-icon="users"></span>Personale imbarcato / sbarcato</h3><div class="ph-sub">Numero di persone</div><div id="stPers"></div></div>
+          <div class="panelbox" data-sp="ev"><h3><span data-icon="zap"></span>Eventi registrati</h3><div class="ph-sub">Conteggio per tipo di evento</div><div id="stEv"></div></div>
         </div>
       </div>
     </section>
@@ -817,8 +852,29 @@ const posLabel = p => p==='VOLO' ? 'In volo' : spotLabel(p);
 
 const MODAL_TYPES = {
   none:'Nessuna finestra', move:'Movimento (da → a)', fasi:'Inizio / Fine', fasiLt:'Inizio / Fine + litri',
-  normalops:'Endurance + POB', personale:'Imbarco / Sbarco + n° persone', carico:'Cosa trasporta / carico', testo:'Testo libero'
+  normalops:'Endurance + POB', personale:'Imbarco / Sbarco + n° persone', carico:'Cosa trasporta / carico', testo:'Testo libero',
+  hero:'Assetto HERO'
 };
+// assetti HERF (richiesti all'Inizio di Fuel / HotRef) e HERO
+const HERF = [
+  { v:'1', t:'Nessuna restrizione', spots:[] },
+  { v:'2', t:'Per spot 1, 2 e 3', spots:['1','2','3'] },
+  { v:'3', t:'Per spot 4, 5 e 6', spots:['4','5','6'] },
+  { v:'4', t:'Per spot 7 e 8', spots:['7','8'] },
+  { v:'5', t:'Per spot 5 e 9', spots:['5','9'] },
+  { v:'6', t:'Per Isole', spots:['Isole'] }
+];
+const HERO = [
+  { v:'1', t:'Safe' },
+  { v:'2', t:'Armamento spot 1, 2, 3 e 4' },
+  { v:'3', t:'Armamento spot 5, 6 e 9' },
+  { v:'4', t:'Armamento spot 7 e 8' },
+  { v:'5', t:'Armamento Isole' },
+  { v:'6', t:'Armamento in Hangar' },
+  { v:'7', t:'Restrizioni con A/C in volo' }
+];
+const herfText = v => { const h = HERF.find(x=>x.v===v); return h ? 'HERF '+h.v+' · '+h.t.toLowerCase() : ''; };
+const heroText = v => { const h = HERO.find(x=>x.v===v); return h ? 'HERO '+h.v+' · '+h.t : ''; };
 const REG_TYPES = {
   spot:'Standard: con uno spot o con il pulsante Salva',
   subito:'Subito al clic / alla conferma della finestra (con gli A/C selezionati)',
@@ -843,6 +899,7 @@ function defaultEvents(){
     ['giallo','Giallo','#facc15','none','',false,'solo'],
     ['rosso','Rosso','#ef4444','none','',false,'solo'],
     ['verde','Verde','#22c55e','none','',false,'solo'],
+    ['hero','HERO','#e879f9','hero','',false,'solo'],
     ['tacchi','Tacchi','#f97316','none','',true,'spot',true],
     ['rizze','Rizze','#f97316','none','',true,'spot',true],
     ['fuel','Fuel','#f59e0b','fasiLt','fuel',false,'spot',true],
@@ -1361,6 +1418,7 @@ function rememberRecent(kind, txt){
 const chip = (v, label, on, ic) => '<button type="button" class="chip'+(on?' on':'')+'" data-v="'+esc(v)+'">'+(ic?I[ic]:'')+esc(label)+'</button>';
 const stepper = (k, v) => '<div class="stepper"><button type="button" data-step="-1" data-for="'+k+'">−</button><input type="number" inputmode="numeric" min="0" step="1" data-k="'+k+'" value="'+esc(v)+'"><button type="button" data-step="1" data-for="'+k+'">+</button></div>';
 const fmtShort = v => { const h=Math.floor(v/60), m=v%60; return h ? h+'h'+(m?pad(m):'') : m+'′'; };
+const optChip = (v, title, desc, on, badge) => '<button type="button" class="chip opt'+(on?' on':'')+'" data-v="'+esc(v)+'"><b>'+esc(title)+'</b><span>'+esc(desc)+'</span>'+(badge?'<em>'+esc(badge)+'</em>':'')+'</button>';
 function detForm(ev, det, ref, occ){
   det = det||{};
   switch(ev.modal){
@@ -1370,6 +1428,8 @@ function detForm(ev, det, ref, occ){
                           : chip(p, spotLabel(p), det.a===p)).join('')+'</div></div>';
     case 'fasi':
     case 'fasiLt': return '<div class="fgrp"><div class="chipgrp big" data-k="fase">'+chip('inizio','Inizio',det.fase==='inizio','play')+chip('fine','Fine',det.fase==='fine','stop')+'</div></div>'+
+      (ev.modal==='fasiLt' ? '<div class="fgrp herfbox'+(det.fase==='inizio'?'':' hide')+'"><label>Assetto HERF *</label><div class="chipgrp opts" data-k="herf">'+
+        HERF.map(h=>optChip(h.v, 'HERF '+h.v, h.t, det.herf===h.v, (det._herfSug||[]).includes(h.v) ? 'Spot A/C' : '')).join('')+'</div></div>' : '')+
       (ev.modal==='fasiLt' ? '<div class="fgrp ltbox'+(det.fase==='fine'?'':' hide')+'"><label>Quantità (lt)</label><input type="number" inputmode="numeric" min="0" step="1" data-k="lt" value="'+esc(det.lt!=null?det.lt:'')+'" placeholder="es. 1200"'+(det.fase==='fine'?' autofocus':'')+'>'+
         '<div class="quick">'+[100,250,500,1000].map(v=>'<button type="button" class="qbtn" data-add="'+v+'" data-for="lt">+'+v+'</button>').join('')+'<button type="button" class="qbtn" data-zero="lt">Azzera</button></div></div>' : '');
     case 'normalops': {
@@ -1395,6 +1455,8 @@ function detForm(ev, det, ref, occ){
         '<datalist id="dlCarico">'+rec.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
         (rec.length ? '<div class="quick">'+rec.slice(0,8).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="txt">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div>';
     }
+    case 'hero': return '<div class="fgrp"><label>Assetto HERO *</label><div class="chipgrp opts" data-k="hero">'+
+      HERO.map(h=>optChip(h.v, 'HERO '+h.v, h.t, det.hero===h.v, det._cur===h.v ? 'In vigore' : '')).join('')+'</div></div>';
     case 'testo': return '<div class="fgrp"><label>Descrizione evento</label><textarea data-k="txt" placeholder="Scrivi l\'evento fuori norma…" autofocus>'+esc(det.txt||'')+'</textarea></div>';
   }
   return '';
@@ -1408,6 +1470,7 @@ function detRead(ev, box){
     case 'fasiLt': {
       const fase=g('fase'); if(!fase) return {err:'Seleziona Inizio o Fine'};
       const det={fase};
+      if(fase==='inizio' && box.querySelector('.herfbox')){ const herf=g('herf'); if(!herf) return {err:'Seleziona l\'assetto HERF'}; det.herf = herf; }
       if(fase==='fine'){ const s=v('lt').replace(/\./g,'').replace(',','.'); if(s!==''){ const n=Number(s); if(!isFinite(n)||n<0) return {err:'Quantità in litri non valida'}; det.lt=Math.round(n); } }
       return {det};
     }
@@ -1422,6 +1485,7 @@ function detRead(ev, box){
       if(weapon) det.weapon = weapon;
       return {det};
     }
+    case 'hero': { const hero=g('hero'); if(!hero) return {err:'Seleziona l\'assetto HERO'}; return {det:{hero}}; }
     case 'personale': { const dir=g('dir'); const n=parseInt(v('n'),10)||0; if(!dir) return {err:'Seleziona Imbarco o Sbarco'}; if(n<1) return {err:'Inserisci il numero di persone'}; return {det:{dir,n}}; }
     case 'carico': { const txt=v('txt'); return {det: txt ? {txt} : {}}; }
     case 'testo': { const txt=v('txt'); if(!txt) return {err:'Scrivi il testo dell\'evento'}; return {det:{txt}}; }
@@ -1433,9 +1497,10 @@ function detText(modal, det){
   switch(modal){
     case 'move': return det.da&&det.a ? spotLabel(det.da)+' → '+spotLabel(det.a) : '';
     case 'fasi': return det.fase==='fine'?'Fine':det.fase==='inizio'?'Inizio':'';
-    case 'fasiLt': return det.fase==='inizio'?'Inizio':det.fase==='fine'?('Fine'+(det.lt!=null?' · '+fmtNum(det.lt)+' lt':'')):'';
+    case 'fasiLt': return det.fase==='inizio'?('Inizio'+(det.herf?' · HERF '+det.herf:'')):det.fase==='fine'?('Fine'+(det.lt!=null?' · '+fmtNum(det.lt)+' lt':'')):'';
     case 'normalops': return [det.endTs ? 'Termine aut. '+det.end : (det.end ? 'Endurance '+det.end : ''), det.pob!=null?'POB '+det.pob:'', det.weapon?'Weapon '+det.weapon:''].filter(Boolean).join(' · ');
     case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+' · '+det.n+' pers.' : '';
+    case 'hero': return heroText(det.hero);
     case 'carico': case 'testo': return det.txt||'';
   }
   return '';
@@ -1450,9 +1515,22 @@ function suggestDet(ev){
     // se l'ultima registrazione di questo evento (stesso A/C) e' "Inizio", propone "Fine"
     const list = (DAYS[TODAY]||[]).filter(en=>(acId ? en.ac && en.ac.id===acId : true) && en.evs.some(e=>e.id===ev.id));
     const last = list.length ? list[list.length-1].evs.find(e=>e.id===ev.id) : null;
-    return { fase: last && last.det && last.det.fase==='inizio' ? 'fine' : 'inizio' };
+    const out = { fase: last && last.det && last.det.fase==='inizio' ? 'fine' : 'inizio' };
+    if(ev.modal==='fasiLt'){
+      // assetto HERF suggerito in base allo spot dell'A/C (preselezionato se e' uno solo)
+      const p = acId ? positions()[acId] : null;
+      out._herfSug = p ? HERF.filter(h=>h.spots.includes(p)).map(h=>h.v) : [];
+      if(out._herfSug.length===1) out.herf = out._herfSug[0];
+    }
+    return out;
   }
   if(ev.modal==='personale') return { dir:'imbarco', n:1 };
+  if(ev.modal==='hero'){
+    // assetto HERO attualmente in vigore (ultimo registrato)
+    const list = recentEntries().filter(en=>en.evs.some(e=>e.modal==='hero' && e.det && e.det.hero));
+    const last = list.length ? list[list.length-1].evs.find(e=>e.modal==='hero') : null;
+    return { _cur: last ? last.det.hero : null };
+  }
   if(ev.modal==='normalops'){
     // ripropone i dati dell'ultimo Normal OPS dello stesso A/C in volo
     const st = acId ? acStates()[acId] : null, n = st && st.pos==='VOLO' ? st.nops : null;
@@ -1486,6 +1564,8 @@ function syncClock(ck){
 function syncDet(box){
   if(!box) return;
   const ck = box.querySelector('.clock'); if(ck) syncClock(ck);
+  const hb = box.querySelector('.herfbox');
+  if(hb){ const f0 = box.querySelector('.chipgrp[data-k="fase"] .chip.on'); hb.classList.toggle('hide', !(f0 && f0.dataset.v==='inizio')); }
   const lt = box.querySelector('.ltbox');
   if(lt){
     const f = box.querySelector('.chipgrp[data-k="fase"] .chip.on');
@@ -1677,7 +1757,8 @@ function startNoteEdit(cell){
   const en = findEntry(day, id); if(!en) return;
   cell.classList.add('editing'); cell.removeAttribute('data-tip');
   cell.innerHTML = '<textarea class="note-ed" rows="1" maxlength="500" placeholder="Scrivi una nota…">'+esc(en.note||'')+'</textarea>'+
-    '<div class="note-hint" title="Maiusc+Invio per andare a capo"><kbd>Invio</kbd> salva · <kbd>Esc</kbd> annulla</div>';
+    '<button type="button" class="note-x" data-tip="Cancella tutto il testo">'+I.x+'</button>'+
+    '<div class="note-hint" title="Maiusc+Invio per andare a capo"><kbd>Invio</kbd> salva</div>';
   const ta = cell.querySelector('textarea');
   const fit = ()=>{ ta.style.height='auto'; ta.style.height=ta.scrollHeight+'px'; };
   let done = false;
@@ -1699,6 +1780,8 @@ function startNoteEdit(cell){
     else if(e.key==='Escape'){ e.preventDefault(); finish(false); }
   });
   ta.addEventListener('blur', ()=>finish(true));
+  // X: cancella con un clic tutto il testo (resta in modifica; si salva con Invio o cliccando altrove)
+  cell.querySelector('.note-x').addEventListener('mousedown', e=>{ e.preventDefault(); e.stopPropagation(); ta.value=''; fit(); ta.focus(); });
   fit(); ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length);
 }
 function bindLog(el){
@@ -2181,7 +2264,53 @@ function pairBars(rows, series, keepZero){
 /* =========================================================================
    STAMPA / ESPORTAZIONE
    ========================================================================= */
+function setPrintColor(on){
+  document.documentElement.classList.toggle('print-color', on);
+  let st = $('pcPage');
+  if(on && !st){ st = document.createElement('style'); st.id = 'pcPage'; st.textContent = '@media print{@page{size:A4 landscape;margin:0}}'; document.head.appendChild(st); }
+  if(!on && st) st.remove();
+  $('printArea').className = on ? 'color' : '';
+}
+window.addEventListener('afterprint', ()=>setPrintColor(false));
+const ST_PRINT = [['kpi','Riepilogo (indicatori)'],['tipo','Decolli e appontaggi per tipo A/C'],['spot','Decolli e appontaggi per spot'],['elev','Movimentazioni elevatori'],
+                  ['fuel','Carburante erogato per tipo A/C'],['pers','Personale imbarcato / sbarcato'],['ev','Eventi registrati']];
+function periodText(){
+  const r = periodRange(ST_PERIOD);
+  if(!r[0] && !r[1]) return 'Tutto lo storico';
+  return (r[0] ? 'dal '+fmtDayShort(r[0]) : 'fino') + (r[1] ? ' al '+fmtDayShort(r[1]) : ' a oggi');
+}
+function openStatsPrint(){
+  const saved = lsGet('gt.stPrint', ST_PRINT.map(x=>x[0]));
+  openModal({
+    title:'Stampa statistiche', icon:mIcon('printer'), size:'mid',
+    body:'<div class="spr-per">Periodo: <b>'+esc(periodText())+'</b> — per cambiarlo usa i pulsanti in alto nella sezione Statistiche.</div>'+
+      '<div class="fgrp"><label>Cosa vuoi stampare</label><div class="spr-tools"><button type="button" class="btn ghost small" data-all="1">Tutto</button><button type="button" class="btn ghost small" data-all="0">Nessuno</button></div>'+
+      '<div class="spr-list">'+ST_PRINT.map(x=>'<label class="chk"><input type="checkbox" data-sp="'+x[0]+'"'+(saved.includes(x[0])?' checked':'')+'>'+esc(x[1])+'</label>').join('')+'</div></div>'+
+      '<div class="hint">La stampa riproduce le schermate dell\'app a colori. Per il PDF scegli come stampante <b>Salva come PDF</b> (o <b>Microsoft Print to PDF</b>).</div><div class="ferr" hidden></div>',
+    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.printer+'Stampa / PDF</button>',
+    onMount(m){
+      m.root.addEventListener('click', e=>{ const b=e.target.closest('[data-all]'); if(b) qsa('[data-sp]', m.root).forEach(c=>{ c.checked = b.dataset.all==='1'; }); });
+      m.root.querySelector('[data-ok]').onclick = ()=>{
+        const chosen = qsa('[data-sp]', m.root).filter(c=>c.checked).map(c=>c.dataset.sp);
+        if(!chosen.length) return showErr(m, 'Seleziona almeno un elemento da stampare');
+        lsSet('gt.stPrint', chosen); m.close(); printStats(chosen);
+      };
+    }
+  });
+}
+function printStats(chosen){
+  const now = new Date();
+  const panels = ST_PRINT.filter(x=>x[0]!=='kpi' && chosen.includes(x[0])).map(x=>{ const el = document.querySelector('#view-statistiche .panelbox[data-sp="'+x[0]+'"]'); return el ? el.outerHTML : ''; }).join('');
+  $('printArea').innerHTML =
+    '<div class="pc-head">'+(LOGO_URL()?'<img src="'+LOGO_URL()+'" alt="">':'')+'<div><h1>Statistiche</h1><div class="pc-sub">Cronologia Guzzi Twr · Torre di Controllo</div></div>'+
+    '<div class="pc-per">Periodo<b>'+esc(periodText())+'</b>Stampato il '+fmtDayShort(dayKey(now))+' alle '+pad(now.getHours())+':'+pad(now.getMinutes())+'</div></div>'+
+    (chosen.includes('kpi') ? '<div class="kpis">'+$('stKpis').innerHTML+'</div>' : '')+
+    (panels ? '<div class="stgrid">'+panels+'</div>' : '');
+  setPrintColor(true);
+  setTimeout(()=>window.print(), 80);
+}
 function printDay(k){
+  setPrintColor(false);
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da stampare','warn'); return; }
   const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td class="nw">'+esc(en.ac?en.ac.cs:'')+'</td><td class="nw">'+esc(en.ac?en.ac.side:'')+'</td><td class="nw">'+esc(en.ac?en.ac.mat||'':'')+'</td><td class="nw">'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
@@ -2243,6 +2372,7 @@ function bindUI(){
   $('btnSort').onclick = ()=>{ SORT_DESC=!SORT_DESC; lsSet('gt.sortDesc', SORT_DESC); renderLog(); if(VIEW==='storico') renderHistLog(); toast(SORT_DESC?'Più recenti in alto':'Più recenti in basso','info'); };
   $('btnPrintToday').onclick = ()=> printDay(TODAY);
   $('btnHistPrint').onclick = ()=> printDay(HIST_DAY);
+  $('btnStPrint').onclick = openStatsPrint;
   $('btnHistCsv').onclick = ()=> exportCsv(HIST_DAY);
   $('btnHistPrev').onclick = ()=> histStep(-1);
   $('btnHistNext').onclick = ()=> histStep(1);
@@ -2320,7 +2450,15 @@ function normalizeCfg(c){
     o.events.forEach(e=>{ if(e.id==='decollo'){ e.needGround = true; e.needAc = true; } });
     fresh = true;
   }
-  o.version = 4;
+  if((Number(o.version)||1) < 5){
+    // v5: nuovo evento HERO (dopo "Verde")
+    if(!o.events.some(e=>e.id==='hero')){
+      const h = defaultEvents().find(e=>e.id==='hero'), i = o.events.findIndex(e=>e.id==='verde');
+      if(i>=0) o.events.splice(i+1, 0, h); else o.events.push(h);
+    }
+    fresh = true;
+  }
+  o.version = 5;
   return { cfg:o, fresh };
 }
 function showOffline(){

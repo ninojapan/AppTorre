@@ -94,6 +94,16 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      l'A/C da movimentare", l'area A/C si evidenzia in rosso e la finestra non si apre.
    - **Fuel**, **HotRef**: Inizio / Fine; su Fine anche i **litri**. Se l'ultima
      registrazione dello stesso A/C era "Inizio", propone già "Fine".
+     All'**Inizio** è obbligatorio scegliere l'**Assetto HERF**: HERF 1 nessuna
+     restrizione · HERF 2 spot 1, 2 e 3 · HERF 3 spot 4, 5 e 6 · HERF 4 spot 7 e 8 ·
+     HERF 5 spot 5 e 9 · HERF 6 Isole. L'assetto che comprende lo spot dell'A/C è
+     segnalato ("Spot A/C") e, se è uno solo, già selezionato. In cronologia la riga
+     riporta "Inizio · HERF n".
+   - **HERO** (un clic, senza A/C né spot): finestra con l'assetto da scegliere —
+     HERO 1 Safe · HERO 2 armamento spot 1, 2, 3 e 4 · HERO 3 armamento spot 5, 6 e 9 ·
+     HERO 4 armamento spot 7 e 8 · HERO 5 armamento Isole · HERO 6 armamento in
+     Hangar · HERO 7 restrizioni con A/C in volo. L'assetto attualmente in vigore
+     è segnalato; **Registra** scrive subito la riga.
    - **Normal OPS**: **Endurance** con un orologio per impostare l'**ora di
      termine dell'autonomia** (frecce ore e minuti, oppure +30′, +1h, +1h30… da
      adesso), **POB** e **Weapon** (testo libero; gli armamenti già usati vengono
@@ -136,7 +146,8 @@ A/C, evento, dettagli, spot, note) e **cestino** per eliminare (con conferma).
 
 **Colonna Note** (dopo *Evento · dettagli*): **clic sulla cella** per scrivere o
 modificare la nota direttamente nella riga. **Invio** salva, **Maiusc+Invio** va a
-capo, **Esc** annulla; anche cliccando altrove la nota viene salvata. Le note
+capo; anche cliccando altrove la nota viene salvata. La **X** in alto a destra
+cancella con un clic tutto il testo (poi Invio o un clic altrove per confermare). Le note
 compaiono anche nella stampa e nel CSV, e si possono modificare pure dallo Storico.
 Il pulsante con le frecce inverte l'ordine (più recenti in alto o in basso).
 **Stampa** produce il registro del giorno in A4 orizzontale, con lo spazio
@@ -185,6 +196,12 @@ date a scelta. Mostra:
 - **litri di carburante** (Fuel e HotRef, registrati alla Fine) per tipo A/C;
 - **persone imbarcate e sbarcate**;
 - conteggio di tutti gli eventi registrati.
+
+**Stampa / PDF** (in alto a destra): si apre una finestra dove scegli cosa
+stampare — riepilogo indicatori e ciascun grafico (Tutto / Nessuno). La stampa
+riproduce le schermate dell'app **a colori**, in A4 orizzontale, con stemma e
+periodo. Per ottenere il **PDF** scegli come stampante *Salva come PDF* (o
+*Microsoft Print to PDF*).
 
 Per gli eventi personalizzati puoi scegliere, dalla finestra di modifica,
 se e come contarli nelle statistiche (es. un nuovo evento conteggiato come
