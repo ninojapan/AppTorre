@@ -44,7 +44,7 @@ compresa. La cartella `DATI/` non viene caricata su GitHub (`.gitignore`).
 ## Come si usa
 
 Il **menu laterale** si apre e si chiude con il pulsante ☰ in alto a sinistra:
-**Cronologia**, **A/C in Volo**, **Storico**, **Statistiche**. Sugli schermi
+**Cronologia**, **A/C in Volo**, **Storico**, **Statistiche**, **Cerca**. Sugli schermi
 più stretti di 1500 px (es. portatili 1366×768) il menu si apre sopra il
 contenuto e si chiude scegliendo una sezione o con un clic sul velo scuro.
 In alto a destra ci sono data,
@@ -206,6 +206,19 @@ periodo. Per ottenere il **PDF** scegli come stampante *Salva come PDF* (o
 Per gli eventi personalizzati puoi scegliere, dalla finestra di modifica,
 se e come contarli nelle statistiche (es. un nuovo evento conteggiato come
 "Decollo").
+
+### Cerca
+
+Campo **Cerca keyword**: scrivi una parola chiave (es. **VIP**) e trovi tutte le
+registrazioni che la contengono, con tutti i dettagli. La ricerca guarda evento,
+dettagli, note, Callsign, Side, Matricola, Tipo, Gruppo e spot; non distingue
+maiuscole/minuscole né accenti (*autorita* trova *autorità*). Con più parole
+(es. *vip bordo*) devono esserci tutte.
+
+- **Periodo**: *Intero storico*, *Giorno* esatto oppure *Periodo* dal/al.
+- I risultati sono raggruppati per giorno (dal più recente), con la parola
+  evidenziata; su ogni riga funzionano matita, cestino e note come in Cronologia.
+- **Apri nello Storico** porta al giorno; **CSV** esporta i risultati.
 
 ### Backup
 

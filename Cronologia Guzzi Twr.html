@@ -325,6 +325,24 @@ input[type=date],input[type=time]{color-scheme:dark}
 .rday b{font-family:var(--font-d);font-size:12px;color:var(--accent)}
 .hist-side{overflow:auto;min-height:0;padding-bottom:4px}
 
+/* ================= CERCA ================= */
+.srch{height:100%;overflow:auto;padding:16px 18px 30px}
+.srch-bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.srch-in{position:relative;flex:1;min-width:280px;max-width:620px}
+.srch-in > span{position:absolute;left:14px;top:50%;transform:translateY(-50%);display:flex;color:var(--muted);pointer-events:none}
+.srch-in > span svg{width:20px;height:20px}
+.srch-in input{width:100%;padding:13px 46px 13px 44px;background:var(--panel);border:1px solid var(--border2);border-radius:13px;color:var(--text);font-size:16px;font-weight:600;outline:none;transition:.15s}
+.srch-in input:focus{border-color:var(--accent);box-shadow:0 0 0 3px #38bdf833}
+.srch-in .iconbtn{position:absolute;right:7px;top:50%;transform:translateY(-50%);width:30px;height:30px}
+.srch-sum{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted);font-size:13.5px}
+.srch-sum b{color:var(--text);font-family:var(--font-d);font-size:16px}
+.sday{margin-bottom:14px}
+.sday-h{display:flex;align-items:center;gap:10px;margin:0 2px 8px;font-family:var(--font-d);font-size:16px;font-weight:700;letter-spacing:.3px}
+.sday-h .cnt{font-family:var(--font);font-size:12px;font-weight:800;color:var(--accent);background:#0b2436;border:1px solid #1c5c86;border-radius:20px;padding:1px 9px}
+.sday-h .btn{margin-left:auto}
+.sbox{background:linear-gradient(180deg,#0e1a30,#0b1527);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+mark{background:#f5c54259;color:#fff;border-radius:3px;padding:0 2px;box-shadow:0 0 0 1px #f5c54299}
+
 /* ================= STATISTICHE ================= */
 .stats{height:100%;overflow:auto;padding:16px 18px 30px}
 .st-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
@@ -633,6 +651,7 @@ input[type=date],input[type=time]{color-scheme:dark}
         <button class="navbtn" data-view="involo"><span class="ni" data-icon="plane"></span><span class="nt"><b>A/C in Volo</b><small>Autonomia residua</small></span><span class="nbadge" id="flyBadge"></span></button>
         <button class="navbtn" data-view="storico"><span class="ni" data-icon="calendar"></span><span class="nt"><b>Storico</b><small>Consulta per data</small></span></button>
         <button class="navbtn" data-view="statistiche"><span class="ni" data-icon="chart"></span><span class="nt"><b>Statistiche</b><small>Conteggi e riepiloghi</small></span></button>
+        <button class="navbtn" data-view="cerca"><span class="ni" data-icon="search"></span><span class="nt"><b>Cerca</b><small>Parola chiave nelle registrazioni</small></span></button>
       </nav>
       <div class="sb-foot">
         <button class="btn ghost small block" id="btnBackup"><span data-icon="download"></span>Esporta backup completo</button>
@@ -756,6 +775,21 @@ input[type=date],input[type=time]{color-scheme:dark}
       </div>
     </section>
 
+    <!-- ========== CERCA ========== -->
+    <section class="view" id="view-cerca">
+      <div class="srch">
+        <div class="st-head"><h2><span data-icon="search"></span>Cerca keyword</h2></div>
+        <div class="srch-bar">
+          <div class="srch-in"><span data-icon="search"></span><input type="text" id="srchKey" placeholder="Parola chiave… es. VIP" autocomplete="off" spellcheck="false"><button class="iconbtn" id="srchClear" data-tip="Cancella"></button></div>
+          <div class="periods" id="srchMode"></div>
+          <div class="range" id="srchDayBox"><input type="date" id="srchDay"></div>
+          <div class="range" id="srchRangeBox"><input type="date" id="srchFrom"><span>→</span><input type="date" id="srchTo"></div>
+        </div>
+        <div class="srch-sum" id="srchSum"></div>
+        <div id="srchRes"></div>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -833,7 +867,8 @@ const P = {
   server:'<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01" stroke-width="3"/>',
   undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/>',
   dots:'<path d="M5 12h.01M12 12h.01M19 12h.01" stroke-width="3.2"/>',
-  tower:'<path d="M9 22l1-9h4l1 9M6.5 13h11M8 13 6.5 7h11L16 13M12 7V3.5M9.5 3.5h5"/>'
+  tower:'<path d="M9 22l1-9h4l1 9M6.5 13h11M8 13 6.5 7h11L16 13M12 7V3.5M9.5 3.5h5"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20.5 20.5 16 16"/>'
 };
 const I = new Proxy({}, { get:(t,k)=>'<svg class="i" viewBox="0 0 24 24" aria-hidden="true">'+(P[k]||'')+'</svg>' });
 /* Stemma Nave TRIESTE (L9890) ridisegnato in vettoriale: usato se nella cartella non c'e' logo.png / logo.jpg */
@@ -1077,7 +1112,7 @@ function confirmBox(o){
 }
 
 /* ------------------------------ Navigazione / orologio ------------------------------ */
-const VIEW_LAB = { cronologia:['list','Cronologia'], involo:['plane','A/C in Volo'], storico:['calendar','Storico'], statistiche:['chart','Statistiche'] };
+const VIEW_LAB = { cronologia:['list','Cronologia'], involo:['plane','A/C in Volo'], storico:['calendar','Storico'], statistiche:['chart','Statistiche'], cerca:['search','Cerca'] };
 function showView(v){
   VIEW = v;
   qsa('.view').forEach(s=>s.classList.toggle('active', s.id==='view-'+v));
@@ -1087,6 +1122,7 @@ function showView(v){
   if(v==='involo') renderFlight();
   if(v==='storico') openHistory();
   if(v==='statistiche') renderStats();
+  if(v==='cerca') openSearch();
   if(sbOverlay()) setSidebar(false);
 }
 const sbOverlay = () => matchMedia('(max-width:1500px)').matches;
@@ -1645,6 +1681,7 @@ function refreshAfterChange(day){
   if(VIEW==='involo') renderFlight();
   updateFlightBadge();
   if(VIEW==='storico'){ renderHistLog(); renderCal(); renderRecent(); }
+  if(VIEW==='cerca') renderSearch();
 }
 function openEdit(day, id){
   const en = findEntry(day, id); if(!en) return;
@@ -1770,7 +1807,7 @@ function startNoteEdit(cell){
     if(changed){
       queueSave(day);
       // la stessa giornata puo' essere visibile anche nell'altra vista: la riallineo
-      if(row.closest('#histLog') && day===TODAY) renderLog();
+      if(!row.closest('#cronLog') && day===TODAY) renderLog();
     }
   };
   ta.addEventListener('input', fit);
@@ -2177,6 +2214,117 @@ function histStep(dir){
 }
 
 /* =========================================================================
+   CERCA (parola chiave)
+   ========================================================================= */
+const SRCH = { mode:'tutto', days:null, groups:[] };
+const SRCH_MODES = [['tutto','Intero storico'],['giorno','Giorno'],['periodo','Periodo']];
+const norm = s => String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+function entryText(en){
+  const a = en.ac||{};
+  return [a.cs, a.side, a.mat, a.tipo, a.gr].concat(en.evs.map(e=>e.label), en.evs.map(e=>detText(e.modal, e.det)), [en.note, en.spot ? spotLabel(en.spot) : '']).filter(Boolean).join(' · ');
+}
+function searchRange(){
+  if(SRCH.mode==='giorno'){ const d=$('srchDay').value; return d ? [d,d] : null; }
+  if(SRCH.mode==='periodo') return [$('srchFrom').value||'', $('srchTo').value||''];
+  return ['',''];
+}
+function searchPeriodText(){
+  const r = searchRange();
+  if(SRCH.mode==='tutto') return 'intero storico';
+  if(!r) return 'nessun giorno scelto';
+  if(SRCH.mode==='giorno') return fmtDayLong(r[0]);
+  return (r[0] ? 'dal '+fmtDayShort(r[0]) : 'dall\'inizio') + (r[1] ? ' al '+fmtDayShort(r[1]) : ' a oggi');
+}
+function openSearch(){
+  if(!$('srchDay').value) $('srchDay').value = TODAY;
+  if(!$('srchFrom').value){ const d=parseDay(TODAY); $('srchFrom').value = dayKey(new Date(d.getFullYear(), d.getMonth(), 1)); }
+  if(!$('srchTo').value) $('srchTo').value = TODAY;
+  renderSearchMode();
+  runSearch(true);
+  setTimeout(()=>{ const i=$('srchKey'); i.focus(); i.select(); }, 60);
+}
+function renderSearchMode(){
+  $('srchMode').innerHTML = SRCH_MODES.map(m=>'<button class="chip'+(SRCH.mode===m[0]?' on':'')+'" data-sm="'+m[0]+'">'+m[1]+'</button>').join('');
+  $('srchDayBox').classList.toggle('hide', SRCH.mode!=='giorno');
+  $('srchRangeBox').classList.toggle('hide', SRCH.mode!=='periodo');
+}
+async function runSearch(refetch){
+  if(refetch || !SRCH.days){
+    const r = searchRange();
+    if(!r){ SRCH.days = []; renderSearch(); return; }
+    const data = await getJSON('/api/range?from='+r[0]+'&to='+r[1], null, 3) || {};
+    // dati aggiornati dal database (tranne oggi e i giorni con modifiche non ancora salvate)
+    Object.keys(data).forEach(k=>{ if(k!==TODAY && !DIRTY.has(k) && Array.isArray(data[k])){ DAYS[k] = data[k]; sortDay(k); } });
+    const inR = k => (!r[0] || k>=r[0]) && (!r[1] || k<=r[1]);
+    const days = new Set(Object.keys(data));
+    DIRTY.forEach((v,k)=>{ if(k!=='config' && inR(k)) days.add(k); });
+    if(inR(TODAY)) days.add(TODAY);
+    SRCH.days = Array.from(days);
+  }
+  renderSearch();
+}
+function renderSearch(){
+  const raw = $('srchKey').value.trim();
+  const words = raw.split(/\s+/).filter(Boolean), terms = words.map(norm);
+  $('srchClear').style.visibility = raw ? 'visible' : 'hidden';
+  if(!terms.length){
+    SRCH.groups = [];
+    $('srchSum').innerHTML = '<span>Periodo: '+esc(searchPeriodText())+'</span>';
+    $('srchRes').innerHTML = '<div class="empty">'+I.search+'<b>Scrivi una parola chiave</b>Es. <b>VIP</b>: trovi tutte le registrazioni che la contengono (evento, dettagli, note, A/C, spot).</div>';
+    return;
+  }
+  const groups = [];
+  (SRCH.days||[]).slice().sort().reverse().forEach(k=>{
+    const list = (DAYS[k]||[]).filter(en=>{ const t = norm(entryText(en)); return terms.every(w=>t.includes(w)); });
+    if(list.length) groups.push([k, list]);
+  });
+  SRCH.groups = groups;
+  const tot = groups.reduce((n,g)=>n+g[1].length, 0);
+  $('srchSum').innerHTML = '<span><b>'+fmtNum(tot)+'</b> '+(tot===1?'registrazione':'registrazioni')+' con «'+esc(raw)+'» in '+pl(groups.length,'giorno','giorni')+' · '+esc(searchPeriodText())+'</span>'+
+    (tot ? '<button class="btn ghost small" id="srchCsv">'+I.download+'CSV</button>' : '');
+  $('srchRes').innerHTML = groups.length ? groups.map(([k,list])=>
+      '<div class="sday"><div class="sday-h"><span>'+fmtDayLong(k)+'</span><span class="cnt">'+list.length+'</span>'+
+      '<button class="btn ghost small" data-openday="'+k+'">'+I.calendar+'Apri nello Storico</button></div>'+
+      '<div class="sbox">'+logHTML(list, k, null, ['',''])+'</div></div>').join('')
+    : '<div class="empty">'+I.search+'<b>Nessun risultato</b>Nessuna registrazione contiene «'+esc(raw)+'» ('+esc(searchPeriodText())+').</div>';
+  markWords($('srchRes'), words);
+}
+function markWords(root, words){
+  // evidenzia le parole cercate nel testo delle righe
+  if(!words.length) return;
+  const re = new RegExp('('+words.map(w=>w.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')+')', 'gi');
+  qsa('.l-ac, .l-ev, .l-note, .l-spot', root).forEach(cell=>{
+    const tw = document.createTreeWalker(cell, NodeFilter.SHOW_TEXT), nodes = [];
+    while(tw.nextNode()) nodes.push(tw.currentNode);
+    nodes.forEach(n=>{
+      re.lastIndex = 0; if(!re.test(n.nodeValue)) return; re.lastIndex = 0;
+      const span = document.createElement('span'); span.innerHTML = esc(n.nodeValue).replace(re, '<mark>$1</mark>');
+      n.replaceWith(...Array.from(span.childNodes));
+    });
+  });
+}
+function bindSearch(){
+  $('srchClear').innerHTML = I.x;
+  let tm = null;
+  $('srchKey').addEventListener('input', ()=>{ clearTimeout(tm); tm = setTimeout(renderSearch, 150); });
+  $('srchKey').addEventListener('keydown', e=>{ if(e.key==='Escape' && $('srchKey').value){ e.stopPropagation(); $('srchKey').value=''; renderSearch(); } if(e.key==='Enter'){ clearTimeout(tm); renderSearch(); } });
+  $('srchClear').onclick = ()=>{ $('srchKey').value=''; renderSearch(); $('srchKey').focus(); };
+  $('srchMode').addEventListener('click', e=>{ const b=e.target.closest('[data-sm]'); if(!b) return; SRCH.mode=b.dataset.sm; renderSearchMode(); runSearch(true); });
+  ['srchDay','srchFrom','srchTo'].forEach(id=>$(id).addEventListener('change', ()=>runSearch(true)));
+  $('srchSum').addEventListener('click', e=>{
+    if(!e.target.closest('#srchCsv')) return;
+    const pairs = []; SRCH.groups.slice().reverse().forEach(([k,list])=>list.forEach(en=>pairs.push([k,en])));
+    download('Cronologia Guzzi Twr ricerca '+norm($('srchKey').value.trim()).replace(/[^a-z0-9]+/g,'_')+'.csv', csvText(pairs), 'text/csv;charset=utf-8');
+  });
+  $('srchRes').addEventListener('click', e=>{
+    const b = e.target.closest('[data-openday]'); if(!b) return;
+    const k = b.dataset.openday, d = parseDay(k);
+    HIST_DAY = k; CAL_MONTH = new Date(d.getFullYear(), d.getMonth(), 1);
+    showView('storico');
+  });
+}
+
+/* =========================================================================
    STATISTICHE
    ========================================================================= */
 const PERIODS = [['oggi','Oggi'],['7g','7 giorni'],['30g','30 giorni'],['mese','Questo mese'],['anno','Quest\'anno'],['tutto','Tutto']];
@@ -2329,14 +2477,18 @@ function download(name, text, type){
   a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 500);
 }
+function csvText(pairs){
+  // pairs = [[giorno, riga], ...]
+  const q = s => '"'+String(s==null?'':s).replace(/"/g,'""')+'"';
+  const lines = [['Data','Ora','Callsign','Side Number','Matricola','Gruppo Volo','Tipo','Evento','Dettagli','Note','Spot'].map(q).join(';')];
+  pairs.forEach(([k,en])=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.mat||'':'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
+    en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.note||'', en.spot?spotLabel(en.spot):''].map(q).join(';')));
+  return '﻿'+lines.join('\r\n');
+}
 function exportCsv(k){
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da esportare','warn'); return; }
-  const q = s => '"'+String(s==null?'':s).replace(/"/g,'""')+'"';
-  const lines = [['Data','Ora','Callsign','Side Number','Matricola','Gruppo Volo','Tipo','Evento','Dettagli','Note','Spot'].map(q).join(';')];
-  list.forEach(en=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.mat||'':'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
-    en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.note||'', en.spot?spotLabel(en.spot):''].map(q).join(';')));
-  download('Cronologia Guzzi Twr '+k+'.csv', '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
+  download('Cronologia Guzzi Twr '+k+'.csv', csvText(list.map(en=>[k,en])), 'text/csv;charset=utf-8');
 }
 async function exportBackup(){
   const days = await getJSON('/api/range', null, 3);
@@ -2386,7 +2538,8 @@ function bindUI(){
   $('acGrid').addEventListener('keydown', e=>{ if((e.key==='Enter'||e.key===' ') && e.target.matches('[data-ac]')){ e.preventDefault(); onAcClick(e.target.dataset.ac); } });
   $('evGrid').addEventListener('click', e=>{ const b=e.target.closest('[data-ev]'); if(b) onEvClick(b.dataset.ev); });
   $('deck').addEventListener('click', e=>{ const b=e.target.closest('[data-spot]'); if(b) onSpotClick(b.dataset.spot, b); });
-  bindLog($('cronLog')); bindLog($('histLog'));
+  bindLog($('cronLog')); bindLog($('histLog')); bindLog($('srchRes'));
+  bindSearch();
   $('flyGrid').addEventListener('click', onFlightClick);
 
   $('cal').addEventListener('click', e=>{
