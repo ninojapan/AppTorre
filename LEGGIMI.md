@@ -58,9 +58,10 @@ in tre aree. I pulsanti di A/C ed Eventi sono tasselli tutti della stessa
 misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
 
 1. **A/C**: il pulsante **+** apre la finestra *Aeromobili*:
-   - **Nuovo A/C**: Callsign, Side Number, Gruppo Volo, Tipo. Resta in archivio
-     per sempre, non va più riscritto.
-   - **Archivio**: filtra per **Tipo**, cerca, e con l'interruttore decidi quali
+   - **Nuovo A/C**: Callsign, Side Number, **Matricola**, Tipo, Gruppo Volo. Resta
+     in archivio per sempre, non va più riscritto. La matricola compare anche nei
+     riquadri A/C in Volo, negli avvisi di autonomia, nella stampa e nel CSV.
+   - **Archivio**: filtra per **Tipo**, cerca (anche per matricola), e con l'interruttore decidi quali
      aeromobili sono **in gestione** (visibili come pulsanti in Cronologia).
      "Tutti / Nessuno in gestione" agisce sul filtro corrente.
    - Sul pulsante di un A/C, la **×** (al passaggio del mouse) lo toglie dalla
@@ -96,7 +97,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
    - **Normal OPS**: **Endurance** con un orologio per impostare l'**ora di
      termine dell'autonomia** (frecce ore e minuti, oppure +30′, +1h, +1h30… da
      adesso), **POB** e **Weapon** (testo libero; gli armamenti già usati vengono
-     riproposti). L'autonomia residua appare subito in verde, giallo o rosso.
+     riproposti). **Endurance e POB sono obbligatori**: se ne manca uno il
+     salvataggio non avviene ("Obbligatorio: …"). Weapon è facoltativo. L'autonomia residua appare subito in verde, giallo o rosso.
      **Solo per A/C in volo** (dopo il **Decollo**): con un A/C a terra compare
      l'errore "Normal OPS: … non è in volo — registra prima il Decollo" e non si
      salva nulla. Per un A/C in volo si registra **subito alla conferma** della

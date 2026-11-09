@@ -405,7 +405,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .arch-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
 .arch-tools .inp{flex:1;min-width:180px;padding:9px 12px}
 .arch-list{display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto;padding-right:2px}
-.arow{display:grid;grid-template-columns:44px minmax(0,1.3fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,.9fr) 74px;gap:10px;align-items:center;padding:9px 12px;border-radius:11px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:.12s}
+.arow{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,.7fr) minmax(0,.9fr) minmax(0,1.2fr) minmax(0,.9fr) 74px;gap:10px;align-items:center;padding:9px 12px;border-radius:11px;background:var(--bg2);border:1px solid var(--border);cursor:pointer;transition:.12s}
 .arow:hover{border-color:var(--border2)}
 .arow.on{background:#0f2440;border-color:#1f5a86}
 .arow b{font-family:var(--font-d);font-size:15px;letter-spacing:.4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -416,7 +416,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#8da0c0;transition:.15s}
 .sw.on{background:var(--green-d);border-color:var(--green)}
 .sw.on::after{left:18px;background:#fff}
-.ahead{display:grid;grid-template-columns:44px minmax(0,1.3fr) minmax(0,.8fr) minmax(0,1.3fr) minmax(0,.9fr) 74px;gap:10px;padding:0 12px 6px;font-size:10.5px;font-weight:800;color:var(--muted2);letter-spacing:.8px;text-transform:uppercase}
+.ahead{display:grid;grid-template-columns:44px minmax(0,1.2fr) minmax(0,.7fr) minmax(0,.9fr) minmax(0,1.2fr) minmax(0,.9fr) 74px;gap:10px;padding:0 12px 6px;font-size:10.5px;font-weight:800;color:var(--muted2);letter-spacing:.8px;text-transform:uppercase}
 
 /* gestione eventi */
 .evlist{display:flex;flex-direction:column;gap:6px;max-height:56vh;overflow:auto;padding-right:2px}
@@ -879,7 +879,7 @@ let READY = false;
 
 const getAc = id => CFG.aircraft.find(a=>a.id===id);
 const getEv = id => CFG.events.find(e=>e.id===id);
-const acSnap = a => ({ id:a.id, cs:a.callsign, side:a.side||'', gr:a.gruppo||'', tipo:a.tipo||'' });
+const acSnap = a => ({ id:a.id, cs:a.callsign, side:a.side||'', mat:a.matricola||'', gr:a.gruppo||'', tipo:a.tipo||'' });
 function tipoColor(tipo){
   const t = String(tipo||'').trim().toUpperCase() || 'N/D';
   if(!CFG.tipoColor[t]){
@@ -1088,7 +1088,7 @@ function renderAcGrid(){
   SEL.ac = SEL.ac.filter(id=>acs.some(a=>a.id===id));
   let h = acs.map(a=>{
     const on = SEL.ac.includes(a.id), p = pos[a.id];
-    const tip = [a.callsign, a.side, a.gruppo, a.tipo].filter(Boolean).join(' · ') + (p ? ' — Posizione: '+posLabel(p) : '');
+    const tip = [a.callsign, a.side, a.matricola, a.gruppo, a.tipo].filter(Boolean).join(' · ') + (p ? ' — Posizione: '+posLabel(p) : '');
     return '<div class="acchip'+(on?' on':'')+'" role="button" tabindex="0" data-ac="'+a.id+'" style="'+cvars(tipoColor(a.tipo))+'" data-tip="'+esc(tip)+'">'+
       '<span class="ac-cs">'+esc(a.callsign||'—')+'</span>'+
       '<span class="ac-meta">'+(a.side?'<b>'+esc(a.side)+'</b>':'')+'<span>'+esc(a.tipo||'')+'</span></span>'+
@@ -1376,14 +1376,14 @@ function detForm(ev, det, ref, occ){
       const end = /^\d{1,2}:\d{2}$/.test(det.end||'') ? det.end : '';
       const hm = end ? end.split(':') : ['',''];
       const recW = CFG.recent.weapon||[];
-      return '<div class="fgrp"><label>Endurance · ora termine autonomia</label>'+
+      return '<div class="fgrp"><label>Endurance · ora termine autonomia *</label>'+
         '<div class="clock" data-ref="'+esc(ref||new Date().toISOString())+'"><input type="hidden" data-k="end" value="'+end+'">'+
           '<div class="ck-col"><button type="button" data-ck="h" data-d="1" data-tip="Ora +1">'+I.up+'</button><input class="ck-in" data-ckp="h" inputmode="numeric" maxlength="2" placeholder="--" value="'+(hm[0]?pad(hm[0]):'')+'"><button type="button" data-ck="h" data-d="-1" data-tip="Ora −1">'+I.down+'</button></div>'+
           '<span class="ck-sep">:</span>'+
           '<div class="ck-col"><button type="button" data-ck="m" data-d="1" data-tip="+5 minuti">'+I.up+'</button><input class="ck-in" data-ckp="m" inputmode="numeric" maxlength="2" placeholder="--" value="'+(hm[1]||'')+'"><button type="button" data-ck="m" data-d="-1" data-tip="−5 minuti">'+I.down+'</button></div>'+
           '<div class="ck-info"><span class="ck-lab">Autonomia</span><b data-ckrem>—</b></div></div>'+
         '<div class="quick">'+[30,60,90,120,150,180,210,240].map(v=>'<button type="button" class="qbtn" data-ckadd="'+v+'">+'+fmtShort(v)+'</button>').join('')+'<button type="button" class="qbtn" data-ckclr>Azzera</button></div></div>'+
-        '<div class="row2"><div class="fgrp"><label>POB</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div>'+
+        '<div class="row2"><div class="fgrp"><label>POB *</label>'+stepper('pob', det.pob!=null?det.pob:'')+'</div>'+
         '<div class="fgrp"><label>Weapon</label><input type="text" data-k="weapon" value="'+esc(det.weapon||'')+'" placeholder="es. MK46 ×2" list="dlWeapon"><datalist id="dlWeapon">'+recW.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
         (recW.length ? '<div class="quick">'+recW.slice(0,6).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="weapon">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div></div>';
     }
@@ -1414,7 +1414,8 @@ function detRead(ev, box){
     case 'normalops': {
       const ck = box.querySelector('.clock'), end=v('end'), pob=v('pob'), weapon=v('weapon');
       if(ck && !end && qsa('.ck-in', ck).some(x=>x.value!=='')) return {err:'Ora di termine autonomia non valida'};
-      if(!end && pob==='' && !weapon) return {err:'Inserisci almeno termine autonomia, POB o Weapon'};
+      const miss = []; if(!end) miss.push('Endurance (ora termine autonomia)'); if(pob==='') miss.push('POB');
+      if(miss.length) return {err:'Obbligatorio: '+miss.join(' e ')};
       const det = {};
       if(end){ det.end = end; det.endTs = endTsFrom(end, clockRef(ck)).toISOString(); }
       if(pob!=='') det.pob = Math.max(0, parseInt(pob,10)||0);
@@ -1720,12 +1721,13 @@ function acFormHTML(a){
   const gruppi = Array.from(new Set(CFG.aircraft.map(x=>x.gruppo).filter(Boolean)));
   return '<div class="row2"><div class="fgrp"><label>Callsign</label><input type="text" class="up" data-a="callsign" value="'+esc(a.callsign||'')+'" placeholder="es. GUZZI 01" autofocus></div>'+
     '<div class="fgrp"><label>Side Number</label><input type="text" class="up" data-a="side" value="'+esc(a.side||'')+'" placeholder="es. 6-12"></div></div>'+
-    '<div class="row2"><div class="fgrp"><label>Gruppo Volo</label><input type="text" data-a="gruppo" value="'+esc(a.gruppo||'')+'" list="dlGruppi" placeholder="es. 1° Gruppo Elicotteri"><datalist id="dlGruppi">'+gruppi.map(g=>'<option value="'+esc(g)+'">').join('')+'</datalist></div>'+
-    '<div class="fgrp"><label>Tipo</label><input type="text" class="up" data-a="tipo" value="'+esc(a.tipo||'')+'" list="dlTipi" placeholder="es. SH-90A"><datalist id="dlTipi">'+tipi.map(t=>'<option value="'+esc(t)+'">').join('')+'</datalist></div></div>';
+    '<div class="row2"><div class="fgrp"><label>Matricola</label><input type="text" class="up" data-a="matricola" value="'+esc(a.matricola||'')+'" placeholder="es. MM81234"></div>'+
+    '<div class="fgrp"><label>Tipo</label><input type="text" class="up" data-a="tipo" value="'+esc(a.tipo||'')+'" list="dlTipi" placeholder="es. SH-90A"><datalist id="dlTipi">'+tipi.map(t=>'<option value="'+esc(t)+'">').join('')+'</datalist></div></div>'+
+    '<div class="fgrp"><label>Gruppo Volo</label><input type="text" data-a="gruppo" value="'+esc(a.gruppo||'')+'" list="dlGruppi" placeholder="es. 1° Gruppo Elicotteri"><datalist id="dlGruppi">'+gruppi.map(g=>'<option value="'+esc(g)+'">').join('')+'</datalist></div>';
 }
 function acFormRead(root){
   const v = k => String(root.querySelector('[data-a="'+k+'"]').value||'').trim();
-  const a = { callsign:v('callsign').toUpperCase(), side:v('side').toUpperCase(), gruppo:v('gruppo'), tipo:v('tipo').toUpperCase() };
+  const a = { callsign:v('callsign').toUpperCase(), side:v('side').toUpperCase(), matricola:v('matricola').toUpperCase(), gruppo:v('gruppo'), tipo:v('tipo').toUpperCase() };
   if(!a.callsign) return {err:'Inserisci il Callsign'};
   if(!a.tipo) return {err:'Inserisci il Tipo di aeromobile'};
   return {a};
@@ -1751,18 +1753,18 @@ function openAcModal(tab){
       const drawArch = ()=>{
         const tipi = {}; CFG.aircraft.forEach(a=>{ const t=a.tipo||'N/D'; tipi[t]=(tipi[t]||0)+1; });
         if(fTipo!=='*' && !tipi[fTipo]) fTipo='*';
-        const list = CFG.aircraft.filter(a=>(fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q)))
+        const list = CFG.aircraft.filter(a=>(fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.matricola,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q)))
           .sort((a,b)=>(b.active-a.active) || String(a.tipo).localeCompare(String(b.tipo)) || String(a.callsign).localeCompare(String(b.callsign)));
         const inG = list.filter(a=>a.active).length;
         const prevQ = TB.querySelector('[data-q]'); const hadFocus = prevQ && document.activeElement===prevQ;
         TB.innerHTML = !CFG.aircraft.length ? '<div class="empty">'+I.plane+'<b>Archivio vuoto</b>Aggiungi il primo aeromobile dalla scheda "Nuovo A/C".</div>' :
           '<div class="chipgrp" style="margin-bottom:12px" data-ft>'+chip('*','Tutti ('+CFG.aircraft.length+')',fTipo==='*')+Object.keys(tipi).sort().map(t=>chip(t, t+' ('+tipi[t]+')', fTipo===t)).join('')+'</div>'+
-          '<div class="arch-tools"><input class="inp" data-q placeholder="Cerca callsign, side number, gruppo…" value="'+esc(q)+'">'+
+          '<div class="arch-tools"><input class="inp" data-q placeholder="Cerca callsign, side number, matricola, gruppo…" value="'+esc(q)+'">'+
           '<button class="btn small ghost" data-bulk="1">'+I.eye+'Tutti in gestione</button><button class="btn small ghost" data-bulk="0">'+I.eyeOff+'Nessuno in gestione</button></div>'+
-          '<div class="ahead"><div>Gest.</div><div>Callsign</div><div>Side</div><div>Gruppo Volo</div><div>Tipo</div><div></div></div>'+
+          '<div class="ahead"><div>Gest.</div><div>Callsign</div><div>Side</div><div>Matricola</div><div>Gruppo Volo</div><div>Tipo</div><div></div></div>'+
           '<div class="arch-list">'+(list.length ? list.map(a=>
             '<div class="arow'+(a.active?' on':'')+'" data-id="'+a.id+'" data-tip="'+(a.active?'In gestione — clic per togliere':'Clic per mettere in gestione')+'">'+
-            '<span class="sw'+(a.active?' on':'')+'"></span><b>'+esc(a.callsign)+'</b><span>'+esc(a.side||'—')+'</span><span>'+esc(a.gruppo||'—')+'</span>'+
+            '<span class="sw'+(a.active?' on':'')+'"></span><b>'+esc(a.callsign)+'</b><span>'+esc(a.side||'—')+'</span><span>'+esc(a.matricola||'—')+'</span><span>'+esc(a.gruppo||'—')+'</span>'+
             '<span><span class="tipo" style="'+cvars(tipoColor(a.tipo))+'">'+esc(a.tipo||'N/D')+'</span></span>'+
             '<span class="acts"><button class="iconbtn" data-aedit="'+a.id+'" data-tip="Modifica">'+I.pencil+'</button><button class="iconbtn danger" data-adel="'+a.id+'" data-tip="Elimina dall\'archivio">'+I.trash+'</button></span></div>').join('')
             : '<div class="nodata">Nessun aeromobile corrisponde al filtro.</div>')+'</div>'+
@@ -1775,7 +1777,7 @@ function openAcModal(tab){
           const r = acFormRead(TB); if(r.err) return showErr(m, r.err);
           const act = TB.querySelector('[data-a="active"]').checked;
           const dup = CFG.aircraft.find(x=>x.callsign===r.a.callsign && (x.side||'')===r.a.side);
-          if(dup){ dup.active = dup.active || act; Object.assign(dup, {gruppo:r.a.gruppo||dup.gruppo, tipo:r.a.tipo}); toast(dup.callsign+' era già in archivio'+(act?': messo in gestione':''),'info'); }
+          if(dup){ dup.active = dup.active || act; Object.assign(dup, {gruppo:r.a.gruppo||dup.gruppo, matricola:r.a.matricola||dup.matricola||'', tipo:r.a.tipo}); toast(dup.callsign+' era già in archivio'+(act?': messo in gestione':''),'info'); }
           else { CFG.aircraft.push(Object.assign({ id:uid(), active:act, created:new Date().toISOString() }, r.a)); tipoColor(r.a.tipo); }
           queueSave('config'); renderPanel();
           draw(); return;
@@ -1784,7 +1786,7 @@ function openAcModal(tab){
         const bk = e.target.closest('[data-bulk]');
         if(bk){
           const on = bk.dataset.bulk==='1';
-          CFG.aircraft.forEach(a=>{ if((fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q))) a.active=on; });
+          CFG.aircraft.forEach(a=>{ if((fTipo==='*'||(a.tipo||'N/D')===fTipo) && (!q || [a.callsign,a.side,a.matricola,a.gruppo,a.tipo].join(' ').toLowerCase().includes(q))) a.active=on; });
           queueSave('config'); renderPanel(); drawArch(); return;
         }
         const ed = e.target.closest('[data-aedit]'); if(ed){ openAcEdit(ed.dataset.aedit, drawArch); return; }
@@ -1927,7 +1929,7 @@ function renderFlight(){
   $('flyGrid').innerHTML = fl.length ? fl.map(f=>{
     const ac = f.ac, n = f.nops;
     return '<div class="fbox" data-fac="'+esc(f.id)+'" data-end="'+(f.end==null?'':f.end)+'" data-start="'+(f.start||'')+'" style="'+cvars(tipoColor(ac.tipo))+'">'+
-      '<div class="fb-h"><div style="min-width:0"><b class="fb-cs">'+esc(ac.cs)+'</b><div class="fb-sub">Side <b>'+esc(ac.side||'—')+'</b>'+(ac.gr?' · '+esc(ac.gr):'')+'</div></div><span class="fb-tipo">'+esc(ac.tipo||'N/D')+'</span></div>'+
+      '<div class="fb-h"><div style="min-width:0"><b class="fb-cs">'+esc(ac.cs)+'</b><div class="fb-sub">Side <b>'+esc(ac.side||'—')+'</b>'+(ac.mat?' · Matr. <b>'+esc(ac.mat)+'</b>':'')+(ac.gr?' · '+esc(ac.gr):'')+'</div></div><span class="fb-tipo">'+esc(ac.tipo||'N/D')+'</span></div>'+
       '<div class="fb-grid"><div class="fb-cell"><div class="fb-k">POB</div><div class="fb-v">'+(n.pob!=null?esc(n.pob):'—')+'</div></div>'+
       '<div class="fb-cell"><div class="fb-k">Weapon</div><div class="fb-v"'+(n.weapon?' data-tip="'+esc(n.weapon)+'"':'')+'>'+esc(n.weapon||'—')+'</div></div></div>'+
       '<div class="fb-rem"><div class="fb-k">Autonomia residua</div><div class="fb-big" data-rem></div><div class="fb-bar"><i data-bar></i></div>'+
@@ -1998,7 +2000,7 @@ function renderAlert(){
   const list = ALERT.items.slice().sort((a,b)=>(a.lvl==='crit'?0:1)-(b.lvl==='crit'?0:1) || a.f.end-b.f.end);
   m.root.querySelector('[data-alist]').innerHTML = list.map(i=>{
     const f = i.f, ac = f.ac, n = f.nops||{};
-    return '<div class="fa-row '+i.lvl+'" data-aend="'+f.end+'"><div class="fa-l"><b>'+esc(ac.cs)+'</b><span>Side '+esc(ac.side||'—')+(ac.tipo?' · '+esc(ac.tipo):'')+'</span></div>'+
+    return '<div class="fa-row '+i.lvl+'" data-aend="'+f.end+'"><div class="fa-l"><b>'+esc(ac.cs)+'</b><span>Side '+esc(ac.side||'—')+(ac.mat?' · '+esc(ac.mat):'')+(ac.tipo?' · '+esc(ac.tipo):'')+'</span></div>'+
       '<div class="fa-m">'+(i.lvl==='crit'?'Autonomia inferiore a 30 minuti':'Autonomia inferiore a 60 minuti')+'<small>Termine '+fmtClock(f.end)+(n.pob!=null?' · POB '+esc(n.pob):'')+'</small></div>'+
       '<div class="fa-r" data-arem></div></div>';
   }).join('');
@@ -2182,12 +2184,12 @@ function pairBars(rows, series, keepZero){
 function printDay(k){
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da stampare','warn'); return; }
-  const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td class="nw">'+esc(en.ac?en.ac.cs:'')+'</td><td class="nw">'+esc(en.ac?en.ac.side:'')+'</td><td class="nw">'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
+  const rows = list.map(en=>'<tr><td class="t">'+fmtTime(en.ts)+':'+fmtSec(en.ts)+'</td><td class="nw">'+esc(en.ac?en.ac.cs:'')+'</td><td class="nw">'+esc(en.ac?en.ac.side:'')+'</td><td class="nw">'+esc(en.ac?en.ac.mat||'':'')+'</td><td class="nw">'+esc(en.ac?en.ac.tipo:'')+'</td><td>'+esc(en.ac?en.ac.gr:'')+'</td>'+
     '<td><b>'+esc(en.evs.map(e=>e.label).join(' + '))+'</b></td><td>'+esc(en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '))+'</td><td>'+esc(en.note||'')+'</td><td class="nw">'+esc(en.spot?spotLabel(en.spot):'')+'</td></tr>').join('');
   const now = new Date();
   $('printArea').innerHTML =
     '<div class="pr-head"><div class="pr-brand">'+(LOGO_URL()?'<img src="'+LOGO_URL()+'" alt="">':'')+'<div><h1>Cronologia Guzzi Twr</h1><div class="pr-sub">Torre di Controllo · Registro eventi</div></div></div><div class="pr-date">'+fmtDayLong(k)+'</div></div>'+
-    '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Note</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+    '<table><thead><tr><th>Ora</th><th>Callsign</th><th>Side</th><th>Matricola</th><th>Tipo</th><th>Gruppo Volo</th><th>Evento</th><th>Dettagli</th><th>Note</th><th>Spot</th></tr></thead><tbody>'+rows+'</tbody></table>'+
     '<div class="pr-foot"><span>Totale eventi: <b>'+list.length+'</b></span><span>Stampato il '+fmtDayShort(dayKey(now))+' alle '+pad(now.getHours())+':'+pad(now.getMinutes())+'</span></div>'+
     '<div class="pr-sign">L\'AUCV &nbsp; ______________________________</div>';
   setTimeout(()=>window.print(), 50);
@@ -2202,8 +2204,8 @@ function exportCsv(k){
   const list = DAYS[k]||[];
   if(!list.length){ toast('Nessun evento da esportare','warn'); return; }
   const q = s => '"'+String(s==null?'':s).replace(/"/g,'""')+'"';
-  const lines = [['Data','Ora','Callsign','Side Number','Gruppo Volo','Tipo','Evento','Dettagli','Note','Spot'].map(q).join(';')];
-  list.forEach(en=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
+  const lines = [['Data','Ora','Callsign','Side Number','Matricola','Gruppo Volo','Tipo','Evento','Dettagli','Note','Spot'].map(q).join(';')];
+  list.forEach(en=>lines.push([fmtDayShort(k), fmtTime(en.ts)+':'+fmtSec(en.ts), en.ac?en.ac.cs:'', en.ac?en.ac.side:'', en.ac?en.ac.mat||'':'', en.ac?en.ac.gr:'', en.ac?en.ac.tipo:'',
     en.evs.map(e=>e.label).join(' + '), en.evs.map(e=>detText(e.modal,e.det)).filter(Boolean).join(' · '), en.note||'', en.spot?spotLabel(en.spot):''].map(q).join(';')));
   download('Cronologia Guzzi Twr '+k+'.csv', '﻿'+lines.join('\r\n'), 'text/csv;charset=utf-8');
 }
