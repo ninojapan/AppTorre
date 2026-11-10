@@ -225,6 +225,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .acchip .ac-meta b{color:#cfe0f7}
 .acchip .ac-pos{position:absolute;top:-8px;right:8px;font-family:var(--font-d);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:20px;background:#2a220a;border:1px solid #5c4a12;color:var(--gold);display:flex;align-items:center;gap:3px}
 .acchip .ac-pos.fly{background:#0b2a40;border-color:#1c5c86;color:var(--accent)}
+.acchip .ac-pos.ext{background:#0b2a2a;border-color:#1f6b63;color:#5eead4;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
 .acchip .ac-pos svg{width:11px;height:11px}
 .acchip .ac-x{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:18px;height:18px;border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--muted2);opacity:0;transition:.12s}
 .acchip .ac-x svg{width:12px;height:12px}
@@ -497,6 +498,7 @@ mark{background:#f5c54259;color:#fff;border-radius:3px;padding:0 2px;box-shadow:
 .fb-cs{font-family:var(--font-d);font-size:25px;font-weight:700;letter-spacing:.6px;display:block;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fb-sub{font-size:12.5px;color:var(--muted);margin-top:3px}
 .fb-sub b{color:var(--text)}
+.fb-x{flex:0 0 auto;margin-left:6px}
 .fb-tipo{margin-left:auto;flex:0 0 auto;font-size:12px;font-weight:800;padding:4px 10px;border-radius:8px;background:var(--cb);border:1px solid var(--cg)}
 .fb-grid{display:grid;grid-template-columns:90px minmax(0,1fr);gap:10px}
 .fb-cell{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:8px 12px;min-width:0}
@@ -675,6 +677,7 @@ mark{background:#f5c54259;color:#fff;border-radius:3px;padding:0 2px;box-shadow:
             <div class="mstats" id="cronStats"></div>
             <div class="spacer"></div>
             <button class="iconbtn" id="btnSort" data-tip="Ordine: più recenti in alto / in basso"></button>
+            <button class="btn ghost small" id="btnInsToday" data-tip="Inserisci una registrazione dimenticata"><span data-icon="plus"></span>Inserisci</button>
             <button class="btn ghost small" id="btnPrintToday"><span data-icon="printer"></span>Stampa</button>
           </div>
           <div class="logbox" id="cronLog"></div>
@@ -745,6 +748,7 @@ mark{background:#f5c54259;color:#fff;border-radius:3px;padding:0 2px;box-shadow:
             <div class="spacer"></div>
             <button class="iconbtn" id="btnHistPrev" data-tip="Giorno precedente con cronologia"></button>
             <button class="iconbtn" id="btnHistNext" data-tip="Giorno successivo con cronologia"></button>
+            <button class="btn ghost small" id="btnHistIns" data-tip="Inserisci una registrazione dimenticata"><span data-icon="plus"></span>Inserisci</button>
             <button class="btn ghost small" id="btnHistCsv"><span data-icon="download"></span>CSV</button>
             <button class="btn ghost small" id="btnHistPrint"><span data-icon="printer"></span>Stampa</button>
           </div>
@@ -814,6 +818,7 @@ const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
 const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad = n => String(n).padStart(2,'0');
+const lbl = t => esc(t).replace(/\//g, '/<wbr>');
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 const clone = o => JSON.parse(JSON.stringify(o));
 const fmtNum = n => (Number(n)||0).toLocaleString('it-IT');
@@ -882,13 +887,13 @@ const AREA_SPOTS = SPOTS.filter(s=>!/^\d+$/.test(s));
 const MOVE_PLACES = ['Hangar','1','2','3','4','5','6','7','8','9','Isole'];
 const isNum = s => /^\d+$/.test(String(s));
 const spotLabel = s => (s==null||s==='') ? '—' : (isNum(s) ? 'Spot '+s : String(s));
-const spotShort = s => isNum(s) ? 'S'+s : (s==='Hangar' ? 'HGR' : s==='Isole' ? 'ISOLE' : String(s));
-const posLabel = p => p==='VOLO' ? 'In volo' : spotLabel(p);
+const spotShort = s => isNum(s) ? 'S'+s : (s==='Hangar' ? 'HGR' : s==='Isole' ? 'ISOLE' : String(s).charAt(0)==='@' ? String(s).slice(1) : String(s));
+const posLabel = p => p==='VOLO' ? 'In volo' : String(p).charAt(0)==='@' ? 'Presso '+String(p).slice(1) : spotLabel(p);
 
 const MODAL_TYPES = {
   none:'Nessuna finestra', move:'Movimento (da → a)', fasi:'Inizio / Fine', fasiLt:'Inizio / Fine + litri',
   normalops:'Endurance + POB', personale:'Imbarco / Sbarco + n° persone', carico:'Cosa trasporta / carico', testo:'Testo libero',
-  hero:'Assetto HERO'
+  hero:'Assetto HERO', luogo:'Aeroporto / altra Unità'
 };
 // assetti HERF (richiesti all'Inizio di Fuel / HotRef) e HERO
 const HERF = [
@@ -945,6 +950,7 @@ function defaultEvents(){
     ['decollo','Decollo','#38bdf8','none','decollo',false,'spot',true,false,true],
     ['normalops','Normal OPS','#818cf8','normalops','',false,'spot',true,true],
     ['appontaggio','Appontaggio','#22c55e','none','appontaggio',false,'spot',true],
+    ['atext','Atterraggio/Appontaggio','#2dd4bf','luogo','',false,'spot',true,true],
     ['personale','Personale','#f472b6','personale','personale',false,'spot',true],
     ['elsx','Elev. Sx','#a3e635','carico','elev_sx',false,'subito'],
     ['eldx','Elev. Dx','#a3e635','carico','elev_dx',false,'subito'],
@@ -953,7 +959,8 @@ function defaultEvents(){
     ['nlock','Norco Lock','#94a3b8','none','',false,'spot',true],
     ['fold','Fold','#94a3b8','none','',false,'spot',true],
     ['unfold','Unfold','#94a3b8','none','',false,'spot',true],
-    ['testo','Testo','#e2e8f0','testo']
+    ['testo','Testo','#e2e8f0','testo'],
+    ['fineatt','Termina attività giornaliera','#fb7185','none','',false,'solo']
   ].map(a=>({ id:a[0], label:a[1], color:a[2], modal:a[3]||'none', stat:a[4]||'', combo:!!a[5], reg:a[6]||'spot', needAc:!!a[7], needFly:!!a[8], needGround:!!a[9], hidden:false }));
 }
 
@@ -1087,6 +1094,7 @@ function openModal(o){
   if(!o.sticky) ov.addEventListener('mousedown', e=>{ if(e.target===ov) m.close(); });
   ov.addEventListener('click', e=>{ if(e.target.closest('[data-close]')) m.close(); });
   MODALS.push(m);
+  m.root.addEventListener('input', ()=>{ const fe = m.root.querySelector('.ferr'); if(fe) fe.hidden = true; });
   if(o.onMount) o.onMount(m);
   setTimeout(()=>{
     if(m.closed) return;
@@ -1150,7 +1158,12 @@ function rollDay(k){
    ========================================================================= */
 function prevDayKey(k){ const d=parseDay(k); d.setDate(d.getDate()-1); return dayKey(d); }
 function recentEntries(){ return (DAYS[prevDayKey(TODAY)]||[]).concat(DAYS[TODAY]||[]); }
-function acStates(){ return computeStates(recentEntries()); }
+function acStates(){
+  const st = computeStates(recentEntries()), clr = (CFG && CFG.flightClear) || {};
+  // voli eliminati a mano da "A/C in Volo": si ignorano fino a un nuovo Decollo
+  Object.keys(st).forEach(id=>{ const c = clr[id]; if(c && st[id].pos==='VOLO' && st[id].since && st[id].since <= c){ st[id].pos = null; st[id].nops = null; } });
+  return st;
+}
 function computeStates(entries){
   // stato di ogni A/C dalle righe (in ordine di tempo): posizione, in volo, ultimo Normal OPS
   const st = {};
@@ -1161,9 +1174,11 @@ function computeStates(entries){
     const dec = en.evs.some(e=>e.stat==='decollo');
     const nops = en.evs.find(e=>e.modal==='normalops' && e.det);
     const mv = en.evs.find(e=>e.modal==='move' && e.det && e.det.a);
+    const ext = en.evs.find(e=>e.modal==='luogo' && e.det && e.det.luogo);
     if(dec){ s.pos='VOLO'; s.since=en.ts; s.nops=null; s.nopsTs=null; }
     else if(!nops){
-      if(mv) s.pos = mv.det.a;
+      if(ext){ s.pos = '@'+ext.det.luogo; s.nops = null; }   // atterrato presso un aeroporto / altra Unita'
+      else if(mv) s.pos = mv.det.a;
       else if(en.spot) s.pos = en.spot;
       else if(en.evs.some(e=>e.stat==='appontaggio')) s.pos = null;
     }
@@ -1185,7 +1200,7 @@ function renderAcGrid(){
     return '<div class="acchip'+(on?' on':'')+'" role="button" tabindex="0" data-ac="'+a.id+'" style="'+cvars(tipoColor(a.tipo))+'" data-tip="'+esc(tip)+'">'+
       '<span class="ac-cs">'+esc(a.callsign||'—')+'</span>'+
       '<span class="ac-meta">'+(a.side?'<b>'+esc(a.side)+'</b>':'')+'<span>'+esc(a.tipo||'')+'</span></span>'+
-      (p ? '<span class="ac-pos'+(p==='VOLO'?' fly':'')+'">'+(p==='VOLO'?I.plane+'VOLO':esc(spotShort(p)))+'</span>' : '')+
+      (p ? '<span class="ac-pos'+(p==='VOLO'?' fly':String(p).charAt(0)==='@'?' ext':'')+'">'+(p==='VOLO'?I.plane+'VOLO':esc(spotShort(p)))+'</span>' : '')+
       '<span class="ac-x" data-hide="'+a.id+'" data-tip="Togli dalla gestione (resta in archivio)">'+I.x+'</span></div>';
   }).join('');
   if(!acs.length) h = '<span class="acempty">Nessun A/C in gestione — premi <b>+</b> per aggiungerne o richiamarli dall\'archivio.</span>';
@@ -1204,7 +1219,7 @@ function renderEvGrid(){
       e.needFly ? 'Solo per A/C in volo (dopo il Decollo)' : e.needGround ? 'Solo per A/C a terra (non gia\' in volo)' : e.needAc ? 'Richiede un A/C selezionato' : ''
     ].filter(Boolean).join(' · ');
     return '<button class="evbtn'+(s?' on':'')+'" data-ev="'+e.id+'" style="'+cvars(e.color)+'"'+(tip?' data-tip="'+esc(tip)+'"':'')+'>'+
-      '<span class="dot"></span><span class="evl">'+esc(e.label)+'</span>'+
+      '<span class="dot"></span><span class="evl">'+lbl(e.label)+'</span>'+
       (e.reg==='solo' ? '<span class="evk">'+I.zap+'</span>' : e.modal!=='none' ? '<span class="evm">…</span>' : '')+
       (d?'<span class="evd">'+esc(d)+'</span>':'')+'</button>';
   }).join('') || '<span class="acempty">Nessun evento visibile — usa la matita per gestirli.</span>';
@@ -1439,6 +1454,7 @@ function rememberFrom(evs){
     if(!e.det) return;
     if(e.modal==='carico' && e.det.txt) rememberRecent('carico', e.det.txt);
     if(e.modal==='normalops' && e.det.weapon) rememberRecent('weapon', e.det.weapon);
+    if(e.modal==='luogo' && e.det.luogo) rememberRecent('luogo', e.det.luogo);
   });
 }
 function rememberRecent(kind, txt){
@@ -1491,6 +1507,12 @@ function detForm(ev, det, ref, occ){
         '<datalist id="dlCarico">'+rec.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
         (rec.length ? '<div class="quick">'+rec.slice(0,8).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="txt">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div>';
     }
+    case 'luogo': {
+      const rec = CFG.recent.luogo||[];
+      return '<div class="fgrp"><label>Identificativo aeroporto o altra Unità *</label><input type="text" data-k="luogo" value="'+esc(det.luogo||'')+'" placeholder="es. LIRP, LICZ, Nave Cavour…" maxlength="40" autofocus list="dlLuogo">'+
+        '<datalist id="dlLuogo">'+rec.map(r=>'<option value="'+esc(r)+'">').join('')+'</datalist>'+
+        (rec.length ? '<div class="quick">'+rec.slice(0,8).map(r=>'<button type="button" class="qbtn" data-fill="'+esc(r)+'" data-for="luogo">'+esc(r)+'</button>').join('')+'</div>' : '')+'</div>';
+    }
     case 'hero': return '<div class="fgrp"><label>Assetto HERO *</label><div class="chipgrp opts" data-k="hero">'+
       HERO.map(h=>optChip(h.v, 'HERO '+h.v, h.t, det.hero===h.v, det._cur===h.v ? 'In vigore' : '')).join('')+'</div></div>';
     case 'testo': return '<div class="fgrp"><label>Descrizione evento</label><textarea data-k="txt" placeholder="Scrivi l\'evento fuori norma…" autofocus>'+esc(det.txt||'')+'</textarea></div>';
@@ -1522,6 +1544,7 @@ function detRead(ev, box){
       if(weapon) det.weapon = weapon;
       return {det};
     }
+    case 'luogo': { let l=v('luogo'); if(!l) return {err:'Inserisci l\'identificativo dell\'aeroporto o dell\'Unità'}; if(/^[a-z0-9]{3,5}$/i.test(l)) l=l.toUpperCase(); return {det:{luogo:l}}; }
     case 'hero': { const hero=g('hero'); if(!hero) return {err:'Seleziona l\'assetto HERO'}; return {det:{hero}}; }
     case 'personale': { const dir=g('dir'); const n=parseInt(v('n'),10)||0; if(!dir) return {err:'Seleziona Imbarco o Sbarco'}; if(n<1) return {err:'Inserisci il numero di persone'}; return {det:{dir,n}}; }
     case 'carico': { const txt=v('txt'); return {det: txt ? {txt} : {}}; }
@@ -1538,6 +1561,7 @@ function detText(modal, det){
     case 'normalops': return [det.endTs ? 'Termine aut. '+det.end : (det.end ? 'Endurance '+det.end : ''), det.pob!=null?'POB '+det.pob:'', det.weapon?'Weapon '+det.weapon:''].filter(Boolean).join(' · ');
     case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+' · '+det.n+' pers.' : '';
     case 'hero': return heroText(det.hero);
+    case 'luogo': return det.luogo ? 'Presso '+det.luogo : '';
     case 'carico': case 'testo': return det.txt||'';
   }
   return '';
@@ -1684,14 +1708,27 @@ function refreshAfterChange(day){
   if(VIEW==='storico'){ renderHistLog(); renderCal(); renderRecent(); }
   if(VIEW==='cerca') renderSearch();
 }
+async function ensureDay(k){
+  // carica un giorno dal database se non e' gia' in memoria; false se il server non risponde
+  if(DAYS[k] || DIRTY.has(k)) return true;
+  const l = await getJSON('/api/day?d='+k, null, 3);
+  if(!Array.isArray(l)) return false;
+  if(!DAYS[k]){ DAYS[k] = l; sortDay(k); }
+  return true;
+}
+function openInsert(day){ openEntryEditor(day||TODAY, { id:uid(), ts:null, ac:null, evs:[], spot:null }, true); }
 function openEdit(day, id){
   const en = findEntry(day, id); if(!en) return;
+  openEntryEditor(day, en, false);
+}
+function openEntryEditor(day, en, isNew){
+  const ctxDay = day;
   const pool = CFG.events.slice();
   en.evs.forEach(e=>{ if(!pool.some(p=>p.id===e.id)) pool.push(Object.assign({}, e, {hidden:false, combo:false, _orphan:true})); });
   const getP = i => pool.find(e=>e.id===i);
   let sel = en.evs.map(e=>({ id:e.id, det:e.det ? clone(e.det) : null }));
-  const d = new Date(en.ts);
-  const tval = pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  const d = en.ts ? new Date(en.ts) : new Date();
+  const tval = (isNew && day!==TODAY) ? '' : pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
   const arch = CFG.aircraft.slice().sort((a,b)=>String(a.callsign).localeCompare(String(b.callsign)));
   let acOpts = '<option value="">— Nessun A/C —</option>' + arch.map(a=>'<option value="'+a.id+'"'+(en.ac&&en.ac.id===a.id?' selected':'')+'>'+esc(a.callsign)+(a.side?' · '+esc(a.side):'')+(a.tipo?' · '+esc(a.tipo):'')+(a.active?'':' (archivio)')+'</option>').join('');
   if(en.ac && !getAc(en.ac.id)) acOpts += '<option value="'+en.ac.id+'" selected>'+esc(en.ac.cs)+(en.ac.side?' · '+esc(en.ac.side):'')+' (eliminato dall\'archivio)</option>';
@@ -1702,16 +1739,19 @@ function openEdit(day, id){
     '<div data-f="det"></div>'+
     '<div class="fgrp"><label>Spot</label><div class="chipgrp" data-k="spot" data-f="spot">'+chip('','Nessuno',!en.spot)+SPOTS.map(s=>chip(s, spotLabel(s), en.spot===s)).join('')+'</div></div>'+
     '<div class="fgrp"><label>Note</label><textarea data-f="note" maxlength="500" style="min-height:64px" placeholder="Nota facoltativa…">'+esc(en.note||'')+'</textarea></div>'+
-    '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div><div class="ferr" hidden></div>';
+    (isNew ? '<div class="hint">La registrazione viene inserita nella cronologia del giorno scelto, all\'ora indicata.</div>' : '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div>')+'<div class="ferr" hidden></div>';
+  const bodyFull = isNew
+    ? '<div class="row2"><div class="fgrp"><label>Data</label><input type="date" data-f="date" value="'+day+'" max="'+TODAY+'"></div><div></div></div>'+body
+    : body;
   openModal({
-    title:'Modifica evento', icon:mIcon('pencil'), size:'mid', body,
-    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+'Salva modifiche</button>',
+    title: isNew ? 'Inserisci registrazione' : 'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid', body:bodyFull,
+    foot:'<span class="grow"></span><button class="btn ghost" data-close>Annulla</button><button class="btn blue" data-primary data-ok>'+I.check+(isNew?'Inserisci':'Salva modifiche')+'</button>',
     onMount(m){
       const R = m.root, evBox = R.querySelector('[data-f="evs"]'), detZone = R.querySelector('[data-f="det"]');
       bindDet(R);
       const captureDet = ()=>{ qsa('.detbox[data-ev]', detZone).forEach(b=>{ const s=sel.find(x=>x.id===b.dataset.ev); const e=getP(b.dataset.ev); if(s&&e){ const r=detRead(e,b); if(!r.err) s.det=r.det; } }); };
       const draw = ()=>{
-        evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span><span class="evl">'+esc(e.label)+'</span></button>').join('');
+        evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span><span class="evl">'+lbl(e.label)+'</span></button>').join('');
         detZone.innerHTML = sel.map(s=>{ const e=getP(s.id); if(!e||e.modal==='none') return ''; return '<div class="detsec"><div class="detsec-h"><i style="background:'+e.color+'"></i>'+esc(e.label)+'</div><div class="detbox" data-ev="'+e.id+'">'+detForm(e, s.det, en.ts)+'</div></div>'; }).join('');
         qsa('.detbox', detZone).forEach(syncDet);
       };
@@ -1727,13 +1767,23 @@ function openEdit(day, id){
         draw();
       });
       draw();
-      R.querySelector('[data-ok]').onclick = ()=>{
+      R.querySelector('[data-ok]').onclick = async ()=>{
+        let day0 = ctxDay;
+        if(isNew){
+          day0 = String(R.querySelector('[data-f="date"]').value||'');
+          if(!/^\d{4}-\d{2}-\d{2}$/.test(day0)) return showErr(m,'Scegli la data della registrazione');
+          if(day0 > TODAY) return showErr(m,'La data non può essere nel futuro');
+          if(!(await ensureDay(day0)) || !(await ensureDay(prevDayKey(day0)))) return showErr(m,'Impossibile leggere il giorno dal database: riprova');
+        }
+        const day = day0;
         const tm = String(R.querySelector('[data-f="time"]').value).trim().match(/^(\d{1,2})[:.](\d{2})(?:[:.](\d{2}))?$/);
         const tp = tm ? [Number(tm[1]), Number(tm[2]), Number(tm[3]||0)] : null;
         if(!tp || tp[0]>23 || tp[1]>59 || tp[2]>59) return showErr(m,'Orario non valido: usa il formato hh:mm:ss (24 ore)');
         const base = parseDay(day); base.setHours(tp[0], tp[1], tp[2]||0, 0);
+        if(isNew && base.getTime() > Date.now()+60000) return showErr(m,'L\'orario non può essere nel futuro');
         // ora non modificata: si conserva l'orario esatto originale (millisecondi compresi)
-        const newTs = String(R.querySelector('[data-f="time"]').value).trim()===tval ? en.ts : base.toISOString();
+        const newTs = (!isNew && String(R.querySelector('[data-f="time"]').value).trim()===tval) ? en.ts : base.toISOString();
+        qsa('.clock', detZone).forEach(ck=>{ ck.dataset.ref = newTs; });   // autonomia calcolata dall'ora della registrazione
         const evs = [];
         for(const s of sel){
           const e = getP(s.id); let det = null;
@@ -1774,8 +1824,13 @@ function openEdit(day, id){
         en.ts = newTs; en.ac = ac; en.evs = evs; en.spot = spot;
         const nv = String(R.querySelector('[data-f="note"]').value||'').trim(); if(nv) en.note = nv; else delete en.note;
         rememberFrom(evs);
+        if(isNew){ if(!DAYS[day]) DAYS[day] = []; DAYS[day].push(en); setIndex(day); }
         sortDay(day); m.close();
         refreshAfterChange(day); queueSave(day);
+        if(isNew){
+          toast('Registrazione inserita: '+fmtDayShort(day)+' '+fmtTime(newTs),'ok');
+          const r = qsa('.lrow').find(x=>x.dataset.id===en.id); if(r){ r.classList.add('fresh'); r.scrollIntoView({block:'nearest'}); }
+        }
       };
     }
   });
@@ -2050,7 +2105,7 @@ function renderFlight(){
   $('flyGrid').innerHTML = fl.length ? fl.map(f=>{
     const ac = f.ac, n = f.nops;
     return '<div class="fbox" data-fac="'+esc(f.id)+'" data-end="'+(f.end==null?'':f.end)+'" data-start="'+(f.start||'')+'" style="'+cvars(tipoColor(ac.tipo))+'">'+
-      '<div class="fb-h"><div style="min-width:0"><b class="fb-cs">'+esc(ac.cs)+'</b><div class="fb-sub">Side <b>'+esc(ac.side||'—')+'</b>'+(ac.mat?' · Matr. <b>'+esc(ac.mat)+'</b>':'')+(ac.gr?' · '+esc(ac.gr):'')+'</div></div><span class="fb-tipo">'+esc(ac.tipo||'N/D')+'</span></div>'+
+      '<div class="fb-h"><div style="min-width:0"><b class="fb-cs">'+esc(ac.cs)+'</b><div class="fb-sub">Side <b>'+esc(ac.side||'—')+'</b>'+(ac.mat?' · Matr. <b>'+esc(ac.mat)+'</b>':'')+(ac.gr?' · '+esc(ac.gr):'')+'</div></div><span class="fb-tipo">'+esc(ac.tipo||'N/D')+'</span><button class="iconbtn danger fb-x" data-fdel data-tip="Elimina volo da A/C in Volo">'+I.x+'</button></div>'+
       '<div class="fb-grid"><div class="fb-cell"><div class="fb-k">POB</div><div class="fb-v">'+(n.pob!=null?esc(n.pob):'—')+'</div></div>'+
       '<div class="fb-cell"><div class="fb-k">Weapon</div><div class="fb-v"'+(n.weapon?' data-tip="'+esc(n.weapon)+'"':'')+'>'+esc(n.weapon||'—')+'</div></div></div>'+
       '<div class="fb-rem"><div class="fb-k">Autonomia residua</div><div class="fb-big" data-rem></div><div class="fb-bar"><i data-bar></i></div>'+
@@ -2138,6 +2193,17 @@ function updateAlertTimers(){
 function onFlightClick(e){
   const box = e.target.closest('.fbox'); if(!box) return;
   const f = flightsInAir().find(x=>x.id===box.dataset.fac); if(!f) return;
+  if(e.target.closest('[data-fdel]')){
+    confirmBox({ title:'Elimina volo', danger:true, ok:'Elimina volo',
+      html:'Togliere <b>'+esc(f.ac.cs)+'</b> da A/C in Volo?<br><span class="muted">Le registrazioni in cronologia non vengono modificate. L\'A/C tornerà in volo solo con un nuovo Decollo.</span>' })
+      .then(ok=>{
+        if(!ok) return;
+        CFG.flightClear[f.id] = new Date().toISOString();
+        queueSave('config'); renderFlight(); updateFlightBadge(); renderPanel();
+        toast(f.ac.cs+' tolto da A/C in Volo','info');
+      });
+    return;
+  }
   if(e.target.closest('[data-fops]')){
     const ev = nopsEvent(), n = f.nops;
     openDetModal(ev, { end: /^\d{1,2}:\d{2}$/.test(n.end||'') ? n.end : '', pob:n.pob, weapon:n.weapon }, det=>{
@@ -2525,6 +2591,8 @@ function bindUI(){
   $('btnSort').onclick = ()=>{ SORT_DESC=!SORT_DESC; lsSet('gt.sortDesc', SORT_DESC); renderLog(); if(VIEW==='storico') renderHistLog(); toast(SORT_DESC?'Più recenti in alto':'Più recenti in basso','info'); };
   $('btnPrintToday').onclick = ()=> printDay(TODAY);
   $('btnHistPrint').onclick = ()=> printDay(HIST_DAY);
+  $('btnInsToday').onclick = ()=> openInsert(TODAY);
+  $('btnHistIns').onclick = ()=> openInsert(HIST_DAY || TODAY);
   $('btnStPrint').onclick = openStatsPrint;
   $('btnHistCsv').onclick = ()=> exportCsv(HIST_DAY);
   $('btnHistPrev').onclick = ()=> histStep(-1);
@@ -2588,6 +2656,10 @@ function normalizeCfg(c){
   if(!o.recent || typeof o.recent!=='object') o.recent = {};
   if(!Array.isArray(o.recent.carico)) o.recent.carico = [];
   if(!Array.isArray(o.recent.weapon)) o.recent.weapon = [];
+  if(!Array.isArray(o.recent.luogo)) o.recent.luogo = [];
+  if(!o.flightClear || typeof o.flightClear!=='object') o.flightClear = {};
+  const old = new Date(Date.now()-4*86400000).toISOString();
+  Object.keys(o.flightClear).forEach(id=>{ if(o.flightClear[id] < old) delete o.flightClear[id]; });
   if((Number(o.version)||1) < 2){
     // v2: questi eventi devono essere abbinati a un A/C
     const NEED = ['move','tacchi','rizze','fuel','hotref','apu','mim','ingaggio','decollo','normalops','appontaggio','personale','nlock','fold','unfold'];
@@ -2612,7 +2684,14 @@ function normalizeCfg(c){
     }
     fresh = true;
   }
-  o.version = 5;
+  if((Number(o.version)||1) < 6){
+    // v6: nuovi eventi "Atterraggio/Appontaggio" (presso aeroporto / altra Unita') e "Termina attivita' giornaliera"
+    const defs = defaultEvents();
+    if(!o.events.some(e=>e.id==='atext')){ const i = o.events.findIndex(e=>e.id==='appontaggio'); const ev = defs.find(e=>e.id==='atext'); if(i>=0) o.events.splice(i+1, 0, ev); else o.events.push(ev); }
+    if(!o.events.some(e=>e.id==='fineatt')) o.events.push(defs.find(e=>e.id==='fineatt'));
+    fresh = true;
+  }
+  o.version = 6;
   return { cfg:o, fresh };
 }
 function showOffline(){

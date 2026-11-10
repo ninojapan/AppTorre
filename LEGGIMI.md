@@ -82,6 +82,12 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      si tocca lo spot (es. l'Appontaggio) oppure si preme **SALVA**.
    - **Tacchi + Rizze**: se premi Rizze (o Tacchi) sullo stesso A/C entro 2 minuti
      dall'altro, viene aggiunto alla stessa riga ("Tacchi + Rizze").
+   - **Atterraggio/Appontaggio** (presso un altro aeroporto o un'altra Unità): solo
+     per A/C **in volo**; apre una finestra dove scrivere l'identificativo
+     dell'aeroporto o dell'Unità (es. *LIRP*, *Nave Cavour*; quelli già usati sono
+     riproposti) e si registra alla conferma. Il volo si chiude e l'A/C risulta
+     "presso" quel luogo (badge sul pulsante, es. `LIRP`).
+   - **Termina attività giornaliera**: un clic, registrato subito senza A/C né spot.
    - **Decollo** solo per A/C a terra: se l'A/C risulta già in volo compare
      l'errore "Decollo: … è già in volo" e non si salva nulla (vale anche nella
      modifica di una riga). Per farlo ripartire serve prima l'**Appontaggio**.
@@ -142,6 +148,12 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
 
 Sequenza tipica: **A/C → Evento** (registrato subito se l'A/C è già su uno spot),
 altrimenti **A/C → Evento → Spot**.
+
+**Inserisci** (in Cronologia e in Storico): per aggiungere una **registrazione
+dimenticata**. Scegli data e ora (non nel futuro), A/C, evento con i suoi dettagli,
+spot e note: la riga viene inserita al suo posto in ordine di tempo, con gli stessi
+controlli delle registrazioni normali (A/C richiesto, A/C in volo / a terra a
+quell'ora, spot occupato a quell'ora).
 `Esc` annulla la selezione. Su ogni riga: **matita** per modificare (ora,
 A/C, evento, dettagli, spot, note) e **cestino** per eliminare (con conferma).
 
@@ -164,6 +176,9 @@ sotto i 30 minuti (lampeggia se l'autonomia è scaduta). Un A/C compare dopo il
 POB, Weapon e ora di termine vengono dall'ultimo **Normal OPS** di quel volo.
 
 - **Normal OPS** sul riquadro: aggiorna i dati (finestra già compilata) e lo registra in cronologia.
+- **X** sul riquadro: **elimina il volo** dalla sezione (con conferma), per esempio se
+  le registrazioni sono state cancellate o corrette. La cronologia non viene
+  modificata; l'A/C tornerà in volo solo con un nuovo **Decollo**.
 - **Appontaggio** sul riquadro: torna alla Cronologia con A/C ed evento già
   selezionati; basta toccare lo spot.
 - Nel menu, accanto ad *A/C in Volo*, il numero di A/C in volo è colorato con lo
