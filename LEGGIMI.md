@@ -82,15 +82,18 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      si tocca lo spot (es. l'Appontaggio) oppure si preme **SALVA**.
    - **Tacchi + Rizze**: se premi Rizze (o Tacchi) sullo stesso A/C entro 2 minuti
      dall'altro, viene aggiunto alla stessa riga ("Tacchi + Rizze").
-   - **Atterraggio/Appontaggio** (presso un altro aeroporto o un'altra Unità): solo
-     per A/C **in volo**; apre una finestra dove scrivere l'identificativo
+   - **Atterraggio/Appontaggio** (presso un altro aeroporto o un'altra Unità): per
+     A/C **in volo**; apre una finestra dove scrivere l'identificativo
      dell'aeroporto o dell'Unità (es. *LIRP*, *Nave Cavour*; quelli già usati sono
      riproposti) e si registra alla conferma. Il volo si chiude e l'A/C risulta
      "presso" quel luogo (badge sul pulsante, es. `LIRP`).
    - **Termina attività giornaliera**: un clic, registrato subito senza A/C né spot.
-   - **Decollo** solo per A/C a terra: se l'A/C risulta già in volo compare
-     l'errore "Decollo: … è già in volo" e non si salva nulla (vale anche nella
-     modifica di una riga). Per farlo ripartire serve prima l'**Appontaggio**.
+   - **Verifica registrazione**: se lo stato dell'A/C non torna — Decollo di un A/C
+     che risulta già in volo, Normal OPS o Atterraggio/Appontaggio di un A/C che non
+     risulta in volo, spot già occupato — non c'è un blocco: compare la finestra
+     **Verifica registrazione** con il motivo e il pulsante **Registra comunque**
+     (basta **Invio**); *Annulla* lascia la selezione com'era. Utile per A/C arrivati
+     da altre Unità o quando un Decollo non è stato registrato.
    - **Un clic** (icona ⚡): **Ops di volo, FodWalk, Deck Ready, Prova Semaforo,
      Giallo, Rosso, Verde** vengono registrati subito, senza A/C né spot.
      Gli A/C eventualmente selezionati restano selezionati.
@@ -116,10 +119,8 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      riproposti). **Endurance e POB sono obbligatori**: se ne manca uno il
      salvataggio non avviene ("Obbligatorio: …"); il **POB deve essere almeno 1**
      (con 0 non si salva). Weapon è facoltativo. L'autonomia residua appare subito in verde, giallo o rosso.
-     **Solo per A/C in volo** (dopo il **Decollo**): con un A/C a terra compare
-     l'errore "Normal OPS: … non è in volo — registra prima il Decollo" e non si
-     salva nulla. Per un A/C in volo si registra **subito alla conferma** della
-     finestra (senza spot né Salva).
+     Per un A/C in volo si registra **subito alla conferma** della finestra (senza
+     spot né Salva); se l'A/C non risulta in volo compare la *Verifica registrazione*.
    - **Personale**: Imbarco o Sbarco e numero di persone.
    - **Elev. Sx / Dx / Mun. Prora / Mun. Poppa**: cosa trasporta (i carichi
      già usati vengono riproposti con un clic). **Registra** nella finestra
@@ -132,28 +133,27 @@ misura. I pulsanti selezionati **restano premuti** fino alla registrazione.
      conferma, con gli A/C selezionati) oppure *un clic* (subito, senza A/C né spot).
      Le opzioni **Solo per A/C in volo** (Normal OPS) e **Solo per A/C a terra**
      (Decollo) si possono attivare anche su altri eventi.
-     L'opzione **Richiede un A/C selezionato** blocca l'evento con un errore se
+     L'opzione **Richiede un A/C selezionato** blocca l'evento (dal pannello) se
      nessun A/C è selezionato e lo registra subito se l'A/C è già su uno spot;
      puoi attivarla o disattivarla per ogni evento.
 3. **Spot**: 1–9, Hangar, Isole. **Toccando uno spot l'evento viene registrato
    subito** con data e ora. Se l'evento non ha spot premi **SALVA** in basso a
    destra (oppure **F2**).
-   **Uno Spot (1–9) può ospitare un solo A/C**: se lo spot è occupato da un altro
-   A/C compare l'errore "Spot 3 occupato da …" e non si salva nulla (la selezione
-   resta, puoi toccare un altro spot); lo stesso se selezioni più A/C sullo stesso
-   spot. Quando un evento è pronto, gli spot occupati sono evidenziati in rosso;
-   in **Move** le destinazioni occupate sono disattivate con il nome dell'A/C che
-   le occupa. Il controllo vale anche nella modifica di una riga (all'ora della
-   riga). **Hangar** e **Isole** possono ospitare più A/C.
+   **Uno Spot (1–9) ospita un solo A/C**: se lo spot è occupato da un altro A/C (o
+   selezioni più A/C sullo stesso spot) compare la *Verifica registrazione* ("Spot 3
+   occupato da …" → **Registra comunque** oppure Annulla e tocchi un altro spot).
+   Quando un evento è pronto, gli spot occupati sono evidenziati in rosso; in
+   **Move** le destinazioni occupate sono segnalate con il nome dell'A/C che le
+   occupa. **Hangar** e **Isole** possono ospitare più A/C.
 
 Sequenza tipica: **A/C → Evento** (registrato subito se l'A/C è già su uno spot),
 altrimenti **A/C → Evento → Spot**.
 
 **Inserisci** (in Cronologia e in Storico): per aggiungere una **registrazione
-dimenticata**. Scegli data e ora (non nel futuro), A/C, evento con i suoi dettagli,
-spot e note: la riga viene inserita al suo posto in ordine di tempo, con gli stessi
-controlli delle registrazioni normali (A/C richiesto, A/C in volo / a terra a
-quell'ora, spot occupato a quell'ora).
+dimenticata**. Scegli data e ora, A/C, evento con i suoi dettagli, spot e note: la
+riga viene inserita **così com'è**, al suo posto in ordine di tempo, **senza
+controlli** (servono solo data, ora e almeno un evento; i campi dei dettagli si
+possono lasciare vuoti). Lo stesso vale per la **matita** (Modifica).
 `Esc` annulla la selezione. Su ogni riga: **matita** per modificare (ora,
 A/C, evento, dettagli, spot, note) e **cestino** per eliminare (con conferma).
 

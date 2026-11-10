@@ -200,7 +200,8 @@ input[type=date],input[type=time]{color-scheme:dark}
 .note-hint kbd{font-family:var(--font);font-size:10px;padding:0 5px;border-radius:4px;border:1px solid var(--border2);background:var(--panel2);color:var(--muted)}
 .empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px}
 .empty svg{width:46px;height:46px;color:#33507e;margin-bottom:10px}
-.empty b{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+.empty > b:first-of-type{display:block;color:var(--text);font-size:16px;margin-bottom:4px}
+.empty b{color:var(--text)}
 
 /* ---------- Pannello comandi (lato destro) ---------- */
 .ctrl{border-left:1px solid var(--border);background:linear-gradient(180deg,#0c172b,#08111f);display:flex;flex-direction:column;min-height:0}
@@ -272,7 +273,7 @@ input[type=date],input[type=time]{color-scheme:dark}
 .deck.armed .spot.busy .sn{color:#f87171}
 .spot.bad{animation:bad .6s ease}
 @keyframes bad{0%,40%{background:#ef4444;border-color:#ef4444}100%{}}
-.chip.busy{opacity:.45;cursor:not-allowed;border-style:dashed}
+.chip.busy{border-style:dashed;border-color:#7a2020}
 .chip small{font-size:10px;font-weight:700;color:var(--muted2);margin-left:2px}
 @keyframes armed{0%,100%{box-shadow:0 0 0 0 #f5c54200}50%{box-shadow:0 0 0 3px #f5c54233}}
 .spot.hit{animation:hit .5s ease}
@@ -1322,17 +1323,10 @@ function onEvClick(id){
   if(i>=0){ SEL.ev.splice(i,1); renderPanel(); return; }
   if((ev.needAc || ev.needFly || ev.needGround) && !SEL.ac.length){ needAcError(ev); return; }
   if(ev.needFly){
-    // solo A/C in volo (dopo il Decollo); in volo non c'e' spot, quindi si registra subito
-    const ground = notFlying(SEL.ac.map(getAc).filter(Boolean));
-    if(ground.length){ needFlyError(ev, ground); return; }
+    // A/C in volo: non c'e' spot, quindi si registra subito (se l'A/C non risulta in volo si chiede conferma)
     const fin = det=>{ applyEvSel(ev, det); register(null); };
     if(ev.modal==='none') fin(null); else openDetModal(ev, suggestDet(ev), fin, { direct:true });
     return;
-  }
-  if(ev.needGround){
-    // es. Decollo: non per un A/C che risulta gia' in volo
-    const air = airborne(SEL.ac.map(getAc).filter(Boolean));
-    if(air.length){ inFlightError(ev, air); return; }
   }
   // A/C gia' su uno spot: l'evento si registra subito su quello spot (per ogni A/C selezionato)
   const auto = ev.needAc && ev.reg==='spot' ? deckSpots(SEL.ac.map(getAc).filter(Boolean)) : null;
@@ -1347,7 +1341,7 @@ function onEvClick(id){
   };
   if(auto && ev.modal!=='none'){ openDetModal(ev, suggestDet(ev), done, { direct:true }); return; }
   if(ev.modal==='none') done(null);
-  else if(ev.modal==='move') openDetModal(ev, suggestDet(ev), done, { occ: occupiedBy(SEL.ac), validate: d=>spotConflict(SEL.ac, d.a) });
+  else if(ev.modal==='move') openDetModal(ev, suggestDet(ev), done, { occ: occupiedBy(SEL.ac) });
   else openDetModal(ev, suggestDet(ev), done);
 }
 function onSpotClick(s, btn){
@@ -1398,30 +1392,33 @@ function mergeCombo(ev){
 function needAcMsg(ev){ return ev.label+': seleziona prima l\'A/C'+(ev.modal==='move'?' da movimentare':''); }
 function notFlying(acs){ const pos = positions(); return acs.filter(a=>pos[a.id]!=='VOLO'); }
 function airborne(acs){ const pos = positions(); return acs.filter(a=>pos[a.id]==='VOLO'); }
-function inFlightError(ev, air){
-  toast(ev.label+': '+air.map(a=>a.callsign).join(', ')+(air.length>1?' sono già':' è già')+' in volo','err');
-  const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
-}
-function needFlyError(ev, ground){
-  toast(ev.label+': '+ground.map(a=>a.callsign).join(', ')+(ground.length>1?' non sono':' non è')+' in volo — registra prima il Decollo','err');
-  const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
-}
 function needAcError(ev){
   toast(needAcMsg(ev),'err');
   const g = $('acGrid'); g.classList.remove('need'); void g.offsetWidth; g.classList.add('need');
 }
-function register(spot, spotByAc){
+function register(spot, spotByAc, force){
   if(!SEL.ev.length){ toast('Seleziona prima un evento','warn'); return; }
-  const need = SEL.ev.map(s=>getEv(s.id)).find(e=>e && (e.needAc || e.needFly));
+  const need = SEL.ev.map(s=>getEv(s.id)).find(e=>e && (e.needAc || e.needFly || e.needGround));
   if(need && !SEL.ac.length){ needAcError(need); return; }
-  const fly = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needFly);
-  if(fly){ const ground = notFlying(SEL.ac.map(getAc).filter(Boolean)); if(ground.length){ needFlyError(fly, ground); return; } }
-  const gnd = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needGround);
-  if(gnd){ const air = airborne(SEL.ac.map(getAc).filter(Boolean)); if(air.length){ inFlightError(gnd, air); return; } }
-  // uno Spot (1-9) puo' ospitare un solo A/C
-  const mvs = SEL.ev.find(x=>{ const e=getEv(x.id); return e && e.modal==='move' && x.det && x.det.a; });
-  const target = mvs ? mvs.det.a : (spotByAc ? null : spot);
-  if(SEL.ac.length && target){ const c = spotConflict(SEL.ac, target); if(c){ spotError(c, target); return false; } }
+  if(!force){
+    // controlli sullo stato (in volo / a terra / spot occupato): non bloccano, chiedono "Registra comunque"
+    const acs = SEL.ac.map(getAc).filter(Boolean), issues = [];
+    const names = l => l.map(a=>a.callsign).join(', ');
+    const fly = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needFly);
+    if(fly){ const gr = notFlying(acs); if(gr.length) issues.push(fly.label+': '+names(gr)+(gr.length>1?' non risultano':' non risulta')+' in volo (manca il Decollo)'); }
+    const gnd = SEL.ev.map(s=>getEv(s.id)).find(e=>e && e.needGround);
+    if(gnd){ const air = airborne(acs); if(air.length) issues.push(gnd.label+': '+names(air)+(air.length>1?' risultano già':' risulta già')+' in volo'); }
+    const mvs = SEL.ev.find(x=>{ const e=getEv(x.id); return e && e.modal==='move' && x.det && x.det.a; });
+    const target = mvs ? mvs.det.a : (spotByAc ? null : spot);
+    if(SEL.ac.length && target){ const c = spotConflict(SEL.ac, target); if(c) issues.push(c); }
+    if(issues.length){
+      flashSpot(target);
+      confirmBox({ title:'Verifica registrazione', ok:'Registra comunque',
+        html: issues.map(esc).join('<br>')+'<br><span class="muted">Vuoi registrare comunque?</span>' })
+        .then(ok=>{ if(ok) register(spot, spotByAc, true); });
+      return false;
+    }
+  }
   const evs = SEL.ev.map(s=>{ const e=getEv(s.id); return e ? evSnap(e, s.det) : null; }).filter(Boolean);
   const ids = addEntries(SEL.ac.map(getAc).filter(Boolean), evs, spot, spotByAc);
   SEL.ac=[]; SEL.ev=[];
@@ -1440,8 +1437,8 @@ function spotConflict(acIds, spot){
   const occ = occupiedBy(acIds)[spot];
   return occ ? spotLabel(spot)+' occupato da '+occ : null;
 }
-function spotError(msg, s){
-  toast(msg, 'err');
+function flashSpot(s){
+  if(!s) return;
   const b = qsa('#deck [data-spot]').find(x=>x.dataset.spot===s); if(b){ b.classList.remove('bad','hit'); void b.offsetWidth; b.classList.add('bad'); }
 }
 function registerSolo(ev, det){
@@ -1476,7 +1473,7 @@ function detForm(ev, det, ref, occ){
   switch(ev.modal){
     case 'move': return '<div class="fgrp"><label>Da</label><div class="chipgrp" data-k="da">'+MOVE_PLACES.map(p=>chip(p, spotLabel(p), det.da===p)).join('')+'</div></div>'+
                         '<div class="fgrp"><label>A</label><div class="chipgrp" data-k="a">'+MOVE_PLACES.map(p=>(occ && occ[p])
-                          ? '<button type="button" class="chip busy" disabled data-v="'+esc(p)+'" data-tip="Occupato da '+esc(occ[p])+'">'+esc(spotLabel(p))+'<small>'+esc(occ[p])+'</small></button>'
+                          ? '<button type="button" class="chip busy'+(det.a===p?' on':'')+'" data-v="'+esc(p)+'" data-tip="Occupato da '+esc(occ[p])+'">'+esc(spotLabel(p))+'<small>'+esc(occ[p])+'</small></button>'
                           : chip(p, spotLabel(p), det.a===p)).join('')+'</div></div>';
     case 'fasi':
     case 'fasiLt': return '<div class="fgrp"><div class="chipgrp big" data-k="fase">'+chip('inizio','Inizio',det.fase==='inizio','play')+chip('fine','Fine',det.fase==='fine','stop')+'</div></div>'+
@@ -1519,47 +1516,62 @@ function detForm(ev, det, ref, occ){
   }
   return '';
 }
-function detRead(ev, box){
+function detRead(ev, box, free){
+  // free = true (Inserisci / Modifica): nessun campo obbligatorio, si salva quello che c'e'
   const g = k => { const c = box.querySelector('.chipgrp[data-k="'+k+'"] .chip.on'); return c ? c.dataset.v : ''; };
   const v = k => { const el = box.querySelector('[data-k="'+k+'"]'); return el ? String(el.value||'').trim() : ''; };
+  const E = msg => free ? null : {err:msg};
+  let e = null;
   switch(ev.modal){
-    case 'move': { const da=g('da'), a=g('a'); if(!da||!a) return {err:'Seleziona provenienza (Da) e destinazione (A)'}; if(da===a) return {err:'Provenienza e destinazione coincidono'}; return {det:{da,a}}; }
-    case 'fasi': { const fase=g('fase'); if(!fase) return {err:'Seleziona Inizio o Fine'}; return {det:{fase}}; }
+    case 'move': {
+      const da=g('da'), a=g('a');
+      if(!da||!a){ if((e = E('Seleziona provenienza (Da) e destinazione (A)'))) return e; }
+      else if(da===a){ if((e = E('Provenienza e destinazione coincidono'))) return e; }
+      const det = {}; if(da) det.da = da; if(a) det.a = a; return {det};
+    }
+    case 'fasi': { const fase=g('fase'); if(!fase && (e = E('Seleziona Inizio o Fine'))) return e; return {det: fase ? {fase} : {}}; }
     case 'fasiLt': {
-      const fase=g('fase'); if(!fase) return {err:'Seleziona Inizio o Fine'};
-      const det={fase};
-      if(fase==='inizio' && box.querySelector('.herfbox')){ const herf=g('herf'); if(!herf) return {err:'Seleziona l\'assetto HERF'}; det.herf = herf; }
-      if(fase==='fine'){ const s=v('lt').replace(/\./g,'').replace(',','.'); if(s!==''){ const n=Number(s); if(!isFinite(n)||n<0) return {err:'Quantità in litri non valida'}; det.lt=Math.round(n); } }
+      const fase=g('fase'); if(!fase && (e = E('Seleziona Inizio o Fine'))) return e;
+      const det = fase ? {fase} : {};
+      if(fase==='inizio' && box.querySelector('.herfbox')){ const herf=g('herf'); if(!herf && (e = E('Seleziona l\'assetto HERF'))) return e; if(herf) det.herf = herf; }
+      if(fase==='fine'){ const s=v('lt').replace(/\./g,'').replace(',','.'); if(s!==''){ const n=Number(s); if(isFinite(n) && n>=0) det.lt=Math.round(n); else if((e = E('Quantità in litri non valida'))) return e; } }
       return {det};
     }
     case 'normalops': {
       const ck = box.querySelector('.clock'), end=v('end'), pob=v('pob'), weapon=v('weapon');
-      if(ck && !end && qsa('.ck-in', ck).some(x=>x.value!=='')) return {err:'Ora di termine autonomia non valida'};
-      const miss = []; if(!end) miss.push('Endurance (ora termine autonomia)'); if(pob==='') miss.push('POB');
-      if(miss.length) return {err:'Obbligatorio: '+miss.join(' e ')};
-      if(!/^\d+$/.test(pob) || parseInt(pob,10)<1) return {err:'POB non valido: deve essere almeno 1'};
+      if(!free){
+        if(ck && !end && qsa('.ck-in', ck).some(x=>x.value!=='')) return {err:'Ora di termine autonomia non valida'};
+        const miss = []; if(!end) miss.push('Endurance (ora termine autonomia)'); if(pob==='') miss.push('POB');
+        if(miss.length) return {err:'Obbligatorio: '+miss.join(' e ')};
+        if(!/^\d+$/.test(pob) || parseInt(pob,10)<1) return {err:'POB non valido: deve essere almeno 1'};
+      }
       const det = {};
       if(end){ det.end = end; det.endTs = endTsFrom(end, clockRef(ck)).toISOString(); }
-      det.pob = parseInt(pob,10);
+      if(/^\d+$/.test(pob)) det.pob = parseInt(pob,10);
       if(weapon) det.weapon = weapon;
       return {det};
     }
-    case 'luogo': { let l=v('luogo'); if(!l) return {err:'Inserisci l\'identificativo dell\'aeroporto o dell\'Unità'}; if(/^[a-z0-9]{3,5}$/i.test(l)) l=l.toUpperCase(); return {det:{luogo:l}}; }
-    case 'hero': { const hero=g('hero'); if(!hero) return {err:'Seleziona l\'assetto HERO'}; return {det:{hero}}; }
-    case 'personale': { const dir=g('dir'); const n=parseInt(v('n'),10)||0; if(!dir) return {err:'Seleziona Imbarco o Sbarco'}; if(n<1) return {err:'Inserisci il numero di persone'}; return {det:{dir,n}}; }
+    case 'luogo': { let l=v('luogo'); if(!l){ if((e = E('Inserisci l\'identificativo dell\'aeroporto o dell\'Unità'))) return e; return {det:{}}; } if(/^[a-z0-9]{3,5}$/i.test(l)) l=l.toUpperCase(); return {det:{luogo:l}}; }
+    case 'hero': { const hero=g('hero'); if(!hero && (e = E('Seleziona l\'assetto HERO'))) return e; return {det: hero ? {hero} : {}}; }
+    case 'personale': {
+      const dir=g('dir'), n=parseInt(v('n'),10)||0;
+      if(!dir && (e = E('Seleziona Imbarco o Sbarco'))) return e;
+      if(n<1 && (e = E('Inserisci il numero di persone'))) return e;
+      const det = {}; if(dir) det.dir = dir; if(n>0) det.n = n; return {det};
+    }
     case 'carico': { const txt=v('txt'); return {det: txt ? {txt} : {}}; }
-    case 'testo': { const txt=v('txt'); if(!txt) return {err:'Scrivi il testo dell\'evento'}; return {det:{txt}}; }
+    case 'testo': { const txt=v('txt'); if(!txt && (e = E('Scrivi il testo dell\'evento'))) return e; return {det: txt ? {txt} : {}}; }
   }
   return {det:null};
 }
 function detText(modal, det){
   if(!det) return '';
   switch(modal){
-    case 'move': return det.da&&det.a ? spotLabel(det.da)+' → '+spotLabel(det.a) : '';
+    case 'move': return det.da||det.a ? (det.da?spotLabel(det.da):'?')+' → '+(det.a?spotLabel(det.a):'?') : '';
     case 'fasi': return det.fase==='fine'?'Fine':det.fase==='inizio'?'Inizio':'';
     case 'fasiLt': return det.fase==='inizio'?('Inizio'+(det.herf?' · HERF '+det.herf:'')):det.fase==='fine'?('Fine'+(det.lt!=null?' · '+fmtNum(det.lt)+' lt':'')):'';
     case 'normalops': return [det.endTs ? 'Termine aut. '+det.end : (det.end ? 'Endurance '+det.end : ''), det.pob!=null?'POB '+det.pob:'', det.weapon?'Weapon '+det.weapon:''].filter(Boolean).join(' · ');
-    case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+' · '+det.n+' pers.' : '';
+    case 'personale': return det.dir ? (det.dir==='sbarco'?'Sbarco':'Imbarco')+(det.n?' · '+det.n+' pers.':'') : (det.n ? det.n+' pers.' : '');
     case 'hero': return heroText(det.hero);
     case 'luogo': return det.luogo ? 'Presso '+det.luogo : '';
     case 'carico': case 'testo': return det.txt||'';
@@ -1739,9 +1751,9 @@ function openEntryEditor(day, en, isNew){
     '<div data-f="det"></div>'+
     '<div class="fgrp"><label>Spot</label><div class="chipgrp" data-k="spot" data-f="spot">'+chip('','Nessuno',!en.spot)+SPOTS.map(s=>chip(s, spotLabel(s), en.spot===s)).join('')+'</div></div>'+
     '<div class="fgrp"><label>Note</label><textarea data-f="note" maxlength="500" style="min-height:64px" placeholder="Nota facoltativa…">'+esc(en.note||'')+'</textarea></div>'+
-    (isNew ? '<div class="hint">La registrazione viene inserita nella cronologia del giorno scelto, all\'ora indicata.</div>' : '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div>')+'<div class="ferr" hidden></div>';
+    (isNew ? '<div class="hint">La registrazione viene inserita così com\'è nella cronologia del giorno scelto, all\'ora indicata.</div>' : '<div class="hint">Data: <b>'+fmtDayLong(day)+'</b></div>')+'<div class="ferr" hidden></div>';
   const bodyFull = isNew
-    ? '<div class="row2"><div class="fgrp"><label>Data</label><input type="date" data-f="date" value="'+day+'" max="'+TODAY+'"></div><div></div></div>'+body
+    ? '<div class="row2"><div class="fgrp"><label>Data</label><input type="date" data-f="date" value="'+day+'"></div><div></div></div>'+body
     : body;
   openModal({
     title: isNew ? 'Inserisci registrazione' : 'Modifica evento', icon:mIcon(isNew?'plus':'pencil'), size:'mid', body:bodyFull,
@@ -1749,7 +1761,7 @@ function openEntryEditor(day, en, isNew){
     onMount(m){
       const R = m.root, evBox = R.querySelector('[data-f="evs"]'), detZone = R.querySelector('[data-f="det"]');
       bindDet(R);
-      const captureDet = ()=>{ qsa('.detbox[data-ev]', detZone).forEach(b=>{ const s=sel.find(x=>x.id===b.dataset.ev); const e=getP(b.dataset.ev); if(s&&e){ const r=detRead(e,b); if(!r.err) s.det=r.det; } }); };
+      const captureDet = ()=>{ qsa('.detbox[data-ev]', detZone).forEach(b=>{ const s=sel.find(x=>x.id===b.dataset.ev); const e=getP(b.dataset.ev); if(s&&e){ const r=detRead(e,b,true); if(!r.err) s.det=r.det; } }); };
       const draw = ()=>{
         evBox.innerHTML = pool.filter(e=>!e.hidden || sel.some(s=>s.id===e.id)).map(e=>'<button type="button" class="evbtn'+(sel.some(s=>s.id===e.id)?' on':'')+'" data-pe="'+e.id+'" style="'+cvars(e.color)+'"><span class="dot"></span><span class="evl">'+lbl(e.label)+'</span></button>').join('');
         detZone.innerHTML = sel.map(s=>{ const e=getP(s.id); if(!e||e.modal==='none') return ''; return '<div class="detsec"><div class="detsec-h"><i style="background:'+e.color+'"></i>'+esc(e.label)+'</div><div class="detbox" data-ev="'+e.id+'">'+detForm(e, s.det, en.ts)+'</div></div>'; }).join('');
@@ -1772,7 +1784,6 @@ function openEntryEditor(day, en, isNew){
         if(isNew){
           day0 = String(R.querySelector('[data-f="date"]').value||'');
           if(!/^\d{4}-\d{2}-\d{2}$/.test(day0)) return showErr(m,'Scegli la data della registrazione');
-          if(day0 > TODAY) return showErr(m,'La data non può essere nel futuro');
           if(!(await ensureDay(day0)) || !(await ensureDay(prevDayKey(day0)))) return showErr(m,'Impossibile leggere il giorno dal database: riprova');
         }
         const day = day0;
@@ -1780,7 +1791,6 @@ function openEntryEditor(day, en, isNew){
         const tp = tm ? [Number(tm[1]), Number(tm[2]), Number(tm[3]||0)] : null;
         if(!tp || tp[0]>23 || tp[1]>59 || tp[2]>59) return showErr(m,'Orario non valido: usa il formato hh:mm:ss (24 ore)');
         const base = parseDay(day); base.setHours(tp[0], tp[1], tp[2]||0, 0);
-        if(isNew && base.getTime() > Date.now()+60000) return showErr(m,'L\'orario non può essere nel futuro');
         // ora non modificata: si conserva l'orario esatto originale (millisecondi compresi)
         const newTs = (!isNew && String(R.querySelector('[data-f="time"]').value).trim()===tval) ? en.ts : base.toISOString();
         qsa('.clock', detZone).forEach(ck=>{ ck.dataset.ref = newTs; });   // autonomia calcolata dall'ora della registrazione
@@ -1789,38 +1799,18 @@ function openEntryEditor(day, en, isNew){
           const e = getP(s.id); let det = null;
           if(e.modal!=='none'){
             const b = detZone.querySelector('.detbox[data-ev="'+e.id+'"]');
-            const r = detRead(e, b); if(r.err) return showErr(m, e.label+': '+r.err);
+            const r = detRead(e, b, true); if(r.err) return showErr(m, e.label+': '+r.err);
             det = r.det;
           }
           evs.push({ id:e.id, label:e.label, color:e.color, stat:e.stat, modal:e.modal, det });
         }
         if(!evs.length) return showErr(m,'Seleziona almeno un evento');
         const acv = R.querySelector('[data-f="ac"]').value;
-        const need = sel.map(x=>getP(x.id)).find(x=>x && (x.needAc || x.needFly));
-        if(need && !acv) return showErr(m, needAcMsg(need));
-        const fly = sel.map(x=>getP(x.id)).find(x=>x && x.needFly);
-        if(fly){
-          const t = newTs;
-          const prior = (DAYS[prevDayKey(day)]||[]).concat(DAYS[day]||[]).filter(x=>x.id!==en.id && x.ts < t);
-          const st = computeStates(prior)[acv];
-          if(!st || st.pos!=='VOLO') return showErr(m, fly.label+': a quell\'ora l\'A/C non risulta in volo (manca il Decollo)');
-        }
-        const gnd = sel.map(x=>getP(x.id)).find(x=>x && x.needGround);
-        if(gnd && acv){
-          const prior = (DAYS[prevDayKey(day)]||[]).concat(DAYS[day]||[]).filter(x=>x.id!==en.id && x.ts < newTs);
-          const st = computeStates(prior)[acv];
-          if(st && st.pos==='VOLO') return showErr(m, gnd.label+': a quell\'ora l\'A/C risulta già in volo');
-        }
         let ac = null;
         if(acv){ const a=getAc(acv); ac = a ? acSnap(a) : (en.ac && en.ac.id===acv ? en.ac : null); }
         const sc = R.querySelector('[data-f="spot"] .chip.on');
         let spot = sc && sc.dataset.v ? sc.dataset.v : null;
         const mv = evs.find(x=>x.modal==='move' && x.det && x.det.a); if(mv) spot = mv.det.a;
-        if(acv && spot && isNum(spot)){
-          const prior = (DAYS[prevDayKey(day)]||[]).concat(DAYS[day]||[]).filter(x=>x.id!==en.id && x.ts < newTs);
-          const st = computeStates(prior), other = Object.keys(st).find(id=>id!==acv && st[id].pos===spot);
-          if(other) return showErr(m, spotLabel(spot)+': a quell\'ora era occupato da '+st[other].ac.cs);
-        }
         en.ts = newTs; en.ac = ac; en.evs = evs; en.spot = spot;
         const nv = String(R.querySelector('[data-f="note"]').value||'').trim(); if(nv) en.note = nv; else delete en.note;
         rememberFrom(evs);
@@ -2111,7 +2101,7 @@ function renderFlight(){
       '<div class="fb-rem"><div class="fb-k">Autonomia residua</div><div class="fb-big" data-rem></div><div class="fb-bar"><i data-bar></i></div>'+
       '<div class="fb-meta">Termine <b>'+(f.end!=null?fmtClock(f.end):'—')+'</b> · Decollo <b>'+(f.since?fmtTime(f.since):'—')+'</b></div></div>'+
       '<div class="fb-act">'+(nEv?'<button class="btn small ghost" data-fops>'+I.refresh+esc(nEv.label)+'</button>':'')+(aEv?'<button class="btn small ghost" data-fland>'+I.down+esc(aEv.label)+'</button>':'')+'</div></div>';
-  }).join('') : '<div class="empty" style="grid-column:1/-1">'+I.plane+'<b>Nessun aeromobile in volo</b>Gli A/C compaiono qui dopo un <b>Decollo</b> (o un <b>Normal OPS</b>) e spariscono con l\'<b>Appontaggio</b>.</div>';
+  }).join('') : '<div class="empty" style="grid-column:1/-1">'+I.plane+'<b>Nessun aeromobile in volo</b>Gli A/C compaiono qui dopo il <b>Decollo</b> e spariscono con l\'<b>Appontaggio</b> (anche presso un altro aeroporto o Unità).</div>';
   updateFlightTimers();
 }
 function updateFlightTimers(){
